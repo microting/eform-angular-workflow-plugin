@@ -1,0 +1,34 @@
+[
+  {
+    "Key": "Workflow",
+    "LocalizedValue": {
+      "da": "Arbejdsproces",
+      "en-US": "Workflow"//,
+      //"de-DE": "Inventar"
+    }
+  },
+  {
+    "Key": "Cases",
+    "LocalizedValue": {
+      "da": "Tilfælde",
+      "en-US": "Cases" //,
+      //"de-DE": "Gegenst"
+    }
+  },
+  {
+    "Key": "SettingsHaveBeenUpdatedSuccessfully",
+    "LocalizedValue": {
+      "da": "Indstillinger er blevet opdateret med succes",
+      "en-US": "Settings have been updated successfully",
+      "de-DE": "Einstellungen wurden erfolgreich aktualisiert"
+    }
+  },
+  {
+    "Key": "ErrorWhileUpdatingSettings",
+    "LocalizedValue": {
+      "da": "Fejl under opdatering af indstillinger",
+      "en-US": "Error while updating settings",
+      "de-DE": "Fehler beim Aktualisieren der Einstellungen"
+    }
+  }
+]
