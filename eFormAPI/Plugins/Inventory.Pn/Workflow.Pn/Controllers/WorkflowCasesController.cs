@@ -20,38 +20,29 @@ SOFTWARE.
 
 namespace Workflow.Pn.Controllers
 {
-    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using Microting.eFormApi.BasePn.Infrastructure.Database.Entities;
+    using Microsoft.AspNetCore.Authorization;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
     using System.Threading.Tasks;
-    using Infrastructure.Models.Settings;
-    using Services.WorkflowPnSettingsService;
+    using Infrastructure.Models.Cases;
+    using Services.WorkflowCasesService;
 
-    public class WorkflowSettingController : Controller
+    public class WorkflowCasesController : Controller
     {
 
-        private readonly IWorkflowPnSettingsService _workflowPnSettingsService;
+        private readonly IWorkflowCasesService _workflowPnSettingsService;
 
-        public WorkflowSettingController(IWorkflowPnSettingsService workflowPnSettingsService)
+        public WorkflowCasesController(IWorkflowCasesService workflowPnSettingsService)
         {
             _workflowPnSettingsService = workflowPnSettingsService;
         }
-
-        [HttpGet]
-        [Authorize(Roles = EformRole.Admin)]
-        [Route("api/workflow-pn/settings")]
-        public async Task<OperationDataResult<WorkflowSettingsModel>> GetSettings()
-        {
-            return await _workflowPnSettingsService.GetSettings();
-        }
-
+        
         [HttpPost]
-        [Authorize(Roles = EformRole.Admin)]
-        [Route("api/workflow-pn/settings/eform")]
-        public async Task<OperationResult> UpdateFolderId([FromBody] int eformId)
+        [Authorize]
+        [Route("api/workflow-pn/cases")]
+        public async Task<OperationResult> UpdateFolderId([FromBody] ReplyRequest model)
         {
-            return await _workflowPnSettingsService.UpdateEformId(eformId);
+            return await _workflowPnSettingsService.UpdateCase(model);
         }
     }
 }

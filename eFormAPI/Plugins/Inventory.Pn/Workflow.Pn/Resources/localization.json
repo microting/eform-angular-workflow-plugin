@@ -3,16 +3,16 @@
     "Key": "Workflow",
     "LocalizedValue": {
       "da": "Arbejdsproces",
-      "en-US": "Workflow"//,
-      //"de-DE": "Inventar"
+      "en-US": "Workflow",
+      "de-DE": "Workflow"
     }
   },
   {
     "Key": "Cases",
     "LocalizedValue": {
       "da": "Tilfælde",
-      "en-US": "Cases" //,
-      //"de-DE": "Gegenst"
+      "en-US": "Cases",
+      "de-DE": "Fallen"
     }
   },
   {
@@ -29,6 +29,22 @@
       "da": "Fejl under opdatering af indstillinger",
       "en-US": "Error while updating settings",
       "de-DE": "Fehler beim Aktualisieren der Einstellungen"
+    }
+  },
+  {
+    "Key": "CaseHasBeenUpdated",
+    "LocalizedValue": {
+      "da": "Sag er blevet opdateret",
+      "en-US": "Case has been updated",
+      "de-DE": "Fall wurde aktualisiert"
+    }
+  },
+  {
+    "Key": "CaseCouldNotBeUpdated",
+    "LocalizedValue": {
+      "da": "Sag kunne ikke opdateres",
+      "en-US": "Case could not be updated",
+      "de-DE": "Fall konnte nicht aktualisiert werden"
     }
   }
 ]

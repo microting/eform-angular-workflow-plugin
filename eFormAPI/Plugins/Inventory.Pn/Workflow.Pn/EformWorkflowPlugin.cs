@@ -42,6 +42,7 @@ namespace Workflow.Pn
     using System.Reflection;
     using Microting.eFormWorkflowBase.Infrastructure.Data;
     using Microting.eFormWorkflowBase.Infrastructure.Data.Factories;
+    using Services.WorkflowCasesService;
     using Services.WorkflowLocalizationService;
 
     public class EformWorkflowPlugin : IEformPlugin
@@ -74,6 +75,7 @@ namespace Workflow.Pn
         {
             services.AddSingleton<IWorkflowLocalizationService, WorkflowLocalizationService>();
             services.AddTransient<IWorkflowPnSettingsService, WorkflowPnSettingsService>();
+            services.AddTransient<IWorkflowCasesService, WorkflowCasesService>();
             services.AddSingleton<IRebusService, RebusService>();
             services.AddControllers();
         }
