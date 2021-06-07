@@ -26,6 +26,7 @@ namespace Workflow.Pn.Controllers
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
     using System.Threading.Tasks;
     using Infrastructure.Models.Settings;
+    using Microting.eForm.Dto;
     using Services.WorkflowPnSettingsService;
 
     public class WorkflowSettingController : Controller
@@ -48,10 +49,18 @@ namespace Workflow.Pn.Controllers
 
         [HttpPost]
         [Authorize(Roles = EformRole.Admin)]
-        [Route("api/workflow-pn/settings/eform")]
-        public async Task<OperationResult> UpdateFolderId([FromBody] int eformId)
+        [Route("api/workflow-pn/settings")]
+        public async Task<OperationResult> UpdateEformId([FromBody] WorkflowSettingsModel workflowSettingsModel)
         {
-            return await _workflowPnSettingsService.UpdateEformId(eformId);
+            return await _workflowPnSettingsService.UpdateEformId(workflowSettingsModel);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = EformRole.Admin)]
+        [Route("api/workflow-pn/settings/template")]
+        public async Task<OperationDataResult<Template_Dto>> UpdateFolderId()
+        {
+            return await _workflowPnSettingsService.GetTemplate();
         }
     }
 }

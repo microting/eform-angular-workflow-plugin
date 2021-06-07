@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { saveAs } from 'file-saver';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Subscription } from 'rxjs';
 import { UserClaimsEnum } from 'src/app/common/const';
@@ -19,8 +18,7 @@ import {
   SecurityGroupEformsPermissionsService,
 } from 'src/app/common/services';
 import { AuthStateService } from 'src/app/common/store';
-import { CasesStateService } from 'src/app/modules/cases/components/store';
-import {WorkflowCasesStateService} from 'src/app/plugins/modules/workflow-pn/components/workflow-cases/store';
+import { WorkflowCasesStateService } from '../store';
 import { WorkflowPnSettingsService } from '../../../services';
 
 @AutoUnsubscribe()
@@ -53,16 +51,13 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     private activateRoute: ActivatedRoute,
     private casesService: CasesService,
     private eFormService: EFormService,
-    private authStateService: AuthStateService,
+    public authStateService: AuthStateService,
     private securityGroupEformsService: SecurityGroupEformsPermissionsService,
     public workflowCaseStateService: WorkflowCasesStateService,
     private settingsService: WorkflowPnSettingsService
-  ) {
-  }
+  ) {}
 
-  ngOnDestroy(): void {
-
-  }
+  ngOnDestroy(): void {}
 
   ngOnInit() {
     this.loadTemplateData();
@@ -83,15 +78,17 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   }
 
   loadAllCases() {
-    this.getCases$ = this.workflowCaseStateService.getCases().subscribe((operation) => {
-      if (operation && operation.success) {
-        this.caseListModel = operation.model;
-        composeCasesTableHeaders(
-          this.currentTemplate,
-          this.authStateService.isAdmin
-        );
-      }
-    });
+    this.getCases$ = this.workflowCaseStateService
+      .getCases()
+      .subscribe((operation) => {
+        if (operation && operation.success) {
+          this.caseListModel = operation.model;
+          composeCasesTableHeaders(
+            this.currentTemplate,
+            this.authStateService.isAdmin
+          );
+        }
+      });
   }
 
   loadTemplateData() {

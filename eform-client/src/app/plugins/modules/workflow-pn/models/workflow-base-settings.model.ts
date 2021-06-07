@@ -1,3 +1,3 @@
 export class WorkflowBaseSettingsModel {
-  selectedTemplateId: number;
+  workflowFormId: number;
 }

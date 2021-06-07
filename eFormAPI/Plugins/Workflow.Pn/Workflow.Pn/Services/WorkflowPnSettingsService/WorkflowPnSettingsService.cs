@@ -32,6 +32,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
     using System;
     using System.Diagnostics;
     using System.Threading.Tasks;
+    using Microting.eForm.Dto;
     using Microting.eFormWorkflowBase.Infrastructure.Data;
     using WorkflowLocalizationService;
 
@@ -42,14 +43,18 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
         private readonly WorkflowPnDbContext _dbContext;
         private readonly IPluginDbOptions<WorkflowBaseSettings> _options;
         private readonly IUserService _userService;
+        private readonly IEFormCoreService _coreHelper;
 
 
-        public WorkflowPnSettingsService(ILogger<WorkflowPnSettingsService> logger,
+        public WorkflowPnSettingsService(
+            IEFormCoreService coreHelper, 
+            ILogger<WorkflowPnSettingsService> logger,
             IWorkflowLocalizationService workflowLocalizationService,
             WorkflowPnDbContext dbContext,
             IPluginDbOptions<WorkflowBaseSettings> options,
             IUserService userService)
         {
+            _coreHelper = coreHelper;
             _logger = logger;
             _dbContext = dbContext;
             _options = options;
@@ -65,7 +70,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
 
                 var settings = new WorkflowSettingsModel
                 {
-                    WorkflowFormId = option.WorkflowFormId,
+                    WorkflowFormId = option.eFormId,
                 };
 
                 return new OperationDataResult<WorkflowSettingsModel>(true, settings);
@@ -79,15 +84,15 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
             }
         }
 
-        public async Task<OperationResult> UpdateEformId(int eformId)
+        public async Task<OperationResult> UpdateEformId(WorkflowSettingsModel workflowSettingsModel)
         {
             try
             {
-                if (eformId > 0)
+                if (workflowSettingsModel.WorkflowFormId > 0)
                 {
                     await _options.UpdateDb(settings =>
                         {
-                            settings.WorkflowFormId = eformId;
+                            settings.eFormId = workflowSettingsModel.WorkflowFormId;
                         },
                         _dbContext,
                         _userService.UserId);
@@ -97,7 +102,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
                         _workflowLocalizationService.GetString("SettingsHaveBeenUpdatedSuccessfully"));
                 }
 
-                throw new ArgumentException($"{nameof(eformId)} is 0");
+                throw new ArgumentException($"{nameof(workflowSettingsModel.WorkflowFormId)} is 0");
             }
             catch (Exception e)
             {
@@ -108,5 +113,13 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
             }
         }
 
+        public async Task<OperationDataResult<Template_Dto>> GetTemplate()
+        {
+            var core = await _coreHelper.GetCore();
+
+            var language = await _userService.GetCurrentUserLanguage();
+            var templateDto = await core.TemplateItemRead(_options.Value.eFormId, language);
+            return new OperationDataResult<Template_Dto>(true, templateDto);
+        }
     }
 }

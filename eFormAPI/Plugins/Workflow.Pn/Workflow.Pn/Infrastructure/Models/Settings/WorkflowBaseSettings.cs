@@ -22,6 +22,6 @@ namespace Workflow.Pn.Infrastructure.Models.Settings
 {
     public class WorkflowBaseSettings
     {
-        public int WorkflowFormId { get; set; }
+        public int eFormId { get; set; }
     }
 }

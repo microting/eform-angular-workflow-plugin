@@ -1,17 +1,20 @@
 import {
   ChangeDetectorRef,
   Component,
-  EventEmitter, OnDestroy,
+  EventEmitter,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Subscription } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
-import { TemplateListModel, TemplateRequestModel } from 'src/app/common/models';
+import {
+  CommonDictionaryModel,
+} from 'src/app/common/models';
 import { EFormService } from 'src/app/common/services';
-import { WorkflowPnSettingsService } from 'src/app/plugins/modules/workflow-pn/services';
-import { WorkflowBaseSettingsModel } from '../../models/workflow-base-settings.model';
+import { WorkflowPnSettingsService } from '../../services';
+import { WorkflowBaseSettingsModel } from '../../models';
 
 @AutoUnsubscribe()
 @Component({
@@ -22,11 +25,11 @@ import { WorkflowBaseSettingsModel } from '../../models/workflow-base-settings.m
 export class WorkflowSettingsComponent implements OnInit, OnDestroy {
   typeahead = new EventEmitter<string>();
   settingsModel: WorkflowBaseSettingsModel = new WorkflowBaseSettingsModel();
-  templatesModel: TemplateListModel = new TemplateListModel();
-  templateRequestModel: TemplateRequestModel = new TemplateRequestModel();
+  templatesModel: CommonDictionaryModel[] = new Array<CommonDictionaryModel>();
 
   getSettings$: Subscription;
   updateSettings$: Subscription;
+  getCommonDictionaryTemplates$: Subscription;
 
   constructor(
     private workflowPnSettingsService: WorkflowPnSettingsService,
@@ -38,13 +41,14 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
       .pipe(
         debounceTime(200),
         switchMap((term) => {
-          this.templateRequestModel.nameFilter = term;
-          return this.eFormService.getAll(this.templateRequestModel);
+          return this.eFormService.getCommonDictionaryTemplates(term);
         })
       )
-      .subscribe((items) => {
-        this.templatesModel = items.model;
-        this.cd.markForCheck();
+      .subscribe((data) => {
+        if (data && data.success && data.model) {
+          this.templatesModel = data.model;
+          this.cd.markForCheck();
+        }
       });
   }
 
@@ -58,6 +62,7 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
       .subscribe((data) => {
         if (data && data.success) {
           this.settingsModel = data.model;
+          this.getSelectedEform(this.settingsModel);
         }
       });
   }
@@ -68,6 +73,11 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
       .subscribe((data) => {});
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy(): void {}
+
+  private getSelectedEform(settingsModel: WorkflowBaseSettingsModel) {
+    this.getCommonDictionaryTemplates$ = this.eFormService
+      .getCommonDictionaryTemplates('', settingsModel.workflowFormId)
+      .subscribe((data) => (this.templatesModel = [...data.model]));
   }
 }

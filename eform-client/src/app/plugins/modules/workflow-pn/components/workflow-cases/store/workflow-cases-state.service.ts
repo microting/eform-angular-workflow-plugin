@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { updateTableSort } from 'src/app/common/helpers';
-import { getOffset } from 'src/app/common/helpers/pagination.helper';
+import { updateTableSort, getOffset} from 'src/app/common/helpers';
 import {
   CaseListModel,
   OperationDataResult,
@@ -10,9 +9,7 @@ import {
   SortModel,
 } from 'src/app/common/models';
 import { CasesService } from 'src/app/common/services';
-import { WorkflowCasesQuery } from './workflow-cases.query';
-import { WorkflowCasesStore } from './workflow-cases.store';
-
+import { WorkflowCasesQuery, WorkflowCasesStore} from './';
 
 @Injectable({ providedIn: 'root' })
 export class WorkflowCasesStateService {
@@ -32,8 +29,7 @@ export class WorkflowCasesStateService {
     return this.query.selectSort$;
   }
 
-  getCases(
-  ): Observable<OperationDataResult<CaseListModel>> {
+  getCases(): Observable<OperationDataResult<CaseListModel>> {
     return this.service
       .getCases({
         ...this.query.pageSetting.pagination,
@@ -124,5 +120,9 @@ export class WorkflowCasesStateService {
 
   getPagination(): Observable<PaginationModel> {
     return this.query.selectPagination$;
+  }
+
+  getNameFilter(): Observable<string> {
+    return this.query.selectNameFilter$;
   }
 }

@@ -32,77 +32,77 @@
         (sortChanged)="sortTable($event)"
       ></thead>
       <tbody>
-      <tr *ngFor="let caseModel of caseListModel.cases">
-        <td>{{ caseModel.id }}</td>
-        <td>
-          <date-formatter
-            [date]="caseModel.doneAt"
-            [Format]="'datetime'"
-          ></date-formatter>
-        </td>
-        <td *ngIf="authStateService.isAdmin">
-          <date-formatter
-            [date]="caseModel.createdAt"
-            [Format]="'datetime'"
-          ></date-formatter>
-        </td>
-        <td>{{ caseModel.workerName }}</td>
-        <td *ngIf="currentTemplate.field1" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue1"></div>
-        </td>
-        <td *ngIf="currentTemplate.field2" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue2"></div>
-        </td>
-        <td *ngIf="currentTemplate.field3" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue3"></div>
-        </td>
-        <td *ngIf="currentTemplate.field4" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue4"></div>
-        </td>
-        <td *ngIf="currentTemplate.field5" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue5"></div>
-        </td>
-        <td *ngIf="currentTemplate.field6" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue6"></div>
-        </td>
-        <td *ngIf="currentTemplate.field7" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue7"></div>
-        </td>
-        <td *ngIf="currentTemplate.field8" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue8"></div>
-        </td>
-        <td *ngIf="currentTemplate.field9" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue9"></div>
-        </td>
-        <td>
-          <div class="d-flex flex-row justify-content-center">
-            <button
-              mdbBtn
-              class="btn-success btn-icon mb-2"
-              *ngIf="checkEformPermissions(userClaimsEnum.caseRead)"
-              [routerLink]="[
+        <tr *ngFor="let caseModel of caseListModel.cases">
+          <td>{{ caseModel.id }}</td>
+          <td>
+            <date-formatter
+              [date]="caseModel.doneAt"
+              [Format]="'datetime'"
+            ></date-formatter>
+          </td>
+          <td *ngIf="authStateService.isAdmin">
+            <date-formatter
+              [date]="caseModel.createdAt"
+              [Format]="'datetime'"
+            ></date-formatter>
+          </td>
+          <td>{{ caseModel.workerName }}</td>
+          <td *ngIf="currentTemplate.field1" class="text-center">
+            <div class="max-lines" [innerHTML]="caseModel.fieldValue1"></div>
+          </td>
+          <td *ngIf="currentTemplate.field2" class="text-center">
+            <div class="max-lines" [innerHTML]="caseModel.fieldValue2"></div>
+          </td>
+          <td *ngIf="currentTemplate.field3" class="text-center">
+            <div class="max-lines" [innerHTML]="caseModel.fieldValue3"></div>
+          </td>
+          <td *ngIf="currentTemplate.field4" class="text-center">
+            <div class="max-lines" [innerHTML]="caseModel.fieldValue4"></div>
+          </td>
+          <td *ngIf="currentTemplate.field5" class="text-center">
+            <div class="max-lines" [innerHTML]="caseModel.fieldValue5"></div>
+          </td>
+          <td *ngIf="currentTemplate.field6" class="text-center">
+            <div class="max-lines" [innerHTML]="caseModel.fieldValue6"></div>
+          </td>
+          <td *ngIf="currentTemplate.field7" class="text-center">
+            <div class="max-lines" [innerHTML]="caseModel.fieldValue7"></div>
+          </td>
+          <td *ngIf="currentTemplate.field8" class="text-center">
+            <div class="max-lines" [innerHTML]="caseModel.fieldValue8"></div>
+          </td>
+          <td *ngIf="currentTemplate.field9" class="text-center">
+            <div class="max-lines" [innerHTML]="caseModel.fieldValue9"></div>
+          </td>
+          <td>
+            <div class="d-flex flex-row justify-content-center">
+              <button
+                mdbBtn
+                class="btn-success btn-icon mb-2"
+                *ngIf="checkEformPermissions(userClaimsEnum.caseRead)"
+                [routerLink]="[
                   '/cases/edit/' + caseModel.id + '/' + currentTemplate.id
                 ]"
-              mdbTooltip="{{ 'Edit Case' | translate }}"
-            >
-              <fa-icon icon="pen" size="lg" [fixedWidth]="true"></fa-icon>
-            </button>
-            <button
-              mdbBtn
-              class="btn-danger btn-icon mb-2"
-              *ngIf="checkEformPermissions(userClaimsEnum.caseDelete)"
-              mdbTooltip="{{ 'Delete Case' | translate }}"
-              (click)="onDeleteClicked(caseModel)"
-            >
-              <fa-icon
-                icon="trash-alt"
-                size="lg"
-                [fixedWidth]="true"
-              ></fa-icon>
-            </button>
-          </div>
-        </td>
-      </tr>
+                mdbTooltip="{{ 'Edit Case' | translate }}"
+              >
+                <fa-icon icon="pen" size="lg" [fixedWidth]="true"></fa-icon>
+              </button>
+              <button
+                mdbBtn
+                class="btn-danger btn-icon mb-2"
+                *ngIf="checkEformPermissions(userClaimsEnum.caseDelete)"
+                mdbTooltip="{{ 'Delete Case' | translate }}"
+                (click)="onDeleteClicked(caseModel)"
+              >
+                <fa-icon
+                  icon="trash-alt"
+                  size="lg"
+                  [fixedWidth]="true"
+                ></fa-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>

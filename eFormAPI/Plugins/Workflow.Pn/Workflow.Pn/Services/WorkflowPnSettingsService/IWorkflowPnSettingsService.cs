@@ -26,12 +26,15 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
 {
     using System.Threading.Tasks;
     using Infrastructure.Models.Settings;
+    using Microting.eForm.Dto;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
 
     public interface IWorkflowPnSettingsService
     {
         Task<OperationDataResult<WorkflowSettingsModel>> GetSettings();
         
-        Task<OperationResult> UpdateEformId(int eFormId);
+        Task<OperationResult> UpdateEformId(WorkflowSettingsModel workflowSettingsModel);
+
+        Task<OperationDataResult<Template_Dto>> GetTemplate();
     }
 }

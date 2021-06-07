@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
-
 import { Observable } from 'rxjs';
-import { OperationResult } from 'src/app/common/models/operation.models';
-
-import { ReplyRequest } from 'src/app/common/models';
+import { OperationResult, ReplyRequest } from 'src/app/common/models';
 import { ApiBaseService } from 'src/app/common/services';
 
 export let WorkflowPnCasesMethods = {
@@ -16,9 +13,7 @@ export let WorkflowPnCasesMethods = {
 export class WorkflowPnCasesService {
   constructor(private apiBaseService: ApiBaseService) {}
 
-  updateCase(
-    model: ReplyRequest
-  ): Observable<OperationResult> {
+  updateCase(model: ReplyRequest): Observable<OperationResult> {
     return this.apiBaseService.post<ReplyRequest>(
       `${WorkflowPnCasesMethods.Cases}`,
       model

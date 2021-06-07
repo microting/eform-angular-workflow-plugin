@@ -9,17 +9,15 @@
 <div class="container-fluid">
   <div class="row mt-4">
     <div class="col-md-12 col-xs-12 control-block">
-      <eform-subheader [title]="'Settings' | translate" [heandingSizeRem]="1">
-      </eform-subheader>
       <div class="container-fluid">
         <div class="col-md-3 col-sm-6 col-xs-6 ng-select-wrapper">
           <ng-select
-            [items]="templatesModel.templates"
-            bindLabel="label"
+            [items]="templatesModel"
+            bindLabel="name"
             [placeholder]="'Selected template' | translate"
             bindValue="id"
             [typeahead]="typeahead"
-            [(ngModel)]="settingsModel.selectedTemplateId"
+            [(ngModel)]="settingsModel.workflowFormId"
             id="createPlanningSelector"
           >
           </ng-select>
