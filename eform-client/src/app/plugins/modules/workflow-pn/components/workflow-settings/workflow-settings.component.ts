@@ -1,7 +1,7 @@
 import {
   ChangeDetectorRef,
   Component,
-  EventEmitter,
+  EventEmitter, OnDestroy,
   OnInit,
 } from '@angular/core';
 import { Router } from '@angular/router';
@@ -19,7 +19,7 @@ import { WorkflowBaseSettingsModel } from '../../models/workflow-base-settings.m
   templateUrl: './workflow-settings.component.html',
   styleUrls: ['./workflow-settings.component.scss'],
 })
-export class WorkflowSettingsComponent implements OnInit {
+export class WorkflowSettingsComponent implements OnInit, OnDestroy {
   typeahead = new EventEmitter<string>();
   settingsModel: WorkflowBaseSettingsModel = new WorkflowBaseSettingsModel();
   templatesModel: TemplateListModel = new TemplateListModel();
@@ -66,5 +66,8 @@ export class WorkflowSettingsComponent implements OnInit {
     this.updateSettings$ = this.workflowPnSettingsService
       .updateSettings(this.settingsModel)
       .subscribe((data) => {});
+  }
+
+  ngOnDestroy(): void {
   }
 }
