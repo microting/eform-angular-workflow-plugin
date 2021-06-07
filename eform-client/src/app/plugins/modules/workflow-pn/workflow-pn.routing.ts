@@ -1,9 +1,11 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {AdminGuard, AuthGuard, PermissionGuard} from 'src/app/common/guards';
+import {AdminGuard, AuthGuard, CanDeactivateGuard, PermissionGuard} from 'src/app/common/guards';
+import {CaseEditComponent} from 'src/app/modules/cases/components';
 import {WorkflowPnLayoutComponent} from './layouts';
 import {
-  WorkflowCasesContainerComponent,
+  WorkflowCaseEditComponent,
+  WorkflowCasesPageComponent,
   WorkflowSettingsComponent,
 } from './components';
 import {WorkflowPnClaims} from './enums';
@@ -20,7 +22,12 @@ export const routes: Routes = [
       {
         path: 'cases',
         canActivate: [AuthGuard],
-        component: WorkflowCasesContainerComponent,
+        component: WorkflowCasesPageComponent,
+      },
+      {
+        path: 'cases/:id',
+        component: WorkflowCaseEditComponent,
+        canDeactivate: [CanDeactivateGuard]
       },
       {
         path: 'settings',

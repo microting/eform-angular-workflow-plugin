@@ -17,11 +17,10 @@ export class WorkflowPnCasesService {
   constructor(private apiBaseService: ApiBaseService) {}
 
   updateCase(
-    model: ReplyRequest,
-    templateId: number
+    model: ReplyRequest
   ): Observable<OperationResult> {
     return this.apiBaseService.post<ReplyRequest>(
-      `${WorkflowPnCasesMethods.Cases}/${templateId}`,
+      `${WorkflowPnCasesMethods.Cases}`,
       model
     );
   }

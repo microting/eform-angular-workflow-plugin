@@ -5,13 +5,19 @@ import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
+import {
+  ButtonsModule,
+  InputsModule, MDBBootstrapModule,
+  ModalModule,
+  TableModule,
+} from 'angular-bootstrap-md';
+import { EformCasesModule } from 'src/app/common/modules/eform-cases/eform-cases.module';
 import { EformSharedTagsModule } from 'src/app/common/modules/eform-shared-tags/eform-shared-tags.module';
 import { EformSharedModule } from 'src/app/common/modules/eform-shared/eform-shared.module';
 import { CasesModule } from 'src/app/modules';
 import {
   WorkflowCaseEditComponent,
-  WorkflowCasesContainerComponent,
-  WorkflowCasesTableComponent,
+  WorkflowCasesPageComponent,
   WorkflowSettingsComponent,
 } from './components';
 import { WorkflowPnLayoutComponent } from './layouts';
@@ -32,14 +38,15 @@ import { WorkflowPnRouting } from './workflow-pn.routing';
     ReactiveFormsModule,
     CasesModule,
     EformSharedTagsModule,
+    EformCasesModule,
+    MDBBootstrapModule,
   ],
   declarations: [
     WorkflowPnLayoutComponent,
     WorkflowSettingsComponent,
     WorkflowCaseEditComponent,
     WorkflowCaseEditComponent,
-    WorkflowCasesContainerComponent,
-    WorkflowCasesTableComponent,
+    WorkflowCasesPageComponent,
   ],
   providers: [
     WorkflowPnSettingsService,
