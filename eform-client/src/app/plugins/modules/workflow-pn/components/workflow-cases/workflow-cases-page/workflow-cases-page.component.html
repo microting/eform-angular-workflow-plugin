@@ -7,7 +7,7 @@
       <div class="md-form">
         <input
           mdbInput
-          [ngModel]="caseStateService.getNameFilter() | async"
+          [ngModel]="workflowCaseStateService.getNameFilter() | async"
           (ngModelChange)="onLabelInputChanged($event)"
           type="text"
           class="form-control"
@@ -28,7 +28,7 @@
       <thead
         table-headers
         [tableHeaders]="tableHeaders"
-        [sort]="caseStateService.getSort() | async"
+        [sort]="workflowCaseStateService.getSort() | async"
         (sortChanged)="sortTable($event)"
       ></thead>
       <tbody>
@@ -89,54 +89,6 @@
             </button>
             <button
               mdbBtn
-              class="btn-success btn-icon mb-2"
-              *ngIf="checkEformPermissions(userClaimsEnum.caseRead)"
-              [routerLink]="[
-                  '/cases/posts/' + caseModel.id + '/' + currentTemplate.id
-                ]"
-              mdbTooltip="{{ 'Posts' | translate }}"
-            >
-              <fa-icon
-                icon="sticky-note"
-                size="lg"
-                [fixedWidth]="true"
-              ></fa-icon>
-            </button>
-            <button
-              mdbBtn
-              class="btn-success btn-icon mb-2"
-              *ngIf="
-                  checkEformPermissions(userClaimsEnum.caseGetPdf) &&
-                  (currentTemplate.jasperExportEnabled ||
-                    currentTemplate.docxExportEnabled)
-                "
-              (click)="downloadFile(caseModel.id, 'pdf')"
-              mdbTooltip="{{ 'Download PDF' | translate }}"
-            >
-              <fa-icon
-                icon="file-pdf"
-                size="lg"
-                [fixedWidth]="true"
-              ></fa-icon>
-            </button>
-            <button
-              mdbBtn
-              class="btn-info btn-icon mb-2"
-              *ngIf="
-                  checkEformPermissions(userClaimsEnum.caseGetPdf) &&
-                  currentTemplate.docxExportEnabled
-                "
-              (click)="downloadFile(caseModel.id, 'docx')"
-              mdbTooltip="{{ 'Download Docx' | translate }}"
-            >
-              <fa-icon
-                icon="file-word"
-                size="lg"
-                [fixedWidth]="true"
-              ></fa-icon>
-            </button>
-            <button
-              mdbBtn
               class="btn-danger btn-icon mb-2"
               *ngIf="checkEformPermissions(userClaimsEnum.caseDelete)"
               mdbTooltip="{{ 'Delete Case' | translate }}"
@@ -157,14 +109,14 @@
   <div class="row justify-content-between mr-2 ml-2">
     <div class="col-md-1">
       <eform-page-size
-        [pageSize]="caseStateService.getPageSize() | async"
+        [pageSize]="workflowCaseStateService.getPageSize() | async"
         (onPageSizeChanged)="onPageSizeChanged($event)"
       >
       </eform-page-size>
     </div>
     <div class="col-md-4 ml-auto d-flex justify-content-end p-2">
       <eform-pagination
-        [pagination]="caseStateService.getPagination() | async"
+        [pagination]="workflowCaseStateService.getPagination() | async"
         (onPageChanged)="changePage($event)"
       ></eform-pagination>
     </div>

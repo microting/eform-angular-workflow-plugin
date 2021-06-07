@@ -20,6 +20,8 @@ import {
 } from 'src/app/common/services';
 import { AuthStateService } from 'src/app/common/store';
 import { CasesStateService } from 'src/app/modules/cases/components/store';
+import {WorkflowCasesStateService} from 'src/app/plugins/modules/workflow-pn/components/workflow-cases/store';
+import { WorkflowPnSettingsService } from '../../../services';
 
 @AutoUnsubscribe()
 @Component({
@@ -53,15 +55,13 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     private eFormService: EFormService,
     private authStateService: AuthStateService,
     private securityGroupEformsService: SecurityGroupEformsPermissionsService,
-    public caseStateService: CasesStateService
+    public workflowCaseStateService: WorkflowCasesStateService,
+    private settingsService: WorkflowPnSettingsService
   ) {
-    this.activateRoute.params.subscribe((params) => {
-      this.caseStateService.setTemplateId(+params['id']);
-    });
   }
 
   ngOnDestroy(): void {
-    throw new Error('Method not implemented.');
+
   }
 
   ngOnInit() {
@@ -69,7 +69,7 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   }
 
   onLabelInputChanged(label: string) {
-    this.caseStateService.updateNameFilter(label);
+    this.workflowCaseStateService.updateNameFilter(label);
     this.loadAllCases();
   }
 
@@ -78,12 +78,12 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   }
 
   sortTable(sort: string) {
-    this.caseStateService.onSortTable(sort);
+    this.workflowCaseStateService.onSortTable(sort);
     this.loadAllCases();
   }
 
   loadAllCases() {
-    this.getCases$ = this.caseStateService.getCases().subscribe((operation) => {
+    this.getCases$ = this.workflowCaseStateService.getCases().subscribe((operation) => {
       if (operation && operation.success) {
         this.caseListModel = operation.model;
         composeCasesTableHeaders(
@@ -95,23 +95,14 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   }
 
   loadTemplateData() {
-    this.getTemplate$ = this.caseStateService
-      .loadTemplateData()
+    this.getTemplate$ = this.settingsService
+      .getSelectedTemplate()
       .subscribe((operation) => {
         if (operation && operation.success) {
           this.currentTemplate = operation.model;
           this.loadEformPermissions(this.currentTemplate.id);
           this.loadAllCases();
         }
-      });
-  }
-
-  downloadFile(caseId: number, fileType: string) {
-    this.eFormService
-      .downloadEformPDF(this.currentTemplate.id, caseId, fileType)
-      .subscribe((data) => {
-        const blob = new Blob([data]);
-        saveAs(blob, `template_${this.currentTemplate.id}.${fileType}`);
       });
   }
 
@@ -149,17 +140,17 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   }
 
   changePage(offset: number) {
-    this.caseStateService.changePage(offset);
+    this.workflowCaseStateService.changePage(offset);
     this.loadAllCases();
   }
 
   onPageSizeChanged(newPageSize: number) {
-    this.caseStateService.updatePageSize(newPageSize);
+    this.workflowCaseStateService.updatePageSize(newPageSize);
     this.loadAllCases();
   }
 
   onCaseDeleted() {
-    this.caseStateService.onDelete();
+    this.workflowCaseStateService.onDelete();
     this.loadAllCases();
   }
 }

@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
-import { CasesService } from 'src/app/common/services';
-import { WorkflowCasesStore, WorkflowCasesQuery } from './';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { updateTableSort } from 'src/app/common/helpers';
+import { getOffset } from 'src/app/common/helpers/pagination.helper';
 import {
   CaseListModel,
   OperationDataResult,
-  Paged,
   PaginationModel,
   SortModel,
 } from 'src/app/common/models';
-import { updateTableSort } from 'src/app/common/helpers';
-import { getOffset } from 'src/app/common/helpers/pagination.helper';
-import { map } from 'rxjs/operators';
-import { WorkflowPnCasesService } from '../../../services';
+import { CasesService } from 'src/app/common/services';
+import { WorkflowCasesQuery } from './workflow-cases.query';
+import { WorkflowCasesStore } from './workflow-cases.store';
+
 
 @Injectable({ providedIn: 'root' })
 export class WorkflowCasesStateService {
@@ -22,6 +22,8 @@ export class WorkflowCasesStateService {
     private query: WorkflowCasesQuery
   ) {}
 
+  private templateId: number;
+
   getPageSize(): Observable<number> {
     return this.query.selectPageSize$;
   }
@@ -30,14 +32,13 @@ export class WorkflowCasesStateService {
     return this.query.selectSort$;
   }
 
-  getAllCases(
-    templateId: number
+  getCases(
   ): Observable<OperationDataResult<CaseListModel>> {
     return this.service
       .getCases({
         ...this.query.pageSetting.pagination,
         ...this.query.pageSetting.filters,
-        templateId,
+        templateId: this.templateId,
       })
       .pipe(
         map((response) => {
@@ -49,6 +50,19 @@ export class WorkflowCasesStateService {
           return response;
         })
       );
+  }
+
+  updateNameFilter(nameFilter: string) {
+    this.store.update((state) => ({
+      pagination: {
+        ...state.pagination,
+        offset: 0,
+      },
+      filters: {
+        ...state.filters,
+        nameFilter: nameFilter,
+      },
+    }));
   }
 
   updatePageSize(pageSize: number) {

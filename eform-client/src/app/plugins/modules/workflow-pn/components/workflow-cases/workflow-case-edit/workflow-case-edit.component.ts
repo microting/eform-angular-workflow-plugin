@@ -1,25 +1,46 @@
-import {Component, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {AutoUnsubscribe} from 'ngx-auto-unsubscribe';
-import {Observable} from 'rxjs';
-import {UserClaimsEnum} from 'src/app/common/const';
-import {CaseEditRequest, EformPermissionsSimpleModel, ReplyElementDto, ReplyRequest, TemplateDto} from 'src/app/common/models';
-import {CaseEditElementComponent} from 'src/app/common/modules/eform-cases/components';
-import {AuthService, CasesService, EFormService, SecurityGroupEformsPermissionsService} from 'src/app/common/services';
-import {AuthStateService} from 'src/app/common/store';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
+import { Observable, Subscription } from 'rxjs';
+import { UserClaimsEnum } from 'src/app/common/const';
+import {
+  CaseEditRequest,
+  EformPermissionsSimpleModel,
+  ReplyElementDto,
+  ReplyRequest,
+  TemplateDto,
+} from 'src/app/common/models';
+import { CaseEditElementComponent } from 'src/app/common/modules/eform-cases/components';
+import {
+  AuthService,
+  CasesService,
+  EFormService,
+  SecurityGroupEformsPermissionsService,
+} from 'src/app/common/services';
+import { AuthStateService } from 'src/app/common/store';
+import {
+  WorkflowPnCasesService,
+  WorkflowPnSettingsService,
+} from '../../../services';
 
 @AutoUnsubscribe()
 @Component({
   selector: 'app-workflow-case-edit',
   templateUrl: './workflow-case-edit.component.html',
-  styleUrls: ['./workflow-case-edit.component.scss']
+  styleUrls: ['./workflow-case-edit.component.scss'],
 })
 export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   @ViewChildren(CaseEditElementComponent)
   editElements: QueryList<CaseEditElementComponent>;
   @ViewChild('caseConfirmation', { static: true }) caseConfirmation;
   id: number;
-  templateId: number;
   currentTemplate: TemplateDto = new TemplateDto();
   replyElement: ReplyElementDto = new ReplyElementDto();
 
@@ -30,6 +51,11 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   isNoSaveExitAllowed = false;
   isSaveClicked = false;
   reverseRoute: string;
+
+  getCase$: Subscription;
+  getSelectedTemplate$: Subscription;
+  updateCase$: Subscription;
+  getTemplatePermissions$: Subscription;
 
   get userClaims() {
     return this.authStateService.currentUserClaims;
@@ -42,6 +68,8 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   constructor(
     private activateRoute: ActivatedRoute,
     private casesService: CasesService,
+    private workflowCasesService: WorkflowPnCasesService,
+    private settingsService: WorkflowPnSettingsService,
     private eFormService: EFormService,
     private router: Router,
     private authService: AuthService,
@@ -50,7 +78,6 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   ) {
     const activatedRouteSub = this.activateRoute.params.subscribe((params) => {
       this.id = +params['id'];
-      this.templateId = +params['templateId'];
     });
     this.activateRoute.queryParams.subscribe((params) => {
       this.reverseRoute = params['reverseRoute'];
@@ -63,12 +90,12 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {}
 
-  loadCase() {
+  loadCase(templateId: number) {
     if (!this.id || this.id === 0) {
       return;
     }
-    this.casesService
-      .getById(this.id, this.currentTemplate.id)
+    this.getCase$ = this.casesService
+      .getById(this.id, templateId)
       .subscribe((operation) => {
         if (operation && operation.success) {
           this.replyElement = operation.model;
@@ -76,7 +103,7 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
       });
   }
 
-  saveCase(navigateToPosts?: boolean) {
+  saveCase() {
     this.requestModels = [];
     this.editElements.forEach((x) => {
       x.extractData();
@@ -85,39 +112,27 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     this.replyRequest.id = this.replyElement.id;
     this.replyRequest.label = this.replyElement.label;
     this.replyRequest.elementList = this.requestModels;
-    this.casesService
-      .updateCase(this.replyRequest, this.currentTemplate.id)
+    this.updateCase$ = this.workflowCasesService
+      .updateCase(this.replyRequest)
       .subscribe((operation) => {
         if (operation && operation.success) {
           this.replyElement = new ReplyElementDto();
           this.isNoSaveExitAllowed = true;
-          if (navigateToPosts) {
-            this.router
-              .navigate([
-                '/cases/posts/',
-                this.id,
-                this.currentTemplate.id,
-                'new',
-              ])
-              .then();
-          } else if (this.isSaveClicked) {
-            this.navigateToReverse();
-          }
+          this.navigateToReverse();
         }
       });
   }
 
   loadTemplateInfo() {
-    if (this.templateId) {
-      this.eFormService.getSingle(this.templateId).subscribe((operation) => {
+    this.getSelectedTemplate$ = this.settingsService
+      .getSelectedTemplate()
+      .subscribe((operation) => {
         if (operation && operation.success) {
           this.currentTemplate = operation.model;
           this.loadEformPermissions(this.currentTemplate.id);
-          this.loadCase();
+          this.loadCase(this.currentTemplate.id);
         }
-        // // This is commented as loadCase is in 99% of the time the slowest
       });
-    }
   }
 
   goToSection(location: string): void {
@@ -162,7 +177,7 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
         (x) => x.templateId === templateId
       );
     } else {
-      this.securityGroupEformsService
+      this.getTemplatePermissions$ = this.securityGroupEformsService
         .getEformsSimplePermissions()
         .subscribe((data) => {
           if (data && data.success) {
