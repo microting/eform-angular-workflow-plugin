@@ -21,8 +21,8 @@ SOFTWARE.
 namespace Workflow.Pn.Services.WorkflowCasesService
 {
     using System.Threading.Tasks;
-    using Infrastructure.Models.Cases;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
+    using Microting.eFormApi.BasePn.Infrastructure.Models.Application.Case.CaseEdit;
 
     public interface IWorkflowCasesService
     {

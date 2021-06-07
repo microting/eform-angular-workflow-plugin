@@ -24,7 +24,7 @@ namespace Workflow.Pn.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
     using System.Threading.Tasks;
-    using Infrastructure.Models.Cases;
+    using Microting.eFormApi.BasePn.Infrastructure.Models.Application.Case.CaseEdit;
     using Services.WorkflowCasesService;
 
     public class WorkflowCasesController : Controller

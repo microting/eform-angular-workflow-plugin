@@ -24,12 +24,11 @@ namespace Workflow.Pn.Services.WorkflowCasesService
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Helpers;
-    using Infrastructure.Models.Cases;
     using Microting.eFormApi.BasePn.Abstractions;
     using Microting.eFormApi.BasePn.Infrastructure.Delegates.CaseUpdate;
     using Microting.eFormApi.BasePn.Infrastructure.Helpers;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
+    using Microting.eFormApi.BasePn.Infrastructure.Models.Application.Case.CaseEdit;
     using WorkflowLocalizationService;
 
     public class WorkflowCasesService: IWorkflowCasesService
@@ -53,8 +52,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             var checkListValueList = new List<string>();
             var fieldValueList = new List<string>();
             var core = await _coreHelper.GetCore();
-            var locale = await _userService.GetCurrentUserLocale();
-            var language = core.DbContextHelper.GetDbContext().Languages.Single(x => x.LanguageCode.ToLower() == locale.ToLower());
+            var language = await _userService.GetCurrentUserLanguage();
             try
             {
                 model.ElementList.ForEach(element =>
@@ -82,6 +80,23 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     foreach (var func in invocationList)
                     {
                         func.DynamicInvoke(model.Id);
+                    }
+                }
+
+                foreach (var editRequest in model.ElementList)
+                {
+                    foreach (var caseEditRequestField in editRequest.Fields)
+                    {
+                        if (caseEditRequestField.FieldType == "Solved by")
+                        {
+                            foreach (var caseEditRequestFieldValue in caseEditRequestField.FieldValues)
+                            {
+                                if (caseEditRequestFieldValue.Value == "Not selected")
+                                {
+
+                                }
+                            }
+                        }
                     }
                 }
 
