@@ -9,9 +9,7 @@ import { Router } from '@angular/router';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Subscription } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
-import {
-  CommonDictionaryModel,
-} from 'src/app/common/models';
+import { CommonDictionaryModel } from 'src/app/common/models';
 import { EFormService } from 'src/app/common/services';
 import { WorkflowPnSettingsService } from '../../services';
 import { WorkflowBaseSettingsModel } from '../../models';
@@ -41,7 +39,7 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
       .pipe(
         debounceTime(200),
         switchMap((term) => {
-          return this.eFormService.getCommonDictionaryTemplates(term);
+          return this.eFormService.getTemplatesDictionary(term);
         })
       )
       .subscribe((data) => {
@@ -77,7 +75,7 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
 
   private getSelectedEform(settingsModel: WorkflowBaseSettingsModel) {
     this.getCommonDictionaryTemplates$ = this.eFormService
-      .getCommonDictionaryTemplates('', settingsModel.workflowFormId)
+      .getTemplatesDictionary('', settingsModel.workflowFormId)
       .subscribe((data) => (this.templatesModel = [...data.model]));
   }
 }
