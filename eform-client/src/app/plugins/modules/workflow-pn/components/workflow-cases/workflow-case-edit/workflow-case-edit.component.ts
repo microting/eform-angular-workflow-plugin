@@ -167,7 +167,7 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     if (this.reverseRoute) {
       this.router.navigate([this.reverseRoute]).then();
     } else {
-      this.router.navigate(['/cases/', this.currentTemplate.id]).then();
+      this.router.navigate(['../']).then();
     }
   }
 
