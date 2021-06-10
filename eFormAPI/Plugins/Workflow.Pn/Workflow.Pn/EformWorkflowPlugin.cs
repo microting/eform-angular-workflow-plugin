@@ -40,6 +40,7 @@ namespace Workflow.Pn
     using System;
     using System.Collections.Generic;
     using System.Reflection;
+    using System.Text.RegularExpressions;
     using Microting.eFormWorkflowBase.Infrastructure.Data;
     using Microting.eFormWorkflowBase.Infrastructure.Data.Factories;
     using Services.WorkflowCasesService;
@@ -65,10 +66,17 @@ namespace Workflow.Pn
         public void Configure(IApplicationBuilder appBuilder)
         {
             var serviceProvider = appBuilder.ApplicationServices;
-            var rebusService = serviceProvider.GetService<IRebusService>();
-            rebusService.Start(_connectionString);
 
-            rebusService.GetBus();
+            var rabbitMqHost = "localhost";
+
+            if (_connectionString.Contains("frontend"))
+            {
+                var dbPrefix = Regex.Match(_connectionString, @"atabase=(\d*)_").Groups[1].Value;
+                rabbitMqHost = $"frontend-{dbPrefix}-rabbitmq";
+            }
+
+            var rebusService = serviceProvider.GetService<IRebusService>();
+            rebusService.Start(_connectionString, "admin", "password", rabbitMqHost);
         }
 
         public void ConfigureServices(IServiceCollection services)

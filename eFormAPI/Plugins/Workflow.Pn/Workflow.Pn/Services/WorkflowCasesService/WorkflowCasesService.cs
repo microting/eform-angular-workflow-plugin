@@ -24,11 +24,13 @@ namespace Workflow.Pn.Services.WorkflowCasesService
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Messages;
     using Microting.eFormApi.BasePn.Abstractions;
     using Microting.eFormApi.BasePn.Infrastructure.Delegates.CaseUpdate;
     using Microting.eFormApi.BasePn.Infrastructure.Helpers;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
     using Microting.eFormApi.BasePn.Infrastructure.Models.Application.Case.CaseEdit;
+    using Rebus.Bus;
     using WorkflowLocalizationService;
 
     public class WorkflowCasesService: IWorkflowCasesService
@@ -36,14 +38,17 @@ namespace Workflow.Pn.Services.WorkflowCasesService
         private readonly IEFormCoreService _coreHelper;
         private readonly IWorkflowLocalizationService _workflowLocalizationService;
         private readonly IUserService _userService;
+        private readonly IBus _bus;
 
         public WorkflowCasesService(IEFormCoreService coreHelper,
             IUserService userService,
+            IBus bus,
             IWorkflowLocalizationService workflowLocalizationService)
         {
             _coreHelper = coreHelper;
             _userService = userService;
             _workflowLocalizationService = workflowLocalizationService;
+            _bus = bus;
         }
 
         public async Task<OperationResult> UpdateCase(ReplyRequest model)
@@ -83,21 +88,38 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     }
                 }
 
+                var solvedByNotSelected = false;
+                var statusClosed = false;
+                var statusOngoing = false;
+                var solvedUsers = new List<string>();
+
                 foreach (var editRequest in model.ElementList)
                 {
-                    foreach (var caseEditRequestField in editRequest.Fields)
+                    var fieldSolvedBy = editRequest.Fields.FirstOrDefault(x => x.FieldType == "Solved by");
+                    var fieldStatus = editRequest.Fields.FirstOrDefault(x => x.FieldType == "Status");
+                    if(fieldSolvedBy != null && fieldStatus != null)
                     {
-                        if (caseEditRequestField.FieldType == "Solved by")
-                        {
-                            foreach (var caseEditRequestFieldValue in caseEditRequestField.FieldValues)
-                            {
-                                if (caseEditRequestFieldValue.Value == "Not selected")
-                                {
-
-                                }
-                            }
-                        }
+                        solvedByNotSelected = fieldSolvedBy.FieldValues.Any(x => x.Value == "Not selected");
+                        solvedUsers = fieldSolvedBy.FieldValues.Where(x => x.Value != "Not selected").Select(x => (string)x.Value).ToList(); 
+                        statusClosed = fieldStatus.FieldValues.Any(x => x.Value == "Closed");
+                        statusOngoing = fieldStatus.FieldValues.Any(x => x.Value == "Ongoing");
                     }
+                }
+
+                if (solvedByNotSelected && statusClosed)
+                {// send email with pdf report to device user
+                    await _bus.SendLocal(new QueueEformEmail
+                        {CaseId = model.Id, UserId = _userService.UserId, ListSolvedUser = solvedUsers });
+                }
+
+                if (!solvedByNotSelected && statusClosed)
+                {
+                    // send email with pdf report to device user and solved user
+                }
+
+                if (!solvedByNotSelected && statusOngoing)
+                {
+                    // eform is deployed to solver device user
                 }
 
                 return new OperationResult(true, _workflowLocalizationService.GetString("CaseHasBeenUpdated"));

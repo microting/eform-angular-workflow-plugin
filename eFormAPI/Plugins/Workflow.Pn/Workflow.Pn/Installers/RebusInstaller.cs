@@ -28,30 +28,35 @@ namespace Workflow.Pn.Installers
 {
     public class RebusInstaller : IWindsorInstaller
     {
-        private readonly string connectionString;
-        private readonly int maxParallelism;
-        private readonly int numberOfWorkers;
+        private readonly string _connectionString;
+        private readonly int _maxParallelism;
+        private readonly int _numberOfWorkers;
+        private readonly string _rabbitMqUser;
+        private readonly string _rabbitMqPassword;
+        private readonly string _rabbitMqHost;
 
-        public RebusInstaller(string connectionString, int maxParallelism, int numberOfWorkers)
+        public RebusInstaller(string connectionString, int maxParallelism, int numberOfWorkers, string rabbitMqUser, string rabbitMqPassword, string rabbitMqHost)
         {
             if (string.IsNullOrEmpty(connectionString)) throw new ArgumentNullException(nameof(connectionString));
-            this.connectionString = connectionString;
-            this.maxParallelism = maxParallelism;
-            this.numberOfWorkers = numberOfWorkers;
+            _connectionString = connectionString;
+            _maxParallelism = maxParallelism;
+            _numberOfWorkers = numberOfWorkers;
+            _rabbitMqHost = rabbitMqHost;
+            _rabbitMqUser = rabbitMqUser;
+            _rabbitMqPassword = rabbitMqPassword;
         }
 
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             Configure.With(new CastleWindsorContainerAdapter(container))
                 .Logging(l => l.ColoredConsole())
-                .Transport(t => t.UseRabbitMq("amqp://admin:password@localhost", "eform-angular-workflow-plugin"))
+                .Transport(t => t.UseRabbitMq($"amqp://{_rabbitMqUser}:{_rabbitMqPassword}@{_rabbitMqHost}", "eform-angular-workflow-plugin"))
                 .Options(o =>
                 {
-                    o.SetMaxParallelism(maxParallelism);
-                    o.SetNumberOfWorkers(numberOfWorkers);
+                    o.SetMaxParallelism(_maxParallelism);
+                    o.SetNumberOfWorkers(_numberOfWorkers);
                 })
                 .Start();
-            
         }
     }
 }
