@@ -109,7 +109,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 if (solvedByNotSelected && statusClosed)
                 {// send email with pdf report to device user
                     await _bus.SendLocal(new QueueEformEmail
-                        {CaseId = model.Id, UserId = _userService.UserId, ListSolvedUser = solvedUsers });
+                    { CaseId = model.Id, UserId = _userService.UserId, ListSolvedUser = solvedUsers });
                 }
 
                 if (!solvedByNotSelected && statusClosed)

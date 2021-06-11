@@ -46,5 +46,13 @@
       "en-US": "Case could not be updated",
       "de-DE": "Fall konnte nicht aktualisiert werden"
     }
+  },
+  {
+    "Key": "ErrorWhileGetSettings",
+    "LocalizedValue": {
+      "da": "Fejl, mens få indstillinger",
+      "en-US": "Error while get settings",
+      "de-DE": "Fehler beim Abrufen von Einstellungen"
+    }
   }
 ]

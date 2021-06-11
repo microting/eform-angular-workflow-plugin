@@ -22,6 +22,7 @@ namespace Workflow.Pn.Infrastructure.Data.Seed.Data
 {
     using Microting.eFormApi.BasePn.Abstractions;
     using Microting.eFormApi.BasePn.Infrastructure.Database.Entities;
+    using Models.Settings;
 
     public class WorkflowConfigurationSeedData : IPluginConfigurationSeedData
     {
@@ -29,8 +30,38 @@ namespace Workflow.Pn.Infrastructure.Data.Seed.Data
         {
             new PluginConfigurationValue
             {
-                Name = "WorkflowBaseSettings:eFormId",
+                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.FirstEformId)}",
                 Value = 0.ToString(),
+            },
+            new PluginConfigurationValue
+            {
+                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.SecondEformId)}",
+                Value = 0.ToString(),
+            },
+            new PluginConfigurationValue
+            {
+                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.SmtpHost)}",
+                Value = "",
+            },
+            new PluginConfigurationValue
+            {
+                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.SmtpPort)}",
+                Value = 0.ToString(),
+            },
+            new PluginConfigurationValue
+            {
+                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.Login)}",
+                Value = "",
+            },
+            new PluginConfigurationValue
+            {
+                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.Password)}",
+                Value = "",
+            },
+            new PluginConfigurationValue
+            {
+                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.SendGridKey)}",
+                Value = "",
             },
         };
     }

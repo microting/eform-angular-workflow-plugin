@@ -1,6 +1,11 @@
 <eform-subheader [title]="'Workflow plugin settings' | translate">
   <div class="p-3">
-    <button class="btn btn-success" id="saveBtn" (click)="updateSettings()">
+    <button
+      mdbBtn
+      class="btn btn-success"
+      id="saveBtn"
+      (click)="updateSettings()"
+    >
       {{ 'Save' | translate }}
     </button>
   </div>
@@ -12,15 +17,92 @@
       <div class="container-fluid">
         <div class="col-md-3 col-sm-6 col-xs-6 ng-select-wrapper">
           <ng-select
-            [items]="templatesModel"
+            [items]="templatesModelForFirst()"
             bindLabel="name"
-            [placeholder]="'Selected template' | translate"
+            [placeholder]="'Selected first template' | translate"
             bindValue="id"
             [typeahead]="typeahead"
-            [(ngModel)]="settingsModel.workflowFormId"
-            id="createPlanningSelector"
+            [(ngModel)]="settingsModel.firstEformId"
+            id="selectedFirstTemplateSelector"
           >
           </ng-select>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-6 ng-select-wrapper">
+          <ng-select
+            [items]="templatesModelForSecond()"
+            bindLabel="name"
+            [placeholder]="'Selected second template' | translate"
+            bindValue="id"
+            [typeahead]="typeahead"
+            [(ngModel)]="settingsModel.secondEformId"
+            id="selectedSecondTemplateSelector"
+          >
+          </ng-select>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-6">
+          <div class="md-form">
+            <input
+              mdbInput
+              type="text"
+              [(ngModel)]="settingsModel.smtpHost"
+              class="form-control"
+              id="smtpHostInput"
+              name="smtpHostInput"
+            />
+            <label for="smtpHostInput">{{ 'smtpHost' }}</label>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-6">
+          <div class="md-form">
+            <input
+              mdbInput
+              type="text"
+              [(ngModel)]="settingsModel.smtpPort"
+              class="form-control"
+              id="smtpPortInput"
+              name="smtpPortInput"
+            />
+            <label for="smtpPortInput">{{ 'smtpPort' }}</label>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-6">
+          <div class="md-form">
+            <input
+              mdbInput
+              type="text"
+              [(ngModel)]="settingsModel.login"
+              class="form-control"
+              id="loginInput"
+              name="loginInput"
+            />
+            <label for="loginInput">{{ 'login' }}</label>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-6">
+          <div class="md-form">
+            <input
+              mdbInput
+              type="text"
+              [(ngModel)]="settingsModel.password"
+              class="form-control"
+              id="passwordInput"
+              name="passwordInput"
+            />
+            <label for="passwordInput">{{ 'password' }}</label>
+          </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-6">
+          <div class="md-form">
+            <input
+              mdbInput
+              type="text"
+              [(ngModel)]="settingsModel.sendGridKey"
+              class="form-control"
+              id="sendGridKeyInput"
+              name="sendGridKeyInput"
+            />
+            <label for="sendGridKeyInput">{{ 'sendGridKey' }}</label>
+          </div>
         </div>
       </div>
     </div>

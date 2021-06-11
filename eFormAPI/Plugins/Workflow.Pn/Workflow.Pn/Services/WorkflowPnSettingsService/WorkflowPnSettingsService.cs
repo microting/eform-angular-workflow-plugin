@@ -70,7 +70,13 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
 
                 var settings = new WorkflowSettingsModel
                 {
-                    WorkflowFormId = option.eFormId,
+                    FirstEformId = option.FirstEformId == 0 ? (int?) null : option.FirstEformId,
+                    SecondEformId = option.SecondEformId == 0 ? (int?)null : option.SecondEformId,
+                    SmtpHost = option.SmtpHost,
+                    SmtpPort = option.SmtpPort,
+                    Login = option.Login,
+                    Password = option.Password,
+                    SendGridKey = option.SendGridKey,
                 };
 
                 return new OperationDataResult<WorkflowSettingsModel>(true, settings);
@@ -80,29 +86,41 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
                 Trace.TraceError(e.Message);
                 _logger.LogError(e.Message);
                 return new OperationDataResult<WorkflowSettingsModel>(false,
-                    _workflowLocalizationService.GetString("ErrorWhileUpdatingSettings"));
+                    _workflowLocalizationService.GetString("ErrorWhileGetSettings"));
             }
         }
 
-        public async Task<OperationResult> UpdateEformId(WorkflowSettingsModel workflowSettingsModel)
+        public async Task<OperationResult> UpdateSetting(WorkflowSettingsModel workflowSettingsModel)
         {
             try
             {
-                if (workflowSettingsModel.WorkflowFormId > 0)
+                if (workflowSettingsModel.FirstEformId == null || workflowSettingsModel.FirstEformId == 0)
                 {
-                    await _options.UpdateDb(settings =>
-                        {
-                            settings.eFormId = workflowSettingsModel.WorkflowFormId;
-                        },
-                        _dbContext,
-                        _userService.UserId);
-
-                    return new OperationResult(
-                        true,
-                        _workflowLocalizationService.GetString("SettingsHaveBeenUpdatedSuccessfully"));
+                    throw new ArgumentException($"{nameof(workflowSettingsModel.FirstEformId)} is 0");
                 }
 
-                throw new ArgumentException($"{nameof(workflowSettingsModel.WorkflowFormId)} is 0");
+                if (workflowSettingsModel.SecondEformId == null || workflowSettingsModel.SecondEformId == 0)
+                {
+                    throw new ArgumentException($"{nameof(workflowSettingsModel.SecondEformId)} is 0");
+                }
+
+                await _options.UpdateDb(settings =>
+                    {
+                        settings.FirstEformId = (int) workflowSettingsModel.FirstEformId;
+                        settings.SecondEformId = (int) workflowSettingsModel.SecondEformId;
+                        settings.SmtpHost = workflowSettingsModel.SmtpHost;
+                        settings.SmtpPort = workflowSettingsModel.SmtpPort ?? 0;
+                        settings.Login = workflowSettingsModel.Login;
+                        settings.Password = workflowSettingsModel.Password;
+                        settings.SendGridKey = workflowSettingsModel.SendGridKey;
+                    },
+                    _dbContext,
+                    _userService.UserId);
+
+                return new OperationResult(
+                    true,
+                    _workflowLocalizationService.GetString("SettingsHaveBeenUpdatedSuccessfully"));
+
             }
             catch (Exception e)
             {
@@ -118,8 +136,9 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
             var core = await _coreHelper.GetCore();
 
             var language = await _userService.GetCurrentUserLanguage();
-            var templateDto = await core.TemplateItemRead(_options.Value.eFormId, language);
-            return new OperationDataResult<Template_Dto>(true, templateDto);
+            var firstTemplate = await core.TemplateItemRead(_options.Value.FirstEformId, language);
+            var secondTemplate = await core.TemplateItemRead(_options.Value.SecondEformId, language);
+            return new OperationDataResult<Template_Dto>(true, firstTemplate);
         }
     }
 }

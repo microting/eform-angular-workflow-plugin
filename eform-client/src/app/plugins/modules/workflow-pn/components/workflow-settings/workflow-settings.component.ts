@@ -27,7 +27,7 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
 
   getSettings$: Subscription;
   updateSettings$: Subscription;
-  getCommonDictionaryTemplates$: Subscription;
+  getDictionaryTemplates$: Subscription;
 
   constructor(
     private workflowPnSettingsService: WorkflowPnSettingsService,
@@ -54,13 +54,25 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
     this.getSettings();
   }
 
+  templatesModelForFirst() {
+    return this.templatesModel.filter(
+      (x) => x.id !== this.settingsModel.secondEformId
+    );
+  }
+
+  templatesModelForSecond() {
+    return this.templatesModel.filter(
+      (x) => x.id !== this.settingsModel.firstEformId
+    );
+  }
+
   getSettings() {
     this.getSettings$ = this.workflowPnSettingsService
       .getAllSettings()
       .subscribe((data) => {
         if (data && data.success) {
           this.settingsModel = data.model;
-          this.getSelectedEform(this.settingsModel);
+          this.getEforms();
         }
       });
   }
@@ -73,9 +85,9 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {}
 
-  private getSelectedEform(settingsModel: WorkflowBaseSettingsModel) {
-    this.getCommonDictionaryTemplates$ = this.eFormService
-      .getTemplatesDictionary('', settingsModel.workflowFormId)
+  private getEforms() {
+    this.getDictionaryTemplates$ = this.eFormService
+      .getTemplatesDictionary('')
       .subscribe((data) => (this.templatesModel = [...data.model]));
   }
 }

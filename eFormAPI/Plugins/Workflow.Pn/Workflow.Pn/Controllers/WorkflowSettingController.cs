@@ -31,7 +31,6 @@ namespace Workflow.Pn.Controllers
 
     public class WorkflowSettingController : Controller
     {
-
         private readonly IWorkflowPnSettingsService _workflowPnSettingsService;
 
         public WorkflowSettingController(IWorkflowPnSettingsService workflowPnSettingsService)
@@ -50,13 +49,13 @@ namespace Workflow.Pn.Controllers
         [HttpPost]
         [Authorize(Roles = EformRole.Admin)]
         [Route("api/workflow-pn/settings")]
-        public async Task<OperationResult> UpdateEformId([FromBody] WorkflowSettingsModel workflowSettingsModel)
+        public async Task<OperationResult> UpdateSetting([FromBody] WorkflowSettingsModel workflowSettingsModel)
         {
-            return await _workflowPnSettingsService.UpdateEformId(workflowSettingsModel);
+            return await _workflowPnSettingsService.UpdateSetting(workflowSettingsModel);
         }
 
         [HttpGet]
-        [Authorize(Roles = EformRole.Admin)]
+        //[Authorize(Roles = EformRole.Admin)]
         [Route("api/workflow-pn/settings/template")]
         public async Task<OperationDataResult<Template_Dto>> UpdateFolderId()
         {

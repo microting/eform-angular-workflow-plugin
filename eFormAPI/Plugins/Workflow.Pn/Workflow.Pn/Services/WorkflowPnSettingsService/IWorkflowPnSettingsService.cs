@@ -33,7 +33,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
     {
         Task<OperationDataResult<WorkflowSettingsModel>> GetSettings();
         
-        Task<OperationResult> UpdateEformId(WorkflowSettingsModel workflowSettingsModel);
+        Task<OperationResult> UpdateSetting(WorkflowSettingsModel workflowSettingsModel);
 
         Task<OperationDataResult<Template_Dto>> GetTemplate();
     }
