@@ -1,29 +1,10 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-import {Subject, Subscription} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
-import { UserClaimsEnum } from 'src/app/common/const';
-import { composeCasesTableHeaders } from 'src/app/common/helpers';
-import {
-  CaseListModel,
-  CaseModel,
-  EformPermissionsSimpleModel, Paged,
-  PageSettingsModel,
-  TableHeaderElementModel,
-  TemplateDto,
-} from 'src/app/common/models';
-import {
-  CasesService,
-  EFormService,
-  SecurityGroupEformsPermissionsService,
-} from 'src/app/common/services';
-import { AuthStateService } from 'src/app/common/store';
-import {WorkflowCaseModel} from 'src/app/plugins/modules/workflow-pn/models';
-import {WorkordersStateService} from 'src/app/plugins/modules/workorders-pn/components/workorders/store';
-import {WorkOrderModel, WorkOrdersModel} from 'src/app/plugins/modules/workorders-pn/models';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { Paged, TableHeaderElementModel } from 'src/app/common/models';
+import { WorkflowCaseModel } from 'src/app/plugins/modules/workflow-pn/models';
 import { WorkflowCasesStateService } from '../store';
-import { WorkflowPnSettingsService } from '../../../services';
 
 @AutoUnsubscribe()
 @Component({
