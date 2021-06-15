@@ -18,7 +18,7 @@ export class WorkflowCasesQuery extends Query<WorkflowCasesState> {
   selectPagination$ = this.select(
     (state) =>
       new PaginationModel(
-        state.totalCases,
+        state.total,
         state.pagination.pageSize,
         state.pagination.offset
       )

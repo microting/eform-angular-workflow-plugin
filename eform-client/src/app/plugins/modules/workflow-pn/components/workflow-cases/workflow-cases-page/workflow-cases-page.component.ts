@@ -1,13 +1,14 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-import { Subscription } from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
 import { UserClaimsEnum } from 'src/app/common/const';
 import { composeCasesTableHeaders } from 'src/app/common/helpers';
 import {
   CaseListModel,
   CaseModel,
-  EformPermissionsSimpleModel,
+  EformPermissionsSimpleModel, Paged,
   PageSettingsModel,
   TableHeaderElementModel,
   TemplateDto,
@@ -18,6 +19,9 @@ import {
   SecurityGroupEformsPermissionsService,
 } from 'src/app/common/services';
 import { AuthStateService } from 'src/app/common/store';
+import {WorkflowCaseModel} from 'src/app/plugins/modules/workflow-pn/models';
+import {WorkordersStateService} from 'src/app/plugins/modules/workorders-pn/components/workorders/store';
+import {WorkOrderModel, WorkOrdersModel} from 'src/app/plugins/modules/workorders-pn/models';
 import { WorkflowCasesStateService } from '../store';
 import { WorkflowPnSettingsService } from '../../../services';
 
@@ -28,126 +32,111 @@ import { WorkflowPnSettingsService } from '../../../services';
   styleUrls: ['./workflow-cases-page.component.scss'],
 })
 export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
-  @ViewChild('modalRemoveCase', { static: true }) modalRemoveCase;
-  currentTemplate: TemplateDto = new TemplateDto();
-  eformPermissionsSimpleModel: EformPermissionsSimpleModel = new EformPermissionsSimpleModel();
-  caseListModel: CaseListModel = new CaseListModel();
-  localPageSettings: PageSettingsModel = new PageSettingsModel();
+  @ViewChild('deleteWorkflowCaseModal', { static: false }) deleteWorkflowCaseModal;
+  workflowCasesModel: Paged<WorkflowCaseModel> = new Paged<WorkflowCaseModel>();
+  searchSubject = new Subject();
+  getAllSub$: Subscription;
 
-  getCases$: Subscription;
-  getTemplate$: Subscription;
+  tableHeaders: TableHeaderElementModel[] = [
+    { name: 'Id', elementId: 'idTableHeader', sortable: true },
+    {
+      name: 'DateOfIncident',
+      elementId: 'dateOfIncidentHeader',
+      sortable: true,
+      visibleName: 'Date of incident',
+    },
+    {
+      name: 'UpdatedAt',
+      elementId: 'updatedAtHeader',
+      sortable: false,
+      visibleName: 'Updated at',
+    },
+    {
+      name: 'IncidentType',
+      elementId: 'incidentTypeHeader',
+      sortable: true,
+      visibleName: 'Incident type',
+    },
+    {
+      name: 'IncidentPlace',
+      elementId: 'incidentPlaceHeader',
+      sortable: true,
+      visibleName: 'Incident place',
+    },
+    { name: 'Photo', elementId: 'photosExistsHeader', sortable: true },
+    {
+      name: 'Deadline',
+      elementId: 'deadlineHeader',
+      sortable: true
+    },
+    {
+      name: 'ActionPlan',
+      elementId: 'actionPlanHeader',
+      sortable: true,
+      visibleName: 'Action plan',
+    },
+    {
+      name: 'ToBeSolvedBy',
+      elementId: 'toBeSolvedByHeader',
+      sortable: false,
+      visibleName: 'To be solved by',
+    },
+    {
+      name: 'Status',
+      elementId: 'statusHeader',
+      sortable: false,
+    },
+    { name: 'Actions', elementId: '', sortable: false },
+  ];
 
-  get userClaims() {
-    return this.authStateService.currentUserClaims;
+  constructor(public workflowCasesStateService: WorkflowCasesStateService) {
+    this.searchSubject.pipe(debounceTime(500)).subscribe((val) => {
+      this.workflowCasesStateService.updateNameFilter(val.toString());
+      this.getWorkflowCases();
+    });
   }
-
-  get userClaimsEnum() {
-    return UserClaimsEnum;
-  }
-
-  tableHeaders: TableHeaderElementModel[];
-
-  constructor(
-    private activateRoute: ActivatedRoute,
-    private casesService: CasesService,
-    private eFormService: EFormService,
-    public authStateService: AuthStateService,
-    private securityGroupEformsService: SecurityGroupEformsPermissionsService,
-    public workflowCaseStateService: WorkflowCasesStateService,
-    private settingsService: WorkflowPnSettingsService
-  ) {}
-
-  ngOnDestroy(): void {}
 
   ngOnInit() {
-    this.loadTemplateData();
+    this.getWorkflowCases();
   }
 
-  onLabelInputChanged(label: string) {
-    this.workflowCaseStateService.updateNameFilter(label);
-    this.loadAllCases();
+  showDeleteWorkflowCaseModal(model: WorkflowCaseModel) {
+    this.deleteWorkflowCaseModal.show(model);
   }
 
-  onDeleteClicked(caseModel: CaseModel) {
-    this.modalRemoveCase.show(caseModel, this.currentTemplate.id);
+  getWorkflowCases() {
+    this.getAllSub$ = this.workflowCasesStateService
+      .getWorkflowCases()
+      .subscribe((data) => {
+        if (data && data.success) {
+          this.workflowCasesModel = data.model;
+        }
+      });
   }
 
   sortTable(sort: string) {
-    this.workflowCaseStateService.onSortTable(sort);
-    this.loadAllCases();
+    this.workflowCasesStateService.onSortTable(sort);
+    this.getWorkflowCases();
   }
 
-  loadAllCases() {
-    this.getCases$ = this.workflowCaseStateService
-      .getCases()
-      .subscribe((operation) => {
-        if (operation && operation.success) {
-          this.caseListModel = operation.model;
-          composeCasesTableHeaders(
-            this.currentTemplate,
-            this.authStateService.isAdmin
-          );
-        }
-      });
+  changePage(e: any) {
+    this.workflowCasesStateService.changePage(e);
+    this.getWorkflowCases();
   }
 
-  loadTemplateData() {
-    this.getTemplate$ = this.settingsService
-      .getSelectedTemplate()
-      .subscribe((operation) => {
-        if (operation && operation.success) {
-          this.currentTemplate = operation.model;
-          this.loadEformPermissions(this.currentTemplate.id);
-          this.loadAllCases();
-        }
-      });
+  onSearchInputChanged(e: string) {
+    this.searchSubject.next(e);
   }
 
-  loadEformPermissions(templateId: number) {
-    if (this.securityGroupEformsService.mappedPermissions.length) {
-      this.eformPermissionsSimpleModel = this.securityGroupEformsService.mappedPermissions.find(
-        (x) => x.templateId === templateId
-      );
-    } else {
-      this.securityGroupEformsService
-        .getEformsSimplePermissions()
-        .subscribe((data) => {
-          if (data && data.success) {
-            const foundTemplates = this.securityGroupEformsService.mapEformsSimplePermissions(
-              data.model
-            );
-            if (foundTemplates.length) {
-              this.eformPermissionsSimpleModel = foundTemplates.find(
-                (x) => x.templateId === templateId
-              );
-            }
-          }
-        });
-    }
-  }
-
-  checkEformPermissions(permissionIndex: number) {
-    if (this.eformPermissionsSimpleModel.templateId) {
-      return this.eformPermissionsSimpleModel.permissionsSimpleList.find(
-        (x) => x === UserClaimsEnum[permissionIndex].toString()
-      );
-    } else {
-      return this.userClaims[UserClaimsEnum[permissionIndex].toString()];
-    }
-  }
-
-  changePage(offset: number) {
-    this.workflowCaseStateService.changePage(offset);
-    this.loadAllCases();
-  }
+  ngOnDestroy(): void {}
 
   onPageSizeChanged(newPageSize: number) {
-    this.workflowCaseStateService.updatePageSize(newPageSize);
-    this.loadAllCases();
+    this.workflowCasesStateService.updatePageSize(newPageSize);
+    this.getWorkflowCases();
   }
 
-  onCaseDeleted() {
-    this.workflowCaseStateService.onDelete();
-    this.loadAllCases();
+  workflowCaseDeleted() {
+    this.workflowCasesStateService.onDelete();
+    this.getWorkflowCases();
   }
 }

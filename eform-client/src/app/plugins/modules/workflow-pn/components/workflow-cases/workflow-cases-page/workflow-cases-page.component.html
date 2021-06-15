@@ -1,19 +1,18 @@
-<eform-subheader [title]="currentTemplate.label"></eform-subheader>
+<eform-subheader></eform-subheader>
 
-<!--Here you can choose approach as you like: container-row, or flex, or just element with required styles and markup-->
 <div class="container-fluid">
   <div class="row pl-1">
     <div class="col-md-2">
       <div class="md-form">
         <input
           mdbInput
-          [ngModel]="workflowCaseStateService.getNameFilter() | async"
-          (ngModelChange)="onLabelInputChanged($event)"
           type="text"
-          class="form-control"
-          id="labelInput"
+          [ngModel]="workflowCasesStateService.getNameFilter() | async"
+          (ngModelChange)="onSearchInputChanged($event)"
+          class="form-control input-sm"
+          id="searchInput"
         />
-        <label for="labelInput">{{ 'Search' | translate }}</label>
+        <label for="searchInput">{{ 'Search' | translate }}</label>
       </div>
     </div>
   </div>
@@ -28,102 +27,84 @@
       <thead
         table-headers
         [tableHeaders]="tableHeaders"
-        [sort]="workflowCaseStateService.getSort() | async"
+        [sort]="workflowCasesStateService.getSort() | async"
         (sortChanged)="sortTable($event)"
       ></thead>
-      <tbody>
-      <tr *ngFor="let caseModel of caseListModel.cases">
-        <td>{{ caseModel.id }}</td>
-        <td>
-          <date-formatter
-            [date]="caseModel.doneAt"
-            [Format]="'datetime'"
-          ></date-formatter>
-        </td>
-        <td *ngIf="authStateService.isAdmin">
-          <date-formatter
-            [date]="caseModel.createdAt"
-            [Format]="'datetime'"
-          ></date-formatter>
-        </td>
-        <td>{{ caseModel.workerName }}</td>
-        <td *ngIf="currentTemplate.field1" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue1"></div>
-        </td>
-        <td *ngIf="currentTemplate.field2" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue2"></div>
-        </td>
-        <td *ngIf="currentTemplate.field3" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue3"></div>
-        </td>
-        <td *ngIf="currentTemplate.field4" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue4"></div>
-        </td>
-        <td *ngIf="currentTemplate.field5" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue5"></div>
-        </td>
-        <td *ngIf="currentTemplate.field6" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue6"></div>
-        </td>
-        <td *ngIf="currentTemplate.field7" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue7"></div>
-        </td>
-        <td *ngIf="currentTemplate.field8" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue8"></div>
-        </td>
-        <td *ngIf="currentTemplate.field9" class="text-center">
-          <div class="max-lines" [innerHTML]="caseModel.fieldValue9"></div>
-        </td>
-        <td>
-          <div class="d-flex flex-row justify-content-center">
-            <button
-              mdbBtn
-              class="btn-success btn-icon mb-2"
-              *ngIf="checkEformPermissions(userClaimsEnum.caseRead)"
-              [routerLink]="[
-                  './cases/edit/' + caseModel.id
-                ]"
-              mdbTooltip="{{ 'Edit Case' | translate }}"
-            >
-              <fa-icon icon="pen" size="lg" [fixedWidth]="true"></fa-icon>
-            </button>
-            <button
-              mdbBtn
-              class="btn-danger btn-icon mb-2"
-              *ngIf="checkEformPermissions(userClaimsEnum.caseDelete)"
-              mdbTooltip="{{ 'Delete Case' | translate }}"
-              (click)="onDeleteClicked(caseModel)"
-            >
-              <fa-icon
-                icon="trash-alt"
-                size="lg"
-                [fixedWidth]="true"
-              ></fa-icon>
-            </button>
-          </div>
-        </td>
-      </tr>
+      <tbody id="tableBody">
+        <tr
+          *ngFor="
+            let workflowCase of workflowCasesModel?.entities;
+            let i = index
+          "
+        >
+          <td id="workflowCaseId">
+            {{ workflowCase.id }}
+          </td>
+          <td id="workflowCaseUpdatedAt">
+            {{ workflowCase.updatedAt | date: 'dd.MM.y HH:mm:ss' }}
+          </td>
+          <td id="workflowCaseIncidentType">
+            {{ workflowCase.incidentType }}
+          </td>
+          <td id="workflowCaseIncidentPlace">
+            {{ workflowCase.incidentPlace }}
+          </td>
+          <td id="workflowCasePhotosExists">
+            {{ workflowCase.photosExists }}
+          </td>
+          <td id="workflowCaseDescription">
+            {{ workflowCase.description }}
+          </td>
+          <td id="workflowCaseDeadline">
+            {{ workflowCase.deadline | date: 'dd.MM.y HH:mm:ss' }}
+          </td>
+          <td id="workflowCaseActionPlan">
+            {{ workflowCase.actionPlan | date: 'dd.MM.y HH:mm:ss' }}
+          </td>
+          <td id="workflowCaseToBeSolvedBy">
+            {{ workflowCase.toBeSolvedBy }}
+          </td>
+          <td id="workflowCaseStatus">
+            {{ workflowCase.status }}
+          </td>
+          <td>
+            <div class="d-flex flex-row justify-content-center">
+              <button
+                id="deleteBtn"
+                class="btn btn-danger btn-icon mb-2"
+                mdbTooltip="{{ 'Delete' | translate }}"
+                (click)="showDeleteWorkflowCaseModal(workflowCase)"
+              >
+                <fa-icon
+                  icon="trash-alt"
+                  size="lg"
+                  [fixedWidth]="true"
+                ></fa-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
+  </div>
+  <div class="row p-1 my-4 mx-2" *ngIf="workflowCasesModel.total === 0">
+    <span>{{ 'No workflow cases found' | translate }}</span>
   </div>
   <div class="row justify-content-between mr-2 ml-2">
     <div class="col-md-1">
       <eform-page-size
-        [pageSize]="workflowCaseStateService.getPageSize() | async"
+        [pageSize]="workflowCasesStateService.getPageSize() | async"
         (onPageSizeChanged)="onPageSizeChanged($event)"
-      >
-      </eform-page-size>
+      ></eform-page-size>
     </div>
-    <div class="col-md-4 ml-auto d-flex justify-content-end p-2">
-      <eform-pagination
-        [pagination]="workflowCaseStateService.getPagination() | async"
-        (onPageChanged)="changePage($event)"
-      ></eform-pagination>
-    </div>
+    <eform-pagination
+      [pagination]="workflowCasesStateService.getPagination() | async"
+      (onPageChanged)="changePage($event)"
+    ></eform-pagination>
   </div>
 </div>
 
-<app-case-remove-modal
-  (onCaseDeleted)="onCaseDeleted()"
-  #modalRemoveCase
-></app-case-remove-modal>
+<app-workflow-case-delete
+  #deleteWorkflowCaseModal
+  (workflowCaseDeleted)="workflowCaseDeleted()"
+></app-workflow-case-delete>

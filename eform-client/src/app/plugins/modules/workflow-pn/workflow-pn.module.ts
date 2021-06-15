@@ -11,6 +11,7 @@ import { EformSharedTagsModule } from 'src/app/common/modules/eform-shared-tags/
 import { EformSharedModule } from 'src/app/common/modules/eform-shared/eform-shared.module';
 import { CasesModule } from 'src/app/modules';
 import {
+  WorkflowCaseDeleteComponent,
   WorkflowCaseEditComponent,
   WorkflowCasesPageComponent,
   WorkflowSettingsComponent,
@@ -42,6 +43,7 @@ import { WorkflowPnRouting } from './workflow-pn.routing';
     WorkflowCaseEditComponent,
     WorkflowCaseEditComponent,
     WorkflowCasesPageComponent,
+    WorkflowCaseDeleteComponent
   ],
   providers: [
     WorkflowPnSettingsService,

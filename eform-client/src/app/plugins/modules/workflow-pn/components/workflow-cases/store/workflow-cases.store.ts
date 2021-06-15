@@ -5,7 +5,7 @@ import { CommonPaginationState } from 'src/app/common/models/common-pagination-s
 export interface WorkflowCasesState {
   pagination: CommonPaginationState;
   filters: { nameFilter: string };
-  totalCases: number;
+  total: number;
 }
 
 function createInitialState(): WorkflowCasesState {
@@ -17,9 +17,9 @@ function createInitialState(): WorkflowCasesState {
       offset: 0,
     },
     filters: {
-      nameFilter: '',
+      nameFilter: ''
     },
-    totalCases: 0,
+    total: 0,
   };
 }
 

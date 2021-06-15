@@ -1,25 +1,24 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { updateTableSort, getOffset} from 'src/app/common/helpers';
+import { getOffset, updateTableSort } from 'src/app/common/helpers';
 import {
-  CaseListModel,
   OperationDataResult,
+  Paged,
   PaginationModel,
   SortModel,
 } from 'src/app/common/models';
-import { CasesService } from 'src/app/common/services';
-import { WorkflowCasesQuery, WorkflowCasesStore} from './';
+import { WorkflowCaseModel } from '../../../models';
+import { WorkflowPnCasesService } from '../../../services';
+import { WorkflowCasesQuery, WorkflowCasesStore } from './';
 
 @Injectable({ providedIn: 'root' })
 export class WorkflowCasesStateService {
   constructor(
     private store: WorkflowCasesStore,
-    private service: CasesService,
+    private service: WorkflowPnCasesService,
     private query: WorkflowCasesQuery
   ) {}
-
-  private templateId: number;
 
   getPageSize(): Observable<number> {
     return this.query.selectPageSize$;
@@ -29,18 +28,14 @@ export class WorkflowCasesStateService {
     return this.query.selectSort$;
   }
 
-  getCases(): Observable<OperationDataResult<CaseListModel>> {
+  getWorkflowCases(): Observable<OperationDataResult<Paged<WorkflowCaseModel>>> {
     return this.service
-      .getCases({
-        ...this.query.pageSetting.pagination,
-        ...this.query.pageSetting.filters,
-        templateId: this.templateId,
-      })
+      .getWorkflowCases(this.query.pageSetting.pagination)
       .pipe(
         map((response) => {
           if (response && response.success && response.model) {
             this.store.update(() => ({
-              totalCases: response.model.numOfElements,
+              total: response.model.total,
             }));
           }
           return response;
@@ -82,7 +77,7 @@ export class WorkflowCasesStateService {
 
   onDelete() {
     this.store.update((state) => ({
-      totalCases: state.totalCases - 1,
+      total: state.total - 1,
     }));
     this.checkOffset();
   }
@@ -106,7 +101,7 @@ export class WorkflowCasesStateService {
     const newOffset = getOffset(
       this.query.pageSetting.pagination.pageSize,
       this.query.pageSetting.pagination.offset,
-      this.query.pageSetting.totalCases
+      this.query.pageSetting.total
     );
     if (newOffset !== this.query.pageSetting.pagination.offset) {
       this.store.update((state) => ({
