@@ -21,14 +21,19 @@ SOFTWARE.
 namespace Workflow.Pn.Messages
 {
     using System.Collections.Generic;
+    using Microting.eForm.Infrastructure.Data.Entities;
 
     public class QueueEformEmail
     {
         public int CaseId { get; set; }
 
-        public List<string> ListSolvedUser { get; set; }
-            = new List<string>();
+        /// <summary>
+        /// key - user name, value - language
+        /// </summary>
+        public List<KeyValuePair<string, Language>> SolvedUser { get; set; }
 
-        public int UserId { get; set; }
+        public string UserName { get; set; }
+
+        public Language CurrentUserLanguage { get; set; }
     }
 }

@@ -24,6 +24,7 @@ namespace Workflow.Pn.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
     using System.Threading.Tasks;
+    using Infrastructure.Models.Cases;
     using Microting.eFormApi.BasePn.Infrastructure.Models.Application.Case.CaseEdit;
     using Services.WorkflowCasesService;
 
@@ -37,12 +38,21 @@ namespace Workflow.Pn.Controllers
             _workflowPnSettingsService = workflowPnSettingsService;
         }
         
-        [HttpPost]
+        [HttpPut]
         [Authorize]
         [Route("api/workflow-pn/cases")]
         public async Task<OperationResult> UpdateFolderId([FromBody] ReplyRequest model)
         {
             return await _workflowPnSettingsService.UpdateCase(model);
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        [Route("api/workflow-pn/cases")]
+        public async Task<OperationResult> Index([FromBody] WorkflowCasesResponse model)
+        {
+            return await _workflowPnSettingsService.Index(model);
         }
     }
 }

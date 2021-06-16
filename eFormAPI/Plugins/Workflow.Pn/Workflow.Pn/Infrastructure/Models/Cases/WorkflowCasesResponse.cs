@@ -18,18 +18,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace Workflow.Pn.Services.WorkflowCasesService
+namespace Workflow.Pn.Infrastructure.Models.Cases
 {
-    using System.Threading.Tasks;
-    using Microting.eFormApi.BasePn.Infrastructure.Models.API;
-    using Microting.eFormApi.BasePn.Infrastructure.Models.Application.Case.CaseEdit;
     using Microting.eFormApi.BasePn.Infrastructure.Models.Common;
-    using Infrastructure.Models.Cases;
 
-    public interface IWorkflowCasesService
+    public class WorkflowCasesResponse : PaginationModel
     {
-        Task<OperationDataResult<Paged<WorkflowCasesModel>>> Index(WorkflowCasesResponse response);
+        public string Sort { get; set; }
 
-        Task<OperationResult> UpdateCase(ReplyRequest model);
+        public bool IsSortDsc { get; set; }
+
+        public string NameFilter { get; set; }
     }
 }
