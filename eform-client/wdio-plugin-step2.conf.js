@@ -11,7 +11,6 @@ exports.config = {
     //
   specs: [
     'e2e/Tests/workflow-settings/application-settings.plugins-page.spec.ts',
-    'e2e/Tests/workflow-general/workflow.add.spec.ts'
   ],
     suites: {
         settings: [
@@ -141,7 +140,7 @@ exports.config = {
     mochaOpts: {
         ui: 'bdd',
         compilers: ['ts:ts-node/register'],
-        timeout: 1200000
+        timeout: 120000
         // requires: ['./test/helpers/common.js']
     },
     //

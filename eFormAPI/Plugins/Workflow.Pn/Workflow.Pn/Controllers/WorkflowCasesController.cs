@@ -46,7 +46,6 @@ namespace Workflow.Pn.Controllers
             return await _workflowPnSettingsService.UpdateCase(model);
         }
 
-
         [HttpPost]
         [Authorize]
         [Route("api/workflow-pn/cases")]

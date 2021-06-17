@@ -3,7 +3,7 @@ import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { Paged, TableHeaderElementModel } from 'src/app/common/models';
-import { WorkflowCaseModel } from 'src/app/plugins/modules/workflow-pn/models';
+import { WorkflowCaseModel } from '../../../models';
 import { WorkflowCasesStateService } from '../store';
 
 @AutoUnsubscribe()
@@ -13,7 +13,8 @@ import { WorkflowCasesStateService } from '../store';
   styleUrls: ['./workflow-cases-page.component.scss'],
 })
 export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
-  @ViewChild('deleteWorkflowCaseModal', { static: false }) deleteWorkflowCaseModal;
+  @ViewChild('deleteWorkflowCaseModal', { static: false })
+  deleteWorkflowCaseModal;
   workflowCasesModel: Paged<WorkflowCaseModel> = new Paged<WorkflowCaseModel>();
   searchSubject = new Subject();
   getAllSub$: Subscription;
@@ -48,7 +49,7 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     {
       name: 'Deadline',
       elementId: 'deadlineHeader',
-      sortable: true
+      sortable: true,
     },
     {
       name: 'ActionPlan',

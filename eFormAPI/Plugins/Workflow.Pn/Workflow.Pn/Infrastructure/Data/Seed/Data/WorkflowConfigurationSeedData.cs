@@ -38,31 +38,6 @@ namespace Workflow.Pn.Infrastructure.Data.Seed.Data
                 Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.SecondEformId)}",
                 Value = 0.ToString(),
             },
-            new PluginConfigurationValue
-            {
-                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.SmtpHost)}",
-                Value = "",
-            },
-            new PluginConfigurationValue
-            {
-                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.SmtpPort)}",
-                Value = 0.ToString(),
-            },
-            new PluginConfigurationValue
-            {
-                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.Login)}",
-                Value = "",
-            },
-            new PluginConfigurationValue
-            {
-                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.Password)}",
-                Value = "",
-            },
-            new PluginConfigurationValue
-            {
-                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.SendGridKey)}",
-                Value = "",
-            },
         };
     }
 }

@@ -33,7 +33,7 @@ export class WorkflowCaseDeleteComponent implements OnInit, OnDestroy {
     this.frame.show();
   }
 
-  deletePlanning() {
+  deleteWorkflowCase() {
     this.deleteWorkflowCase$ = this.workflowCaseService
       .deleteWorkflowCase(this.workflowCaseModel.id)
       .subscribe((data) => {
