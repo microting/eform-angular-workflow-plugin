@@ -65,10 +65,20 @@
             {{ workflowCase.toBeSolvedBy }}
           </td>
           <td id="workflowCaseStatus">
-            {{ workflowCase.status }}
+            {{ workflowCase.statusName }}
           </td>
           <td>
             <div class="d-flex flex-row justify-content-center">
+              <button
+                mdbBtn
+                class="btn-accent text-black-50 btn-icon mb-2"
+                mdbTooltip="{{ 'Edit Device User' | translate }}"
+                mdbWavesEffect
+                id="editWorkflowCaseBtn"
+                (click)="showEditWorkflowCaseModal(workflowCase)"
+              >
+                <fa-icon icon="pen" [fixedWidth]="true" size="lg"></fa-icon>
+              </button>
               <button
                 id="deleteBtn"
                 class="btn btn-danger btn-icon mb-2"
@@ -103,6 +113,12 @@
     ></eform-pagination>
   </div>
 </div>
+
+<app-workflow-case-edit-modal
+  #editWorkflowCaseModal
+  [deviceUsersList]="deviceUsersList"
+  (workflowCaseUpdated)="workflowCaseDeleted()"
+></app-workflow-case-edit-modal>
 
 <app-workflow-case-delete
   #deleteWorkflowCaseModal
