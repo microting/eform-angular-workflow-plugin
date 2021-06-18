@@ -96,7 +96,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     Id = x.Id,
                     IncidentPlace = x.IncedentPlace,
                     IncidentType = x.IncedentType,
-                    PhotosExist = x.Photos.Any(),
+                    PhotosExist = x.PhotosExist,
                     Status = x.Status,
                     ToBeSolvedBy = x.SolvedBy,
                     UpdatedAt = (DateTime)x.UpdatedAt,
