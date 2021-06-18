@@ -1,0 +1,45 @@
+<eform-subheader [title]="'Workflow plugin settings' | translate">
+  <div class="p-3">
+    <button
+      mdbBtn
+      class="btn btn-success"
+      id="saveBtn"
+      (click)="updateSettings()"
+    >
+      {{ 'Save' | translate }}
+    </button>
+  </div>
+</eform-subheader>
+
+<div class="container-fluid">
+  <div class="row mt-4">
+    <div class="col-md-12 col-xs-12 control-block">
+      <div class="container-fluid">
+        <div class="col-md-3 col-sm-6 col-xs-6 ng-select-wrapper">
+          <ng-select
+            [items]="templatesModelForFirst()"
+            bindLabel="name"
+            [placeholder]="'Selected first template' | translate"
+            bindValue="id"
+            [typeahead]="typeahead"
+            [(ngModel)]="settingsModel.firstEformId"
+            id="selectedFirstTemplateSelector"
+          >
+          </ng-select>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-6 ng-select-wrapper">
+          <ng-select
+            [items]="templatesModelForSecond()"
+            bindLabel="name"
+            [placeholder]="'Selected second template' | translate"
+            bindValue="id"
+            [typeahead]="typeahead"
+            [(ngModel)]="settingsModel.secondEformId"
+            id="selectedSecondTemplateSelector"
+          >
+          </ng-select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+[
+  {
+    "Key": "Workflow",
+    "LocalizedValue": {
+      "da": "Arbejdsproces",
+      "en-US": "Workflow",
+      "de-DE": "Workflow"
+    }
+  },
+  {
+    "Key": "Cases",
+    "LocalizedValue": {
+      "da": "Tilfælde",
+      "en-US": "Cases",
+      "de-DE": "Fallen"
+    }
+  },
+  {
+    "Key": "SettingsHaveBeenUpdatedSuccessfully",
+    "LocalizedValue": {
+      "da": "Indstillinger er blevet opdateret med succes",
+      "en-US": "Settings have been updated successfully",
+      "de-DE": "Einstellungen wurden erfolgreich aktualisiert"
+    }
+  },
+  {
+    "Key": "ErrorWhileUpdatingSettings",
+    "LocalizedValue": {
+      "da": "Fejl under opdatering af indstillinger",
+      "en-US": "Error while updating settings",
+      "de-DE": "Fehler beim Aktualisieren der Einstellungen"
+    }
+  },
+  {
+    "Key": "CaseHasBeenUpdated",
+    "LocalizedValue": {
+      "da": "Sag er blevet opdateret",
+      "en-US": "Case has been updated",
+      "de-DE": "Fall wurde aktualisiert"
+    }
+  },
+  {
+    "Key": "CaseCouldNotBeUpdated",
+    "LocalizedValue": {
+      "da": "Sag kunne ikke opdateres",
+      "en-US": "Case could not be updated",
+      "de-DE": "Fall konnte nicht aktualisiert werden"
+    }
+  },
+  {
+    "Key": "ErrorWhileGetSettings",
+    "LocalizedValue": {
+      "da": "Fejl, mens få indstillinger",
+      "en-US": "Error while get settings",
+      "de-DE": "Fehler beim Abrufen von Einstellungen"
+    }
+  }
+]

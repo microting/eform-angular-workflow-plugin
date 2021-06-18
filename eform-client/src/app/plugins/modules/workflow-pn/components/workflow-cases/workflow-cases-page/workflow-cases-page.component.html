@@ -1,0 +1,110 @@
+<eform-subheader></eform-subheader>
+
+<div class="container-fluid">
+  <div class="row pl-1">
+    <div class="col-md-2">
+      <div class="md-form">
+        <input
+          mdbInput
+          type="text"
+          [ngModel]="workflowCasesStateService.getNameFilter() | async"
+          (ngModelChange)="onSearchInputChanged($event)"
+          class="form-control input-sm"
+          id="searchInput"
+        />
+        <label for="searchInput">{{ 'Search' | translate }}</label>
+      </div>
+    </div>
+  </div>
+  <div class="row p-1 table-responsive no-gutters">
+    <table
+      mdbTable
+      striped="true"
+      hover="true"
+      small="true"
+      class="z-depth-1 text-center"
+    >
+      <thead
+        table-headers
+        [tableHeaders]="tableHeaders"
+        [sort]="workflowCasesStateService.getSort() | async"
+        (sortChanged)="sortTable($event)"
+      ></thead>
+      <tbody id="tableBody">
+        <tr
+          *ngFor="
+            let workflowCase of workflowCasesModel?.entities;
+            let i = index
+          "
+        >
+          <td id="workflowCaseId">
+            {{ workflowCase.id }}
+          </td>
+          <td id="workflowCaseUpdatedAt">
+            {{ workflowCase.updatedAt | date: 'dd.MM.y HH:mm:ss' }}
+          </td>
+          <td id="workflowCaseIncidentType">
+            {{ workflowCase.incidentType }}
+          </td>
+          <td id="workflowCaseIncidentPlace">
+            {{ workflowCase.incidentPlace }}
+          </td>
+          <td id="workflowCasePhotosExists">
+            {{ workflowCase.photosExists }}
+          </td>
+          <td id="workflowCaseDescription">
+            {{ workflowCase.description }}
+          </td>
+          <td id="workflowCaseDeadline">
+            {{ workflowCase.deadline | date: 'dd.MM.y HH:mm:ss' }}
+          </td>
+          <td id="workflowCaseActionPlan">
+            {{ workflowCase.actionPlan | date: 'dd.MM.y HH:mm:ss' }}
+          </td>
+          <td id="workflowCaseToBeSolvedBy">
+            {{ workflowCase.toBeSolvedBy }}
+          </td>
+          <td id="workflowCaseStatus">
+            {{ workflowCase.status }}
+          </td>
+          <td>
+            <div class="d-flex flex-row justify-content-center">
+              <button
+                id="deleteBtn"
+                class="btn btn-danger btn-icon mb-2"
+                mdbTooltip="{{ 'Delete' | translate }}"
+                (click)="showDeleteWorkflowCaseModal(workflowCase)"
+              >
+                <fa-icon
+                  icon="trash-alt"
+                  size="lg"
+                  [fixedWidth]="true"
+                ></fa-icon>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row p-1 my-4 mx-2" *ngIf="workflowCasesModel.total === 0">
+    <span>{{ 'No workflow cases found' | translate }}</span>
+  </div>
+  <div class="row justify-content-between mr-2 ml-2">
+    <div class="col-md-1">
+      <eform-page-size
+        [pageSize]="workflowCasesStateService.getPageSize() | async"
+        (onPageSizeChanged)="onPageSizeChanged($event)"
+      ></eform-page-size>
+    </div>
+    <eform-pagination
+      [pagination]="workflowCasesStateService.getPagination() | async"
+      (onPageChanged)="changePage($event)"
+    ></eform-pagination>
+  </div>
+</div>
+
+<app-workflow-case-delete
+  #deleteWorkflowCaseModal
+  (workflowCaseDeleted)="workflowCaseDeleted()"
+></app-workflow-case-delete>
