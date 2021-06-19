@@ -41,9 +41,9 @@ namespace Workflow.Pn.Controllers
         [HttpPut]
         [Authorize]
         [Route("api/workflow-pn/cases")]
-        public async Task<OperationResult> UpdateFolderId([FromBody] ReplyRequest model)
+        public async Task<OperationResult> UpdateWorkflowCase([FromBody] WorkflowCasesUpdateModel model)
         {
-            return await _workflowPnSettingsService.UpdateCase(model);
+            return await _workflowPnSettingsService.UpdateWorkflowCase(model);
         }
 
         [HttpPost]

@@ -1,4 +1,4 @@
-﻿/*
+/*
 The MIT License (MIT)
 Copyright (c) 2007 - 2021 Microting A/S
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,36 +18,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace Workflow.Pn.Infrastructure.Models.Cases
+namespace Workflow.Pn.Infrastructure.Enum
 {
-    using System;
-
-    public class WorkflowCasesModel
+    public enum WorkflowCaseStatuses
     {
-        public int Id { get; set; }
-
-        public DateTime UpdatedAt { get; set; }
-
-        public DateTime DateOfIncident { get; set; }
-
-        public string IncidentType { get; set; }
-
-        public string IncidentPlace { get; set; }
-
-        public bool PhotosExist { get; set; }
-
-        public string Description { get; set; }
-
-        public DateTime Deadline { get; set; }
-
-        public string ActionPlan { get; set; }
-
-        public string ToBeSolvedBy { get; set; }
-
-        public int ToBeSolvedById { get; set; }
-
-        public string Status { get; set; }
-
-        public int StatusId { get; set; }
+        Ongoing = 1,
+        Closed = 2,
     }
 }

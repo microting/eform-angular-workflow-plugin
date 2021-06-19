@@ -24,16 +24,17 @@ namespace Workflow.Pn.Services.WorkflowCasesService
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Infrastructure.Enum;
     using Infrastructure.Models.Cases;
+    using Infrastructure.Models.Settings;
     using Messages;
     using Microsoft.EntityFrameworkCore;
     using Microting.eForm.Infrastructure.Constants;
     using Microting.eForm.Infrastructure.Data.Entities;
     using Microting.eFormApi.BasePn.Abstractions;
-    using Microting.eFormApi.BasePn.Infrastructure.Delegates.CaseUpdate;
     using Microting.eFormApi.BasePn.Infrastructure.Helpers;
+    using Microting.eFormApi.BasePn.Infrastructure.Helpers.PluginDbOptions;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
-    using Microting.eFormApi.BasePn.Infrastructure.Models.Application.Case.CaseEdit;
     using Microting.eFormApi.BasePn.Infrastructure.Models.Common;
     using Microting.eFormWorkflowBase.Infrastructure.Data;
     using Rebus.Bus;
@@ -43,6 +44,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
     {
         private readonly IEFormCoreService _coreHelper;
         private readonly IWorkflowLocalizationService _workflowLocalizationService;
+        private readonly IPluginDbOptions<WorkflowBaseSettings> _options;
         private readonly IUserService _userService;
         private readonly IBus _bus;
         private readonly WorkflowPnDbContext _workflowPnDbContext;
@@ -51,16 +53,17 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             IUserService userService,
             IBus bus,
             WorkflowPnDbContext workflowPnDbContext,
-            IWorkflowLocalizationService workflowLocalizationService)
+            IWorkflowLocalizationService workflowLocalizationService, IPluginDbOptions<WorkflowBaseSettings> options)
         {
             _coreHelper = coreHelper;
             _userService = userService;
             _workflowLocalizationService = workflowLocalizationService;
+            _options = options;
             _workflowPnDbContext = workflowPnDbContext;
             _bus = bus;
         }
 
-        public async Task<OperationDataResult<Paged<WorkflowCasesModel>>> Index(WorkflowCasesResponse response)
+        public async Task<OperationDataResult<Paged<WorkflowCasesModel>>> Index(WorkflowCasesResponse request)
         {
             // get query
             var query = _workflowPnDbContext.WorkflowCases
@@ -68,22 +71,53 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
             // add filtering
 
-            if (!string.IsNullOrEmpty(response.NameFilter))
+            if (!string.IsNullOrEmpty(request.NameFilter))
             {
                 query = query.Where(x =>
-                    x.Id.ToString().Contains(response.NameFilter) ||
-                    x.IncedentType.Contains(response.NameFilter) ||
-                    x.ActionPlan.Contains(response.NameFilter) ||
-                    x.Description.Contains(response.NameFilter) ||
-                    x.IncedentPlace.Contains(response.NameFilter) ||
-                    x.SolvedBy.Contains(response.NameFilter)
+                    x.Id.ToString().Contains(request.NameFilter) ||
+                    x.IncedentType.Contains(request.NameFilter) ||
+                    x.ActionPlan.Contains(request.NameFilter) ||
+                    x.Description.Contains(request.NameFilter) ||
+                    x.IncedentPlace.Contains(request.NameFilter) ||
+                    x.SolvedBy.Contains(request.NameFilter)
                     );
             }
 
             // add sorting
-            query = QueryHelper.AddSortToQuery(query, response.Sort, response.IsSortDsc);
-
+            query = QueryHelper.AddSortToQuery(query, request.Sort, request.IsSortDsc);
+            
+            // get total
             var total = await query.Select(x => x.Id).CountAsync();
+
+            // pagination
+            query = query.Skip(request.Offset)
+                .Take(request.PageSize);
+
+            var siteNames = await query
+                .Select(x => x.SolvedBy)
+                .Distinct()
+                .ToListAsync();
+
+            var statuses = await query
+                .Select(x => new {x.Id, x.Status})
+                .ToListAsync();
+
+            var workflowStatuses = new List<KeyValuePair<int, int>>();
+            foreach (var statuse in statuses)
+            {
+                if(Enum.TryParse(statuse.Status, out int workflowStatus))
+                {
+
+                    workflowStatuses.Add(new KeyValuePair<int, int>(statuse.Id, workflowStatus));
+                }
+            }
+
+            var core = await _coreHelper.GetCore();
+            var sdkDbContext = core.DbContextHelper.GetDbContext();
+            var idsSites = await sdkDbContext.Sites
+                .Where(x => siteNames.Contains(x.Name))
+                .Select(x => new {x.Id, x.Name})
+                .ToListAsync();
 
             // add select to query and get from db
             var workflowCases = await query
@@ -98,6 +132,8 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     IncidentType = x.IncedentType,
                     PhotosExist = x.PhotosExist,
                     Status = x.Status,
+                    StatusId = workflowStatuses.FirstOrDefault(y => y.Key == x.Id).Value,
+                    ToBeSolvedById = idsSites.First(y => y.Name == x.SolvedBy).Id,
                     ToBeSolvedBy = x.SolvedBy,
                     UpdatedAt = (DateTime)x.UpdatedAt,
                 })
@@ -106,60 +142,36 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
         }
 
-        public async Task<OperationResult> UpdateCase(ReplyRequest model)
+        public async Task<OperationResult> UpdateWorkflowCase(WorkflowCasesUpdateModel model)
         {
-
-            var checkListValueList = new List<string>();
-            var fieldValueList = new List<string>();
             var core = await _coreHelper.GetCore();
-            var currentUserLanguage = await _userService.GetCurrentUserLanguage();
             try
             {
-                model.ElementList.ForEach(element =>
-                {
-                    checkListValueList.AddRange(CaseUpdateHelper.GetCheckList(element));
-                    fieldValueList.AddRange(CaseUpdateHelper.GetFieldList(element));
-                });
-            }
-            catch (Exception ex)
-            {
-                Log.LogException(ex.Message);
-                Log.LogException(ex.StackTrace);
-                return new OperationResult(false, $"{_workflowLocalizationService.GetString("CaseCouldNotBeUpdated")} Exception: {ex.Message}");
-            }
+                var solvedByNotSelected = model.ToBeSolvedById == 0;
+                var statusClosed = model.Status == (int)WorkflowCaseStatuses.Closed;
+                var statusOngoing = model.Status == (int)WorkflowCaseStatuses.Ongoing;
 
-            try
-            {
-                await core.CaseUpdate(model.Id, fieldValueList, checkListValueList);
-                await core.CaseUpdateFieldValues(model.Id, currentUserLanguage);
-
-                if (CaseUpdateDelegates.CaseUpdateDelegate != null)
+                var workflowCase = await _workflowPnDbContext.WorkflowCases.Where(x => x.Id == model.Id).FirstOrDefaultAsync();
+                if (workflowCase == null)
                 {
-                    var invocationList = CaseUpdateDelegates.CaseUpdateDelegate
-                        .GetInvocationList();
-                    foreach (var func in invocationList)
-                    {
-                        func.DynamicInvoke(model.Id);
-                    }
+                    return new OperationResult(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
                 }
 
-                var solvedByNotSelected = false;
-                var statusClosed = false;
-                var statusOngoing = false;
-                var solvedUserNames = new List<string>();
-
-                foreach (var editRequest in model.ElementList)
-                {
-                    var fieldSolvedBy = editRequest.Fields.FirstOrDefault(x => x.FieldType == "Solved by");
-                    var fieldStatus = editRequest.Fields.FirstOrDefault(x => x.FieldType == "Status");
-                    if(fieldSolvedBy != null && fieldStatus != null)
+                var sdkDbContext = core.DbContextHelper.GetDbContext();
+                var solvedUser = await sdkDbContext.Sites.Where(x => x.Id == model.ToBeSolvedById)
+                    .Select(x => new
                     {
-                        solvedByNotSelected = fieldSolvedBy.FieldValues.Any(x => x.Value == "Not selected");
-                        solvedUserNames = fieldSolvedBy.FieldValues.Where(x => x.Value != "Not selected").Select(x => (string)x.Value).ToList(); 
-                        statusClosed = fieldStatus.FieldValues.Any(x => x.Value == "Closed");
-                        statusOngoing = fieldStatus.FieldValues.Any(x => x.Value == "Ongoing");
-                    }
-                }
+                        x.Name,
+                        x.LanguageId
+                    })
+                    .FirstAsync();
+
+                var language = await sdkDbContext.Languages.FirstAsync(x => x.Id == solvedUser.LanguageId);
+                workflowCase.SolvedBy = solvedUser.Name;
+                var statusWorkflowCase = (WorkflowCaseStatuses) model.Status;
+                workflowCase.Status = statusWorkflowCase.ToString();
+                workflowCase.UpdatedByUserId = _userService.UserId;
+                await workflowCase.Update(_workflowPnDbContext);
 
                 if (solvedByNotSelected && statusClosed)
                 {
@@ -175,27 +187,35 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
                 if (!solvedByNotSelected && statusClosed)
                 {
-                    var solvedUser = new List<KeyValuePair<string, Language>>();
-                    var sdkDbContext = core.DbContextHelper.GetDbContext();
-                    foreach (var solvedUserName in solvedUserNames)
+                    var solvedUsers = new List<KeyValuePair<string, Language>>
                     {
-                        var user = await _userService.GetByUsernameAsync(solvedUserName);
-                        var language = await sdkDbContext.Languages.FirstAsync(x => x.LanguageCode == user.Locale);
-                        solvedUser.Add(new KeyValuePair<string, Language>(solvedUserName, language));
-                    }
+                        new KeyValuePair<string, Language>(solvedUser.Name, language),
+                    };
+
                     // send email with pdf report to device user and solved user
                     await _bus.SendLocal(new QueueEformEmail
                     {
                         CaseId = model.Id,
                         UserName = await _userService.GetCurrentUserFullName(),
                         CurrentUserLanguage = await _userService.GetCurrentUserLanguage(),
-                        SolvedUser = solvedUser
+                        SolvedUser = solvedUsers
                     });
                 }
 
                 if (!solvedByNotSelected && statusOngoing)
                 {
                     // eform is deployed to solver device user
+                    var mainElement = await core.ReadeForm(_options.Value.FirstEformId, await _userService.GetCurrentUserLanguage());
+                    mainElement.Repeated = 1;
+                    mainElement.EndDate = DateTime.Now.AddYears(10).ToUniversalTime();
+                    mainElement.StartDate = DateTime.Now.ToUniversalTime();
+                    mainElement.Label = $@"<strong>Event created by: {workflowCase.SolvedBy}</strong><br>";
+                    mainElement.Label += $@"<strong>Event date: {workflowCase.DateOfIncedent}</strong><br>";
+                    mainElement.Label += $@"<strong>Event: {workflowCase.IncedentType}</strong><br>";
+                    mainElement.Label += $@"<strong>Event location: {workflowCase.IncedentPlace}</strong><br>";
+                    mainElement.Label += $@"<strong>Deadline: {workflowCase.Deadline}</strong><br>";
+                    mainElement.Label += $@"<strong>Status: {workflowCase.Status}</strong><br>";
+                    await core.CaseCreate(mainElement, "", model.ToBeSolvedById, 0);
                 }
 
                 return new OperationResult(true, _workflowLocalizationService.GetString("CaseHasBeenUpdated"));

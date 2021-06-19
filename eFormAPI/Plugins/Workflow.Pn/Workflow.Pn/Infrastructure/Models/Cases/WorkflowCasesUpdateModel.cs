@@ -20,34 +20,12 @@ SOFTWARE.
 
 namespace Workflow.Pn.Infrastructure.Models.Cases
 {
-    using System;
-
-    public class WorkflowCasesModel
+    public class WorkflowCasesUpdateModel
     {
         public int Id { get; set; }
 
-        public DateTime UpdatedAt { get; set; }
-
-        public DateTime DateOfIncident { get; set; }
-
-        public string IncidentType { get; set; }
-
-        public string IncidentPlace { get; set; }
-
-        public bool PhotosExist { get; set; }
-
-        public string Description { get; set; }
-
-        public DateTime Deadline { get; set; }
-
-        public string ActionPlan { get; set; }
-
-        public string ToBeSolvedBy { get; set; }
-
         public int ToBeSolvedById { get; set; }
 
-        public string Status { get; set; }
-
-        public int StatusId { get; set; }
+        public int Status { get; set; }
     }
 }

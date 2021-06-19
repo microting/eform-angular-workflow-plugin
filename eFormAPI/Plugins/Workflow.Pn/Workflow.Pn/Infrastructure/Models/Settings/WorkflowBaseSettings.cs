@@ -25,15 +25,5 @@ namespace Workflow.Pn.Infrastructure.Models.Settings
         public int FirstEformId { get; set; }
 
         public int SecondEformId { get; set; }
-
-        public string SmtpHost { get; set; }
-
-        public int SmtpPort { get; set; }
-
-        public string Login { get; set; }
-
-        public string Password { get; set; }
-
-        public string SendGridKey { get; set; }
     }
 }

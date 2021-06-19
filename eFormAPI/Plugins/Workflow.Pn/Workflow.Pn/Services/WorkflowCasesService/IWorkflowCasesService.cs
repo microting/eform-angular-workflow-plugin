@@ -28,8 +28,8 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
     public interface IWorkflowCasesService
     {
-        Task<OperationDataResult<Paged<WorkflowCasesModel>>> Index(WorkflowCasesResponse response);
+        Task<OperationDataResult<Paged<WorkflowCasesModel>>> Index(WorkflowCasesResponse request);
 
-        Task<OperationResult> UpdateCase(ReplyRequest model);
+        Task<OperationResult> UpdateWorkflowCase(WorkflowCasesUpdateModel model);
     }
 }
