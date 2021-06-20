@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
 import { persistState, Store, StoreConfig } from '@datorama/akita';
-import {
-  CommonPaginationState,
-  FiltrationStateModel,
-} from 'src/app/common/models';
+import { CommonPaginationState } from 'src/app/common/models/common-pagination-state';
 
 export interface WorkflowCasesState {
   pagination: CommonPaginationState;
-  filters: FiltrationStateModel;
+  filters: { nameFilter: string };
   total: number;
 }
 
@@ -20,7 +17,7 @@ function createInitialState(): WorkflowCasesState {
       offset: 0,
     },
     filters: {
-      nameFilter: '',
+      nameFilter: ''
     },
     total: 0,
   };

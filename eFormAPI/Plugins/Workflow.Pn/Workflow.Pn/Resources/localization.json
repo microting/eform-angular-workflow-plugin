@@ -54,5 +54,13 @@
       "en-US": "Error while get settings",
       "de-DE": "Fehler beim Abrufen von Einstellungen"
     }
+  },
+  {
+    "Key": "WorkflowCaseNotFound",
+    "LocalizedValue": {
+      "da": "Workorkflow sag ikke fundet",
+      "en-US": "Workflow case not found",
+      "de-DE": "Workflow Fall nicht gefunden"
+    }
   }
 ]

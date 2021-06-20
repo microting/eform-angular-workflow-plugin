@@ -5,10 +5,12 @@ import {
   OperationDataResult,
   OperationResult,
   Paged,
+  PaginationModel,
   ReplyRequest,
 } from 'src/app/common/models';
 import { ApiBaseService } from 'src/app/common/services';
-import { WorkflowCaseModel } from '../models';
+import { WorkflowCaseUpdateModel } from 'src/app/plugins/modules/workflow-pn/models';
+import { WorkflowCaseModel } from '../models/workflow-case.model';
 
 export let WorkflowPnCasesMethods = {
   Cases: 'api/workflow-pn/cases',
@@ -23,17 +25,16 @@ export class WorkflowPnCasesService {
   getWorkflowCases(
     model: CommonPaginationState
   ): Observable<OperationDataResult<Paged<WorkflowCaseModel>>> {
-    return this.apiBaseService.post(WorkflowPnCasesMethods.Cases, model);
+    return this.apiBaseService.post(`${WorkflowPnCasesMethods.Cases}`, model);
   }
 
-  updateCase(model: ReplyRequest): Observable<OperationResult> {
-    return this.apiBaseService.put<ReplyRequest>(
-      WorkflowPnCasesMethods.Cases,
-      model
-    );
+  updateCase(model: WorkflowCaseUpdateModel): Observable<OperationResult> {
+    return this.apiBaseService.put(`${WorkflowPnCasesMethods.Cases}`, model);
   }
 
   deleteWorkflowCase(id: number): Observable<OperationResult> {
-    return this.apiBaseService.delete(WorkflowPnCasesMethods.Cases, { id: id });
+    return this.apiBaseService.delete(
+      WorkflowPnCasesMethods.Cases + '?id=' + id
+    );
   }
 }

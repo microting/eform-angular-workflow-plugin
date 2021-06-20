@@ -71,12 +71,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
                 var settings = new WorkflowSettingsModel
                 {
                     FirstEformId = option.FirstEformId == 0 ? (int?) null : option.FirstEformId,
-                    SecondEformId = option.SecondEformId == 0 ? (int?)null : option.SecondEformId,
-                    SmtpHost = option.SmtpHost,
-                    SmtpPort = option.SmtpPort,
-                    Login = option.Login,
-                    Password = option.Password,
-                    SendGridKey = option.SendGridKey,
+                    SecondEformId = option.SecondEformId == 0 ? (int?) null : option.SecondEformId,
                 };
 
                 return new OperationDataResult<WorkflowSettingsModel>(true, settings);
@@ -108,11 +103,6 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
                     {
                         settings.FirstEformId = (int) workflowSettingsModel.FirstEformId;
                         settings.SecondEformId = (int) workflowSettingsModel.SecondEformId;
-                        settings.SmtpHost = workflowSettingsModel.SmtpHost;
-                        settings.SmtpPort = workflowSettingsModel.SmtpPort ?? 0;
-                        settings.Login = workflowSettingsModel.Login;
-                        settings.Password = workflowSettingsModel.Password;
-                        settings.SendGridKey = workflowSettingsModel.SendGridKey;
                     },
                     _dbContext,
                     _userService.UserId);

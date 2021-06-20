@@ -9,5 +9,7 @@ export class WorkflowCaseModel {
   deadline: Date | string;
   actionPlan: string;
   toBeSolvedBy: string;
-  status: string;
+  toBeSolvedById: number;
+  statusName: string;
+  status: number;
 }
