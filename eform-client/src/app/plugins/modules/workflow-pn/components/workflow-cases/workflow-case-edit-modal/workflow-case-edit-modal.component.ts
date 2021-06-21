@@ -21,7 +21,13 @@ export class WorkflowCaseEditModalComponent implements OnInit {
   @ViewChild('frame', { static: true }) frame;
   workflowCaseUpdateModel: WorkflowCaseUpdateModel = new WorkflowCaseUpdateModel();
 
-  statuses = [{ id: 1, text: 'Open' }];
+  statuses = [
+    { id: 0, text: 'Ongoing' },
+    { id: 1, text: 'Closed' },
+    { id: 2, text: 'No status' },
+    { id: 3, text: 'Not initiated' },
+    { id: 4, text: 'Canceled' },
+  ];
 
   constructor() {}
 

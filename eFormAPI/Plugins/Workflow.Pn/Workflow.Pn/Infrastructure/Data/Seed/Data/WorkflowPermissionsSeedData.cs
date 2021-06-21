@@ -20,17 +20,19 @@ SOFTWARE.
 
 namespace Workflow.Pn.Infrastructure.Data.Seed.Data
 {
+    using Microting.eFormApi.BasePn.Infrastructure.Database.Entities;
+
     //using Microting.eFormApi.BasePn.Infrastructure.Database.Entities;
 
     public static class WorkflowPermissionsSeedData
     {
-        //public static PluginPermission[] Data => new[]
-        //{
-        //    new PluginPermission
-        //    {
-        //        PermissionName = "Access Workflow Plugin",
-        //        ClaimName = WorkflowClaims.AccessWorkflowPlugin,
-        //    },
-        //};
+        public static PluginPermission[] Data => new[]
+        {
+            new PluginPermission
+            {
+                PermissionName = "Access Workflow Plugin",
+                ClaimName = "workflow_plugin_access",
+            },
+        };
     }
 }

@@ -28,9 +28,14 @@ export class WorkflowCasesStateService {
     return this.query.selectSort$;
   }
 
-  getWorkflowCases(): Observable<OperationDataResult<Paged<WorkflowCaseModel>>> {
+  getWorkflowCases(): Observable<
+    OperationDataResult<Paged<WorkflowCaseModel>>
+  > {
     return this.service
-      .getWorkflowCases(this.query.pageSetting.pagination)
+      .getWorkflowCases({
+        ...this.query.pageSetting.pagination,
+        ...this.query.pageSetting.filters,
+      })
       .pipe(
         map((response) => {
           if (response && response.success && response.model) {

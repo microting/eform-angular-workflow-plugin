@@ -30,18 +30,17 @@ namespace Workflow.Pn.Services.WorkflowCasesService
     using Microsoft.EntityFrameworkCore;
     using Microting.eForm.Infrastructure.Constants;
     using Microting.eForm.Infrastructure.Data.Entities;
-    using Microting.eForm.Infrastructure.Models;
     using Microting.eFormApi.BasePn.Abstractions;
     using Microting.eFormApi.BasePn.Infrastructure.Helpers;
     using Microting.eFormApi.BasePn.Infrastructure.Helpers.PluginDbOptions;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
     using Microting.eFormApi.BasePn.Infrastructure.Models.Common;
+    using Microting.eFormWorkflowBase.Infrastructure.Const;
     using Microting.eFormWorkflowBase.Infrastructure.Data;
-    using Microting.eFormWorkflowBase.Infrastructure.Enum;
     using Rebus.Bus;
+    using RebusService;
     using WorkflowLocalizationService;
     using CheckListValue = Microting.eForm.Infrastructure.Models.CheckListValue;
-    using Field = Microting.eForm.Infrastructure.Models.Field;
 
     public class WorkflowCasesService: IWorkflowCasesService
     {
@@ -54,7 +53,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
         public WorkflowCasesService(IEFormCoreService coreHelper,
             IUserService userService,
-            IBus bus,
+            IRebusService rebusService,
             WorkflowPnDbContext workflowPnDbContext,
             IWorkflowLocalizationService workflowLocalizationService, IPluginDbOptions<WorkflowBaseSettings> options)
         {
@@ -63,7 +62,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             _workflowLocalizationService = workflowLocalizationService;
             _options = options;
             _workflowPnDbContext = workflowPnDbContext;
-            _bus = bus;
+            _bus = rebusService.GetBus();
         }
 
         public async Task<OperationDataResult<Paged<WorkflowCasesModel>>> Index(WorkflowCasesResponse request)
@@ -78,10 +77,10 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             {
                 query = query.Where(x =>
                     x.Id.ToString().Contains(request.NameFilter) ||
-                    x.IncedentType.Contains(request.NameFilter) ||
+                    x.IncidentType.Contains(request.NameFilter) ||
                     x.ActionPlan.Contains(request.NameFilter) ||
                     x.Description.Contains(request.NameFilter) ||
-                    x.IncedentPlace.Contains(request.NameFilter) ||
+                    x.IncidentPlace.Contains(request.NameFilter) ||
                     x.SolvedBy.Contains(request.NameFilter)
                     );
             }
@@ -92,56 +91,58 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             // get total
             var total = await query.Select(x => x.Id).CountAsync();
 
-            // pagination
-            query = query.Skip(request.Offset)
-                .Take(request.PageSize);
-
-            var siteNames = await query
-                .Select(x => x.SolvedBy)
-                .Distinct()
-                .ToListAsync();
-
-            var statuses = await query
-                .Select(x => new {x.Id, x.Status})
-                .ToListAsync();
-
-            var workflowStatuses = new List<KeyValuePair<int, int>>();
-            foreach (var statuse in statuses)
+            var workflowCases = new List<WorkflowCasesModel>();
+            if (total > 0)
             {
-                if(Enum.TryParse(statuse.Status, out int workflowStatus))
-                {
+                // pagination
+                query = query.Skip(request.Offset)
+                    .Take(request.PageSize);
 
-                    workflowStatuses.Add(new KeyValuePair<int, int>(statuse.Id, workflowStatus));
+                var siteNames = await query
+                    .Select(x => x.SolvedBy)
+                    .Distinct()
+                    .ToListAsync();
+
+                var core = await _coreHelper.GetCore();
+                var sdkDbContext = core.DbContextHelper.GetDbContext();
+                var idsSites = sdkDbContext.Sites
+                    .Where(x => siteNames.Contains(x.Name))
+                    .Select(x => new { x.Id, x.Name })
+                    .ToList();
+
+                // add select to query and get from db
+                workflowCases = await query
+                    .Select(x => new WorkflowCasesModel
+                    {
+                        ActionPlan = x.ActionPlan,
+                        DateOfIncident = x.DateOfIncident,
+                        Deadline = x.Deadline,
+                        Description = x.Description,
+                        Id = x.Id,
+                        IncidentPlace = x.IncidentPlace,
+                        IncidentType = x.IncidentType,
+                        PhotosExist = x.PhotosExist,
+                        StatusName = x.Status,
+                        //it comment because it posible System.InvalidOperationException: The LINQ expression 'y' could not be translated.
+                        //Status = WorkflowCaseStatuses.Statuses.FirstOrDefault(y => y.Key == x.Status).Value,
+                        //ToBeSolvedById = idsSites.FirstOrDefault(y => y.Name == x.SolvedBy).Id,
+                        ToBeSolvedBy = x.SolvedBy,
+                        UpdatedAt = (DateTime)x.UpdatedAt,
+                    })
+                    .ToListAsync();
+
+                foreach (var workflowCasesModel in workflowCases)
+                {
+                    workflowCasesModel.Status =
+                        WorkflowCaseStatuses.Statuses.First(y => y.Key == workflowCasesModel.StatusName).Value;
+                    if(!string.IsNullOrEmpty(workflowCasesModel.ToBeSolvedBy))
+                    {
+                        workflowCasesModel.ToBeSolvedById =
+                            idsSites.First(y => y.Name == workflowCasesModel.ToBeSolvedBy).Id;
+                    }
                 }
             }
-
-            var core = await _coreHelper.GetCore();
-            var sdkDbContext = core.DbContextHelper.GetDbContext();
-            var idsSites = await sdkDbContext.Sites
-                .Where(x => siteNames.Contains(x.Name))
-                .Select(x => new {x.Id, x.Name})
-                .ToListAsync();
-
-            // add select to query and get from db
-            var workflowCases = await query
-                .Select(x => new WorkflowCasesModel
-                {
-                    ActionPlan = x.ActionPlan,
-                    DateOfIncident = x.DateOfIncedent,
-                    Deadline = x.Deadline,
-                    Description = x.Description,
-                    Id = x.Id,
-                    IncidentPlace = x.IncedentPlace,
-                    IncidentType = x.IncedentType,
-                    PhotosExist = x.PhotosExist,
-                    Status = x.Status,
-                    StatusId = workflowStatuses.FirstOrDefault(y => y.Key == x.Id).Value,
-                    ToBeSolvedById = idsSites.First(y => y.Name == x.SolvedBy).Id,
-                    ToBeSolvedBy = x.SolvedBy,
-                    UpdatedAt = (DateTime)x.UpdatedAt,
-                })
-                .ToListAsync();
-            return new OperationDataResult<Paged<WorkflowCasesModel>>(true, new Paged<WorkflowCasesModel>{Entities = workflowCases, Total = total});
+            return new OperationDataResult<Paged<WorkflowCasesModel>>(true, new Paged<WorkflowCasesModel> { Entities = workflowCases, Total = total });
 
         }
 
@@ -151,8 +152,8 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             try
             {
                 var solvedByNotSelected = model.ToBeSolvedById == 0;
-                var statusClosed = model.Status == (int)WorkflowCaseStatuses.Closed;
-                var statusOngoing = model.Status == (int)WorkflowCaseStatuses.Ongoing;
+                var statusClosed = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Closed").Value;
+                var statusOngoing = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Ongoing").Value;
 
                 var workflowCase = await _workflowPnDbContext.WorkflowCases.Where(x => x.Id == model.Id).FirstOrDefaultAsync();
                 if (workflowCase == null)
@@ -171,8 +172,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
                 var language = await sdkDbContext.Languages.FirstAsync(x => x.Id == solvedUser.LanguageId);
                 workflowCase.SolvedBy = solvedUser.Name;
-                var statusWorkflowCase = (WorkflowCaseStatuses) model.Status;
-                workflowCase.Status = statusWorkflowCase.ToString();
+                workflowCase.Status = WorkflowCaseStatuses.Statuses.First(x => x.Value == model.Status).Key;
                 workflowCase.UpdatedByUserId = _userService.UserId;
                 await workflowCase.Update(_workflowPnDbContext);
 
@@ -217,9 +217,9 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                             var info = checkListValue!.DataItemList[0];
 
                             info.Label = $@"INFO<br><strong>Event created by: {workflowCase.SolvedBy}</strong><br>";
-                            info.Label += $@"<strong>Event date: {workflowCase.DateOfIncedent}</strong><br>";
-                            info.Label += $@"<strong>Event: {workflowCase.IncedentType}</strong><br>";
-                            info.Label += $@"<strong>Event location: {workflowCase.IncedentPlace}</strong><br>";
+                            info.Label += $@"<strong>Event date: {workflowCase.DateOfIncident}</strong><br>";
+                            info.Label += $@"<strong>Event: {workflowCase.IncidentType}</strong><br>";
+                            info.Label += $@"<strong>Event location: {workflowCase.IncidentPlace}</strong><br>";
                             info.Label += $@"<strong>Deadline: {workflowCase.Deadline}</strong><br>";
                             info.Label += $@"<strong>Status: {workflowCase.Status}</strong><br>";
 

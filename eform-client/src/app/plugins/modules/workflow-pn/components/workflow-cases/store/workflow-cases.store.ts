@@ -17,7 +17,7 @@ function createInitialState(): WorkflowCasesState {
       offset: 0,
     },
     filters: {
-      nameFilter: ''
+      nameFilter: '',
     },
     total: 0,
   };
@@ -29,6 +29,7 @@ const workflowCasesPersistStorage = persistState({
   preStorageUpdate(storeName, state: WorkflowCasesState) {
     return {
       pagination: state.pagination,
+      filters: state.filters,
     };
   },
 });
