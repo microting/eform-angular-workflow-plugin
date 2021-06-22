@@ -64,7 +64,7 @@ jobs:
     - name: Load DB dump
       run: |
         mysql -u root -h 127.0.0.1 --password=secretpassword -e 'create database `420_eform-angular-workflow-plugin`'
-        mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < main/4420_eform-angular-workflow-plugin.sql
+        mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < main/420_eform-angular-workflow-plugin.sql
     - name: Unit Tests
       run: dotnet test --no-restore -c Release -v n main/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.Test/Workflow.Pn.Test.csproj
     - name: Copy dependencies
