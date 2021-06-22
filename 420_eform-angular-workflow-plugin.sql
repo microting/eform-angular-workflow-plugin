@@ -21,12 +21,12 @@
 
 DROP TABLE IF EXISTS `__efmigrationshistory`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `__efmigrationshistory` (
-  `MigrationId` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `ProductVersion` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `MigrationId` varchar(150) NOT NULL,
+  `ProductVersion` varchar(32)  NOT NULL,
   PRIMARY KEY (`MigrationId`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,19 +45,19 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `pluginconfigurationvalues`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `pluginconfigurationvalues` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `Name` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `Value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `Name` longtext,
+  `Value` longtext,
   `CreatedAt` datetime(6) NOT NULL,
   `UpdatedAt` datetime(6) DEFAULT NULL,
-  `WorkflowState` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `WorkflowState` varchar(255) DEFAULT NULL,
   `CreatedByUserId` int NOT NULL,
   `UpdatedByUserId` int NOT NULL,
   `Version` int NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,19 +76,19 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `pluginconfigurationvalueversions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `pluginconfigurationvalueversions` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `Name` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `Value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `Name` longtext,
+  `Value` longtext,
   `CreatedAt` datetime(6) NOT NULL,
   `UpdatedAt` datetime(6) DEFAULT NULL,
-  `WorkflowState` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `WorkflowState` varchar(255) DEFAULT NULL,
   `CreatedByUserId` int NOT NULL,
   `UpdatedByUserId` int NOT NULL,
   `Version` int NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,7 +106,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `plugingrouppermissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `plugingrouppermissions` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `GroupId` int NOT NULL,
@@ -114,14 +114,14 @@ CREATE TABLE `plugingrouppermissions` (
   `IsEnabled` tinyint(1) NOT NULL,
   `CreatedAt` datetime(6) NOT NULL,
   `UpdatedAt` datetime(6) DEFAULT NULL,
-  `WorkflowState` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `WorkflowState` varchar(255) DEFAULT NULL,
   `CreatedByUserId` int NOT NULL,
   `UpdatedByUserId` int NOT NULL,
   `Version` int NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE,
   KEY `IX_PluginGroupPermissions_PermissionId` (`PermissionId`) USING BTREE,
   CONSTRAINT `FK_PluginGroupPermissions_PluginPermissions_PermissionId` FOREIGN KEY (`PermissionId`) REFERENCES `pluginpermissions` (`Id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +140,7 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `plugingrouppermissionversions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `plugingrouppermissionversions` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `GroupId` int NOT NULL,
@@ -149,12 +149,12 @@ CREATE TABLE `plugingrouppermissionversions` (
   `PluginGroupPermissionId` int NOT NULL,
   `CreatedAt` datetime(6) NOT NULL,
   `UpdatedAt` datetime(6) DEFAULT NULL,
-  `WorkflowState` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `WorkflowState` varchar(255) DEFAULT NULL,
   `CreatedByUserId` int NOT NULL,
   `UpdatedByUserId` int NOT NULL,
   `Version` int NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -173,19 +173,19 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `pluginpermissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `pluginpermissions` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `PermissionName` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `ClaimName` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `PermissionName` longtext,
+  `ClaimName` longtext,
   `CreatedAt` datetime(6) NOT NULL,
   `UpdatedAt` datetime(6) DEFAULT NULL,
-  `WorkflowState` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `WorkflowState` varchar(255) DEFAULT NULL,
   `CreatedByUserId` int NOT NULL,
   `UpdatedByUserId` int NOT NULL,
   `Version` int NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -204,29 +204,29 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `workflowcases`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `workflowcases` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `Description` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `Description` longtext,
   `DateOfIncident` datetime(6) NOT NULL,
-  `IncidentType` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `IncidentPlace` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `IncidentType` longtext,
+  `IncidentPlace` longtext,
   `Deadline` datetime(6) NOT NULL,
-  `ActionPlan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `SolvedBy` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `Status` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `ActionPlan` longtext,
+  `SolvedBy` longtext,
+  `Status` longtext,
   `PhotosExist` tinyint(1) NOT NULL,
   `MicrotingId` int NOT NULL,
   `CheckMicrotingUid` int NOT NULL,
   `CheckId` int NOT NULL,
   `CreatedAt` datetime(6) NOT NULL,
   `UpdatedAt` datetime(6) DEFAULT NULL,
-  `WorkflowState` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `WorkflowState` varchar(255) DEFAULT NULL,
   `CreatedByUserId` int NOT NULL,
   `UpdatedByUserId` int NOT NULL,
   `Version` int NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -245,30 +245,30 @@ UNLOCK TABLES;
 
 DROP TABLE IF EXISTS `workflowcaseversions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
+/*!50503 SET character_set_client = utf8 */;
 CREATE TABLE `workflowcaseversions` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `WorkflowCaseId` int NOT NULL,
-  `Description` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `Description` longtext,
   `DateOfIncident` datetime(6) NOT NULL,
-  `IncidentType` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `IncidentPlace` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `IncidentType` longtext,
+  `IncidentPlace` longtext,
   `Deadline` datetime(6) NOT NULL,
-  `ActionPlan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `SolvedBy` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `Status` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `ActionPlan` longtext,
+  `SolvedBy` longtext,
+  `Status` longtext,
   `PhotosExist` tinyint(1) NOT NULL,
   `MicrotingId` int NOT NULL,
   `CheckMicrotingUid` int NOT NULL,
   `CheckId` int NOT NULL,
   `CreatedAt` datetime(6) NOT NULL,
   `UpdatedAt` datetime(6) DEFAULT NULL,
-  `WorkflowState` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `WorkflowState` varchar(255) DEFAULT NULL,
   `CreatedByUserId` int NOT NULL,
   `UpdatedByUserId` int NOT NULL,
   `Version` int NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
