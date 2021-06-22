@@ -59,14 +59,14 @@ jobs:
       run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3 | cut -d "v" -f 2)
     - name: Build
       run: dotnet build main/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.sln
+    - name: Unit Tests
+      run: dotnet test --no-restore -c Release -v n main/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.Test/Workflow.Pn.Test.csproj
     - name: Sleep 15 seconds
       run: sleep 15
     - name: Load DB dump
       run: |
         mysql -u root -h 127.0.0.1 --password=secretpassword -e 'create database `420_eform-angular-workflow-plugin`'
         mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < main/420_eform-angular-workflow-plugin.sql
-    - name: Unit Tests
-      run: dotnet test --no-restore -c Release -v n main/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.Test/Workflow.Pn.Test.csproj
     - name: Copy dependencies
       run: |
         cp -av main/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
@@ -76,7 +76,7 @@ jobs:
         cp -av main/eform-client/wdio-headless-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.js
         cp -av main/eform-client/wdio-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-plugin-step2.conf.js
         mkdir -p eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins
-        cp -av main/eFormAPI/eFormAPI.Web/Plugins/Workflow.Pn eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins/Workflow.Pn
+        cp -av main/eFormAPI/eFormAPI.Web/Plugins/Workflow eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins/Workflow
         cd eform-angular-frontend/eform-client && ../../main/testinginstallpn.sh
     - name: Build frontend
       run: dotnet build eform-angular-frontend/eFormAPI/eFormAPI.sln
