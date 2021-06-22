@@ -115,7 +115,7 @@
 <app-workflow-case-edit-modal
   #editWorkflowCaseModal
   [deviceUsersList]="deviceUsersList"
-  (workflowCaseUpdated)="getWorkflowCases()"
+  (workflowCaseUpdated)="updateWorkflowCase($event)"
 ></app-workflow-case-edit-modal>
 
 <app-workflow-case-delete

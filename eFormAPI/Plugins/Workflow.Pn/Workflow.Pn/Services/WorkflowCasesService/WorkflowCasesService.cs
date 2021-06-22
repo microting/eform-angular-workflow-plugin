@@ -168,10 +168,11 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                         x.Name,
                         x.LanguageId
                     })
-                    .FirstAsync();
-
-                var language = await sdkDbContext.Languages.FirstAsync(x => x.Id == solvedUser.LanguageId);
-                workflowCase.SolvedBy = solvedUser.Name;
+                    .FirstOrDefaultAsync();
+                if (!solvedByNotSelected)
+                {
+                    workflowCase.SolvedBy = solvedUser.Name;
+                }
                 workflowCase.Status = WorkflowCaseStatuses.Statuses.First(x => x.Value == model.Status).Key;
                 workflowCase.UpdatedByUserId = _userService.UserId;
                 await workflowCase.Update(_workflowPnDbContext);
@@ -190,6 +191,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                         break;
                     case false when statusClosed:
                         {
+                            var language = await sdkDbContext.Languages.FirstAsync(x => x.Id == solvedUser.LanguageId);
                             var solvedUsers = new List<KeyValuePair<string, Language>>
                             {
                                 new(solvedUser.Name, language),
