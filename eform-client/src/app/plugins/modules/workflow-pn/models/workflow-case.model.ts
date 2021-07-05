@@ -4,7 +4,7 @@ export class WorkflowCaseModel {
   dateOfIncident: Date | string;
   incidentType: string;
   incidentPlace: string;
-  photosExists: boolean;
+  photosExist: boolean;
   description: string;
   deadline: Date | string;
   actionPlan: string;

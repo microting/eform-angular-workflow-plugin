@@ -31,14 +31,12 @@
         (sortChanged)="sortTable($event)"
       ></thead>
       <tbody id="tableBody">
-        <tr
-          *ngFor="
-            let workflowCase of workflowCasesModel?.entities;
-            let i = index
-          "
-        >
+        <tr *ngFor="let workflowCase of workflowCasesModel?.entities">
           <td id="workflowCaseId">
             {{ workflowCase.id }}
+          </td>
+          <td id="workflowCaseDateOfIncident">
+            {{ workflowCase.dateOfIncident | date: 'dd.MM.y HH:mm:ss' }}
           </td>
           <td id="workflowCaseUpdatedAt">
             {{ workflowCase.updatedAt | date: 'dd.MM.y HH:mm:ss' }}
@@ -50,7 +48,7 @@
             {{ workflowCase.incidentPlace }}
           </td>
           <td id="workflowCasePhotosExists">
-            {{ workflowCase.photosExists }}
+            {{ workflowCase.photosExist.toString() }}
           </td>
           <td id="workflowCaseDescription">
             {{ workflowCase.description }}
@@ -59,7 +57,7 @@
             {{ workflowCase.deadline | date: 'dd.MM.y HH:mm:ss' }}
           </td>
           <td id="workflowCaseActionPlan">
-            {{ workflowCase.actionPlan | date: 'dd.MM.y HH:mm:ss' }}
+            {{ workflowCase.actionPlan }}
           </td>
           <td id="workflowCaseToBeSolvedBy">
             {{ workflowCase.toBeSolvedBy }}
@@ -117,7 +115,7 @@
 <app-workflow-case-edit-modal
   #editWorkflowCaseModal
   [deviceUsersList]="deviceUsersList"
-  (workflowCaseUpdated)="workflowCaseDeleted()"
+  (workflowCaseUpdated)="updateWorkflowCase($event)"
 ></app-workflow-case-edit-modal>
 
 <app-workflow-case-delete

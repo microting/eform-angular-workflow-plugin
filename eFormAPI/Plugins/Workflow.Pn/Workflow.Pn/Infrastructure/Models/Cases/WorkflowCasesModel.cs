@@ -46,8 +46,8 @@ namespace Workflow.Pn.Infrastructure.Models.Cases
 
         public int ToBeSolvedById { get; set; }
 
-        public string Status { get; set; }
+        public string StatusName { get; set; }
 
-        public int StatusId { get; set; }
+        public int Status { get; set; }
     }
 }

@@ -8,11 +8,8 @@ import {
   TableHeaderElementModel,
 } from 'src/app/common/models';
 import { SitesService } from 'src/app/common/services';
-import {
-  WorkflowCaseModel,
-  WorkflowCaseUpdateModel,
-} from 'src/app/plugins/modules/workflow-pn/models';
-import { WorkflowPnCasesService } from 'src/app/plugins/modules/workflow-pn/services';
+import { WorkflowCaseModel, WorkflowCaseUpdateModel } from '../../../models';
+import { WorkflowPnCasesService } from '../../../services';
 import { WorkflowCasesStateService } from '../store';
 
 @AutoUnsubscribe()
@@ -59,7 +56,17 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       sortable: true,
       visibleName: 'Incident place',
     },
-    { name: 'Photo', elementId: 'photosExistsHeader', sortable: true },
+    {
+      name: 'PhotosExist',
+      elementId: 'photosExistsHeader',
+      sortable: true,
+      visibleName: 'Photo',
+    },
+    {
+      name: 'Description',
+      elementId: 'descriptionHeader',
+      sortable: true,
+    },
     {
       name: 'Deadline',
       elementId: 'deadlineHeader',
@@ -160,12 +167,7 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     this.getWorkflowCases();
   }
 
-  workflowCaseUpdate(model: WorkflowCaseUpdateModel) {
-    this.workflowCasesStateService.onDelete();
-    this.getWorkflowCases();
-  }
-
   showEditWorkflowCaseModal(model: WorkflowCaseModel) {
-    this.deleteWorkflowCaseModal.show(model);
+    this.editWorkflowCaseModal.show(model);
   }
 }

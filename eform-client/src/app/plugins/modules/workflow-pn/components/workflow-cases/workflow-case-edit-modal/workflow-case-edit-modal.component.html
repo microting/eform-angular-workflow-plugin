@@ -21,7 +21,7 @@
                   id="toBeSolvedByEdit"
                   [placeholder]="'To be solved by' | translate"
                   [bindLabel]="'siteName'"
-                  [bindValue]="'siteUId'"
+                  [bindValue]="'id'"
                   [clearable]="false"
                   [(ngModel)]="workflowCaseUpdateModel.toBeSolvedById"
                   [items]="deviceUsersList"
@@ -35,11 +35,11 @@
                 <ng-select
                   id="statusEdit"
                   [placeholder]="'Status' | translate"
-                  [bindLabel]="'id'"
-                  [bindValue]="'text'"
+                  [bindLabel]="'text'"
+                  [bindValue]="'id'"
                   [clearable]="false"
                   [(ngModel)]="workflowCaseUpdateModel.status"
-                  [items]="deviceUsersList"
+                  [items]="statuses"
                 ></ng-select>
               </div>
             </div>
