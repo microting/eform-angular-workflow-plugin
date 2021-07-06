@@ -18,11 +18,11 @@
         <div class="col-md-3 col-sm-6 col-xs-6 ng-select-wrapper">
           <ng-select
             [items]="templatesModelForFirst()"
-            bindLabel="name"
+            [bindLabel]="'name'"
             [placeholder]="'Selected first template' | translate"
-            bindValue="id"
-            [typeahead]="typeahead"
+            [bindValue]="'id'"
             [(ngModel)]="settingsModel.firstEformId"
+            [clearable]="false"
             id="selectedFirstTemplateSelector"
           >
           </ng-select>
@@ -30,11 +30,11 @@
         <div class="col-md-3 col-sm-6 col-xs-6 ng-select-wrapper">
           <ng-select
             [items]="templatesModelForSecond()"
-            bindLabel="name"
+            [bindLabel]="'name'"
             [placeholder]="'Selected second template' | translate"
-            bindValue="id"
-            [typeahead]="typeahead"
+            [bindValue]="'id'"
             [(ngModel)]="settingsModel.secondEformId"
+            [clearable]="false"
             id="selectedSecondTemplateSelector"
           >
           </ng-select>

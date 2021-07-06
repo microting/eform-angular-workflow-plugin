@@ -1,5 +1,5 @@
 import {
-  ChangeDetectorRef,
+  // ChangeDetectorRef,
   Component,
   EventEmitter,
   OnDestroy,
@@ -8,7 +8,7 @@ import {
 import { Router } from '@angular/router';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Subscription } from 'rxjs';
-import { debounceTime, switchMap } from 'rxjs/operators';
+// import { debounceTime, switchMap } from 'rxjs/operators';
 import { CommonDictionaryModel } from 'src/app/common/models';
 import { EFormService } from 'src/app/common/services';
 import { WorkflowPnSettingsService } from '../../services';
@@ -32,22 +32,22 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
   constructor(
     private workflowPnSettingsService: WorkflowPnSettingsService,
     private router: Router,
-    private eFormService: EFormService,
-    private cd: ChangeDetectorRef
-  ) {
-    this.typeahead
-      .pipe(
-        debounceTime(200),
-        switchMap((term) => {
-          return this.eFormService.getTemplatesDictionary(term);
-        })
-      )
-      .subscribe((data) => {
-        if (data && data.success && data.model) {
-          this.templatesModel = data.model;
-          this.cd.markForCheck();
-        }
-      });
+    private eFormService: EFormService
+  ) // private cd: ChangeDetectorRef
+  {
+    // this.typeahead
+    //   .pipe(
+    //     debounceTime(200),
+    //     switchMap((term) => {
+    //       return this.eFormService.getTemplatesDictionary(term);
+    //     })
+    //   )
+    //   .subscribe((data) => {
+    //     if (data && data.success && data.model) {
+    //       this.templatesModel = data.model;
+    //       this.cd.markForCheck();
+    //     }
+    //   });
   }
 
   ngOnInit() {
@@ -80,7 +80,7 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
   updateSettings() {
     this.updateSettings$ = this.workflowPnSettingsService
       .updateSettings(this.settingsModel)
-      .subscribe((data) => {});
+      .subscribe((_) => {});
   }
 
   ngOnDestroy(): void {}

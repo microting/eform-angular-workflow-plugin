@@ -89,23 +89,25 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
         {
             try
             {
-                if (workflowSettingsModel.FirstEformId == null || workflowSettingsModel.FirstEformId == 0)
+                if (workflowSettingsModel.FirstEformId != null && workflowSettingsModel.FirstEformId != 0)
                 {
-                    throw new ArgumentException($"{nameof(workflowSettingsModel.FirstEformId)} is 0");
+                    await _options.UpdateDb(settings =>
+                        {
+                            settings.FirstEformId = (int)workflowSettingsModel.FirstEformId;
+                        },
+                        _dbContext,
+                        _userService.UserId);
                 }
 
-                if (workflowSettingsModel.SecondEformId == null || workflowSettingsModel.SecondEformId == 0)
+                if (workflowSettingsModel.SecondEformId != null && workflowSettingsModel.SecondEformId != 0)
                 {
-                    throw new ArgumentException($"{nameof(workflowSettingsModel.SecondEformId)} is 0");
+                    await _options.UpdateDb(settings =>
+                        {
+                            settings.SecondEformId = (int)workflowSettingsModel.SecondEformId;
+                        },
+                        _dbContext,
+                        _userService.UserId);
                 }
-
-                await _options.UpdateDb(settings =>
-                    {
-                        settings.FirstEformId = (int) workflowSettingsModel.FirstEformId;
-                        settings.SecondEformId = (int) workflowSettingsModel.SecondEformId;
-                    },
-                    _dbContext,
-                    _userService.UserId);
 
                 return new OperationResult(
                     true,

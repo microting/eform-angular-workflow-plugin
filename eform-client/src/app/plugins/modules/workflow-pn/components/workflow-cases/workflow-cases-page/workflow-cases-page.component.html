@@ -70,10 +70,13 @@
               <button
                 mdbBtn
                 class="btn-accent text-black-50 btn-icon mb-2"
-                mdbTooltip="{{ 'Edit Device User' | translate }}"
+                mdbTooltip="{{ 'Edit Workflow Case' | translate }}"
                 mdbWavesEffect
                 id="editWorkflowCaseBtn"
-                (click)="showEditWorkflowCaseModal(workflowCase)"
+                [routerLink]="[
+                  '/plugins/workflow-pn/edit-workflow-case/',
+                  workflowCase.id
+                ]"
               >
                 <fa-icon icon="pen" [fixedWidth]="true" size="lg"></fa-icon>
               </button>
@@ -111,12 +114,6 @@
     ></eform-pagination>
   </div>
 </div>
-
-<app-workflow-case-edit-modal
-  #editWorkflowCaseModal
-  [deviceUsersList]="deviceUsersList"
-  (workflowCaseUpdated)="updateWorkflowCase($event)"
-></app-workflow-case-edit-modal>
 
 <app-workflow-case-delete
   #deleteWorkflowCaseModal
