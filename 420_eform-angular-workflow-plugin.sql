@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `__efmigrationshistory`
+-- Table structure for table `__EFMigrationsHistory`
 --
 
-DROP TABLE IF EXISTS `__efmigrationshistory`;
+DROP TABLE IF EXISTS `__EFMigrationsHistory`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8 */;
-CREATE TABLE `__efmigrationshistory` (
+CREATE TABLE `__EFMigrationsHistory` (
   `MigrationId` varchar(150) NOT NULL,
   `ProductVersion` varchar(32)  NOT NULL,
   PRIMARY KEY (`MigrationId`) USING BTREE
@@ -30,23 +30,23 @@ CREATE TABLE `__efmigrationshistory` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `__efmigrationshistory`
+-- Dumping data for table `__EFMigrationsHistory`
 --
 
-LOCK TABLES `__efmigrationshistory` WRITE;
-/*!40000 ALTER TABLE `__efmigrationshistory` DISABLE KEYS */;
-INSERT INTO `__efmigrationshistory` VALUES ('20210621182502_InitialCreate','5.0.7');
-/*!40000 ALTER TABLE `__efmigrationshistory` ENABLE KEYS */;
+LOCK TABLES `__EFMigrationsHistory` WRITE;
+/*!40000 ALTER TABLE `__EFMigrationsHistory` DISABLE KEYS */;
+INSERT INTO `__EFMigrationsHistory` VALUES ('20210621182502_InitialCreate','5.0.7');
+/*!40000 ALTER TABLE `__EFMigrationsHistory` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pluginconfigurationvalues`
+-- Table structure for table `PluginConfigurationValues`
 --
 
-DROP TABLE IF EXISTS `pluginconfigurationvalues`;
+DROP TABLE IF EXISTS `PluginConfigurationValues`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8 */;
-CREATE TABLE `pluginconfigurationvalues` (
+CREATE TABLE `PluginConfigurationValues` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `Name` longtext,
   `Value` longtext,
@@ -61,23 +61,23 @@ CREATE TABLE `pluginconfigurationvalues` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pluginconfigurationvalues`
+-- Dumping data for table `PluginConfigurationValues`
 --
 
-LOCK TABLES `pluginconfigurationvalues` WRITE;
-/*!40000 ALTER TABLE `pluginconfigurationvalues` DISABLE KEYS */;
-INSERT INTO `pluginconfigurationvalues` VALUES (1,'WorkflowBaseSettings:FirstEformId','0','2021-06-21 18:40:58.446267','2021-06-21 18:40:58.446456','created',1,0,1),(2,'WorkflowBaseSettings:SecondEformId','0','2021-06-21 18:40:58.598450','2021-06-21 18:40:58.598451','created',1,0,1);
-/*!40000 ALTER TABLE `pluginconfigurationvalues` ENABLE KEYS */;
+LOCK TABLES `PluginConfigurationValues` WRITE;
+/*!40000 ALTER TABLE `PluginConfigurationValues` DISABLE KEYS */;
+INSERT INTO `PluginConfigurationValues` VALUES (1,'WorkflowBaseSettings:FirstEformId','0','2021-06-21 18:40:58.446267','2021-06-21 18:40:58.446456','created',1,0,1),(2,'WorkflowBaseSettings:SecondEformId','0','2021-06-21 18:40:58.598450','2021-06-21 18:40:58.598451','created',1,0,1);
+/*!40000 ALTER TABLE `PluginConfigurationValues` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pluginconfigurationvalueversions`
+-- Table structure for table `PluginConfigurationValueVersions`
 --
 
-DROP TABLE IF EXISTS `pluginconfigurationvalueversions`;
+DROP TABLE IF EXISTS `PluginConfigurationValueVersions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8 */;
-CREATE TABLE `pluginconfigurationvalueversions` (
+CREATE TABLE `PluginConfigurationValueVersions` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `Name` longtext,
   `Value` longtext,
@@ -92,22 +92,22 @@ CREATE TABLE `pluginconfigurationvalueversions` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pluginconfigurationvalueversions`
+-- Dumping data for table `PluginConfigurationValueVersions`
 --
 
-LOCK TABLES `pluginconfigurationvalueversions` WRITE;
-/*!40000 ALTER TABLE `pluginconfigurationvalueversions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pluginconfigurationvalueversions` ENABLE KEYS */;
+LOCK TABLES `PluginConfigurationValueVersions` WRITE;
+/*!40000 ALTER TABLE `PluginConfigurationValueVersions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `PluginConfigurationValueVersions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `plugingrouppermissions`
+-- Table structure for table `PluginGroupPermissions`
 --
 
-DROP TABLE IF EXISTS `plugingrouppermissions`;
+DROP TABLE IF EXISTS `PluginGroupPermissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8 */;
-CREATE TABLE `plugingrouppermissions` (
+CREATE TABLE `PluginGroupPermissions` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `GroupId` int NOT NULL,
   `PermissionId` int NOT NULL,
@@ -120,28 +120,28 @@ CREATE TABLE `plugingrouppermissions` (
   `Version` int NOT NULL,
   PRIMARY KEY (`Id`) USING BTREE,
   KEY `IX_PluginGroupPermissions_PermissionId` (`PermissionId`) USING BTREE,
-  CONSTRAINT `FK_PluginGroupPermissions_PluginPermissions_PermissionId` FOREIGN KEY (`PermissionId`) REFERENCES `pluginpermissions` (`Id`) ON DELETE CASCADE ON UPDATE RESTRICT
+  CONSTRAINT `FK_PluginGroupPermissions_PluginPermissions_PermissionId` FOREIGN KEY (`PermissionId`) REFERENCES `PluginPermissions` (`Id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `plugingrouppermissions`
+-- Dumping data for table `PluginGroupPermissions`
 --
 
-LOCK TABLES `plugingrouppermissions` WRITE;
-/*!40000 ALTER TABLE `plugingrouppermissions` DISABLE KEYS */;
-INSERT INTO `plugingrouppermissions` VALUES (1,1,1,1,'2021-06-21 18:40:58.762467','2021-06-21 18:40:58.762468','created',0,0,1);
-/*!40000 ALTER TABLE `plugingrouppermissions` ENABLE KEYS */;
+LOCK TABLES `PluginGroupPermissions` WRITE;
+/*!40000 ALTER TABLE `PluginGroupPermissions` DISABLE KEYS */;
+INSERT INTO `PluginGroupPermissions` VALUES (1,1,1,1,'2021-06-21 18:40:58.762467','2021-06-21 18:40:58.762468','created',0,0,1);
+/*!40000 ALTER TABLE `PluginGroupPermissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `plugingrouppermissionversions`
+-- Table structure for table `PluginGroupPermissionVersions`
 --
 
-DROP TABLE IF EXISTS `plugingrouppermissionversions`;
+DROP TABLE IF EXISTS `PluginGroupPermissionVersions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8 */;
-CREATE TABLE `plugingrouppermissionversions` (
+CREATE TABLE `PluginGroupPermissionVersions` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `GroupId` int NOT NULL,
   `PermissionId` int NOT NULL,
@@ -158,23 +158,23 @@ CREATE TABLE `plugingrouppermissionversions` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `plugingrouppermissionversions`
+-- Dumping data for table `PluginGroupPermissionVersions`
 --
 
-LOCK TABLES `plugingrouppermissionversions` WRITE;
-/*!40000 ALTER TABLE `plugingrouppermissionversions` DISABLE KEYS */;
-INSERT INTO `plugingrouppermissionversions` VALUES (1,1,1,1,1,'2021-06-21 18:40:58.762467','2021-06-21 18:40:58.762468','created',0,0,1);
-/*!40000 ALTER TABLE `plugingrouppermissionversions` ENABLE KEYS */;
+LOCK TABLES `PluginGroupPermissionVersions` WRITE;
+/*!40000 ALTER TABLE `PluginGroupPermissionVersions` DISABLE KEYS */;
+INSERT INTO `PluginGroupPermissionVersions` VALUES (1,1,1,1,1,'2021-06-21 18:40:58.762467','2021-06-21 18:40:58.762468','created',0,0,1);
+/*!40000 ALTER TABLE `PluginGroupPermissionVersions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pluginpermissions`
+-- Table structure for table `PluginPermissions`
 --
 
-DROP TABLE IF EXISTS `pluginpermissions`;
+DROP TABLE IF EXISTS `PluginPermissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8 */;
-CREATE TABLE `pluginpermissions` (
+CREATE TABLE `PluginPermissions` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `PermissionName` longtext,
   `ClaimName` longtext,
@@ -189,23 +189,23 @@ CREATE TABLE `pluginpermissions` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pluginpermissions`
+-- Dumping data for table `PluginPermissions`
 --
 
-LOCK TABLES `pluginpermissions` WRITE;
-/*!40000 ALTER TABLE `pluginpermissions` DISABLE KEYS */;
-INSERT INTO `pluginpermissions` VALUES (1,'Access Workflow Plugin','workflow_plugin_access','2021-06-21 18:40:58.617381',NULL,'created',1,0,1);
-/*!40000 ALTER TABLE `pluginpermissions` ENABLE KEYS */;
+LOCK TABLES `PluginPermissions` WRITE;
+/*!40000 ALTER TABLE `PluginPermissions` DISABLE KEYS */;
+INSERT INTO `PluginPermissions` VALUES (1,'Access Workflow Plugin','workflow_plugin_access','2021-06-21 18:40:58.617381',NULL,'created',1,0,1);
+/*!40000 ALTER TABLE `PluginPermissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `workflowcases`
+-- Table structure for table `WorkflowCases`
 --
 
-DROP TABLE IF EXISTS `workflowcases`;
+DROP TABLE IF EXISTS `WorkflowCases`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8 */;
-CREATE TABLE `workflowcases` (
+CREATE TABLE `WorkflowCases` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `Description` longtext,
   `DateOfIncident` datetime(6) NOT NULL,
@@ -230,23 +230,23 @@ CREATE TABLE `workflowcases` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `workflowcases`
+-- Dumping data for table `WorkflowCases`
 --
 
-LOCK TABLES `workflowcases` WRITE;
-/*!40000 ALTER TABLE `workflowcases` DISABLE KEYS */;
-INSERT INTO `workflowcases` VALUES (1,'47fb0240-8dc5-43b5-bd17-d31a4eb844d7','2021-06-21 21:04:51.000000','731dd508-d3d2-41cd-b9b1-0753a3de57e9','d14edf67-e864-4661-a3ba-6ce2d2c5c95d','2021-06-27 21:05:08.000000','b1335fac-8f7d-4f76-a525-3c737e0ada5f','','No status',0,0,0,0,'2021-06-21 21:05:46.000000','2021-06-21 21:05:48.000000','created',1,1,1),(2,'b8bbea8a-5e1b-4d5e-a890-61ef42d49da1','2021-06-15 21:04:51.000000','06235274-40ca-43be-9adc-eeb99865d7a2','6fe95f58-845c-4784-ae97-d1a738b155ce','2021-06-30 21:05:08.000000','d732d2bd-d6b5-470e-a27f-422d2e364029','','Closed',1,0,0,0,'2021-06-21 21:05:46.000000','2021-06-21 21:05:50.000000','created',1,1,1),(3,'b4068568-4bc5-405a-a92f-7d4a3080fc6b','2021-06-26 21:04:51.000000','9971c397-61a9-4b6d-aa68-38bf30123360','d23fa495-e8d0-4545-840d-62446f16fe99','2021-07-01 21:05:08.000000','591f85e9-bd96-4ed2-9041-ce6d335e79fb','','Ongoing',0,0,0,0,'2021-06-21 21:05:46.000000','2021-06-21 21:05:30.000000','created',1,1,1);
-/*!40000 ALTER TABLE `workflowcases` ENABLE KEYS */;
+LOCK TABLES `WorkflowCases` WRITE;
+/*!40000 ALTER TABLE `WorkflowCases` DISABLE KEYS */;
+INSERT INTO `WorkflowCases` VALUES (1,'47fb0240-8dc5-43b5-bd17-d31a4eb844d7','2021-06-21 21:04:51.000000','731dd508-d3d2-41cd-b9b1-0753a3de57e9','d14edf67-e864-4661-a3ba-6ce2d2c5c95d','2021-06-27 21:05:08.000000','b1335fac-8f7d-4f76-a525-3c737e0ada5f','','No status',0,0,0,0,'2021-06-21 21:05:46.000000','2021-06-21 21:05:48.000000','created',1,1,1),(2,'b8bbea8a-5e1b-4d5e-a890-61ef42d49da1','2021-06-15 21:04:51.000000','06235274-40ca-43be-9adc-eeb99865d7a2','6fe95f58-845c-4784-ae97-d1a738b155ce','2021-06-30 21:05:08.000000','d732d2bd-d6b5-470e-a27f-422d2e364029','','Closed',1,0,0,0,'2021-06-21 21:05:46.000000','2021-06-21 21:05:50.000000','created',1,1,1),(3,'b4068568-4bc5-405a-a92f-7d4a3080fc6b','2021-06-26 21:04:51.000000','9971c397-61a9-4b6d-aa68-38bf30123360','d23fa495-e8d0-4545-840d-62446f16fe99','2021-07-01 21:05:08.000000','591f85e9-bd96-4ed2-9041-ce6d335e79fb','','Ongoing',0,0,0,0,'2021-06-21 21:05:46.000000','2021-06-21 21:05:30.000000','created',1,1,1);
+/*!40000 ALTER TABLE `WorkflowCases` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `workflowcaseversions`
+-- Table structure for table `WorkflowCaseVersions`
 --
 
-DROP TABLE IF EXISTS `workflowcaseversions`;
+DROP TABLE IF EXISTS `WorkflowCaseVersions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8 */;
-CREATE TABLE `workflowcaseversions` (
+CREATE TABLE `WorkflowCaseVersions` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `WorkflowCaseId` int NOT NULL,
   `Description` longtext,
@@ -272,12 +272,12 @@ CREATE TABLE `workflowcaseversions` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `workflowcaseversions`
+-- Dumping data for table `WorkflowCaseVersions`
 --
 
-LOCK TABLES `workflowcaseversions` WRITE;
-/*!40000 ALTER TABLE `workflowcaseversions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `workflowcaseversions` ENABLE KEYS */;
+LOCK TABLES `WorkflowCaseVersions` WRITE;
+/*!40000 ALTER TABLE `WorkflowCaseVersions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `WorkflowCaseVersions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -100,18 +100,3 @@ jobs:
         cat dotnet_log
         cat eform-angular-frontend/eform-client/npm_log
         mysql -u root --password=secretpassword -e "show databases" -h localhost
-    - name: Notify slack fail
-      if: ${{ failure() }}
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-      uses: voxmedia/github-action-slack-notify-build@v1
-      with:
-        message_id: ${{ steps.slack.outputs.message_id }}
-        channel_id: C017TF6Q46T
-        status: FAILED
-        color: danger
-    - name: Update changelog
-      if: ${{ success() }}
-      uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
