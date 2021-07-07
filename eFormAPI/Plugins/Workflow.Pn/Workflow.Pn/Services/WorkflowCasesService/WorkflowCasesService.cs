@@ -302,10 +302,11 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             if (!string.IsNullOrEmpty(incidentPlace))
             {
                 var fieldWithPlaces = await sdkDbContext.Fields
-                    .Where(x => x.CheckListId == _options.Value.FirstEformId)
-                    .Where(x => x.FieldTypeId == 8) // fieldType.id == 8; fieldType.type -> SingleSelect
+                    //.Where(x => x.CheckListId == _options.Value.FirstEformId)
+                    //.Where(x => x.FieldTypeId == 8) // fieldType.id == 8; fieldType.type -> SingleSelect
+                    .Where(x => x.OriginalId == 374097.ToString())
                     .Select(x => x.Id)
-                    .Skip(1)
+                    //.Skip(1)
                     .FirstOrDefaultAsync();
 
                 var languageId = await _userService.GetCurrentUserLanguage();
