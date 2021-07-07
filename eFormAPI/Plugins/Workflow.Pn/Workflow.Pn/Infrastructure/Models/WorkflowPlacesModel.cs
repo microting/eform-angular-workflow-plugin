@@ -18,26 +18,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-namespace Workflow.Pn.Infrastructure.Models.Cases
+namespace Workflow.Pn.Infrastructure.Models
 {
-    using System;
-
-    public class WorkflowCasesUpdateModel
+    public class WorkflowPlacesModel
     {
         public int Id { get; set; }
-        
-        public DateTime DateOfIncident { get; set; }
-        
-        public int? IncidentPlace { get; set; }
-        
-        public string Description { get; set; }
 
-        public DateTime Deadline { get; set; }
-
-        public string ActionPlan { get; set; }
-        
-        public int? ToBeSolvedById { get; set; }
-        
-        public int? Status { get; set; }
+        public string Name { get; set; }
     }
 }

@@ -10,7 +10,7 @@ import { EformSharedTagsModule } from 'src/app/common/modules/eform-shared-tags/
 import { EformSharedModule } from 'src/app/common/modules/eform-shared/eform-shared.module';
 import {
   WorkflowCaseDeleteComponent,
-  WorkflowCaseEditModalComponent,
+  WorkflowCaseEditComponent,
   WorkflowCasesPageComponent,
   WorkflowSettingsComponent,
 } from './components';
@@ -18,6 +18,7 @@ import { WorkflowPnLayoutComponent } from './layouts';
 import { WorkflowPnCasesService, WorkflowPnSettingsService } from './services';
 import { workflowStoreProviders } from './store/store-providers.config';
 import { WorkflowPnRouting } from './workflow-pn.routing';
+import { OwlDateTimeModule } from '@danielmoncada/angular-datetime-picker';
 
 @NgModule({
   imports: [
@@ -32,13 +33,14 @@ import { WorkflowPnRouting } from './workflow-pn.routing';
     ReactiveFormsModule,
     EformSharedTagsModule,
     MDBBootstrapModule,
+    OwlDateTimeModule,
   ],
   declarations: [
     WorkflowPnLayoutComponent,
     WorkflowSettingsComponent,
     WorkflowCasesPageComponent,
     WorkflowCaseDeleteComponent,
-    WorkflowCaseEditModalComponent,
+    WorkflowCaseEditComponent,
   ],
   providers: [
     WorkflowPnSettingsService,

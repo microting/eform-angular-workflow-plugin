@@ -22,8 +22,10 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
+    using Infrastructure.Models;
     using Infrastructure.Models.Cases;
     using Infrastructure.Models.Settings;
     using Messages;
@@ -42,7 +44,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
     using WorkflowLocalizationService;
     using CheckListValue = Microting.eForm.Infrastructure.Models.CheckListValue;
 
-    public class WorkflowCasesService: IWorkflowCasesService
+    public class WorkflowCasesService : IWorkflowCasesService
     {
         private readonly IEFormCoreService _coreHelper;
         private readonly IWorkflowLocalizationService _workflowLocalizationService;
@@ -72,22 +74,25 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed);
 
             // add filtering
-
             if (!string.IsNullOrEmpty(request.NameFilter))
             {
-                query = query.Where(x =>
-                    x.Id.ToString().Contains(request.NameFilter) ||
-                    x.IncidentType.Contains(request.NameFilter) ||
-                    x.ActionPlan.Contains(request.NameFilter) ||
-                    x.Description.Contains(request.NameFilter) ||
-                    x.IncidentPlace.Contains(request.NameFilter) ||
-                    x.SolvedBy.Contains(request.NameFilter)
-                    );
+                query = QueryHelper
+                    .AddFilterToQuery(query, new List<string>
+                        {
+                            "Id",
+                            "IncidentType",
+                            "ActionPlan",
+                            "Description",
+                            "IncidentPlace",
+                            "SolvedBy",
+                            "IncidentType",
+                            "Status"
+                        }, request.NameFilter);
             }
 
             // add sorting
             query = QueryHelper.AddSortToQuery(query, request.Sort, request.IsSortDsc);
-            
+
             // get total
             var total = await query.Select(x => x.Id).CountAsync();
 
@@ -135,7 +140,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 {
                     workflowCasesModel.Status =
                         WorkflowCaseStatuses.Statuses.First(y => y.Key == workflowCasesModel.StatusName).Value;
-                    if(!string.IsNullOrEmpty(workflowCasesModel.ToBeSolvedBy))
+                    if (!string.IsNullOrEmpty(workflowCasesModel.ToBeSolvedBy))
                     {
                         workflowCasesModel.ToBeSolvedById =
                             idsSites.First(y => y.Name == workflowCasesModel.ToBeSolvedBy).Id;
@@ -151,7 +156,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             var core = await _coreHelper.GetCore();
             try
             {
-                var solvedByNotSelected = model.ToBeSolvedById == 0;
+                var solvedByNotSelected = !model.ToBeSolvedById.HasValue;
                 var statusClosed = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Closed").Value;
                 var statusOngoing = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Ongoing").Value;
 
@@ -173,8 +178,24 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 {
                     workflowCase.SolvedBy = solvedUser.Name;
                 }
-                workflowCase.Status = WorkflowCaseStatuses.Statuses.First(x => x.Value == model.Status).Key;
+
+                if (model.Status.HasValue)
+                {
+                    workflowCase.Status = WorkflowCaseStatuses.Statuses.First(x => x.Value == model.Status).Key;
+                }
                 workflowCase.UpdatedByUserId = _userService.UserId;
+                workflowCase.Deadline = model.Deadline;
+                if(model.IncidentPlace.HasValue)
+                {
+                    workflowCase.IncidentPlace = await sdkDbContext.FieldOptionTranslations
+                        .Where(x => x.Id == model.IncidentPlace)
+                        .Select(x => x.Text)
+                        .FirstAsync();
+                }
+                workflowCase.ActionPlan = model.ActionPlan;
+                workflowCase.Description = model.Description;
+                workflowCase.DateOfIncident = model.DateOfIncident;
+
                 await workflowCase.Update(_workflowPnDbContext);
 
                 switch (solvedByNotSelected)
@@ -228,7 +249,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                             checkListValue!.DataItemList[0] = info;
                             mainElement.ElementList[0] = checkListValue;
 
-                            await core.CaseCreate(mainElement, "", model.ToBeSolvedById, 0);
+                            await core.CaseCreate(mainElement, "", (int)model.ToBeSolvedById, 0);
                             break;
                         }
                 }
@@ -240,6 +261,115 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 Log.LogException(ex.Message);
                 Log.LogException(ex.StackTrace);
                 return new OperationResult(false, $"{_workflowLocalizationService.GetString("CaseCouldNotBeUpdated")} Exception: {ex.Message}");
+            }
+        }
+
+        public async Task<OperationDataResult<WorkflowCasesUpdateModel>> Read(int id)
+        {
+            var core = await _coreHelper.GetCore();
+            var sdkDbContext = core.DbContextHelper.GetDbContext();
+
+            // get query
+            var query = _workflowPnDbContext.WorkflowCases
+                .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
+                .Where(x => x.Id == id);
+
+            //get from db
+            var workflowCase = await query
+                .Select(x => new WorkflowCasesUpdateModel
+                {
+                    ActionPlan = x.ActionPlan,
+                    DateOfIncident = x.DateOfIncident,
+                    Deadline = x.Deadline,
+                    Description = x.Description,
+                    Id = x.Id,
+                    //it comment because it posible System.InvalidOperationException: The LINQ expression 'y' could not be translated.
+                    //Status = WorkflowCaseStatuses.Statuses.FirstOrDefault(y => y.Key == x.Status).Value,
+                    //ToBeSolvedById = idsSites.FirstOrDefault(y => y.Name == x.SolvedBy).Id,
+                })
+                .FirstOrDefaultAsync();
+
+
+            if (workflowCase == null)
+            {
+                return new OperationDataResult<WorkflowCasesUpdateModel>(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
+            }
+
+            var statusName = await query.Select(x => x.Status).FirstAsync();
+            var toBeSolvedBy = await query.Select(x => x.SolvedBy).FirstAsync();
+            var incidentPlace = await query.Select(x => x.IncidentPlace).FirstAsync();
+            if (!string.IsNullOrEmpty(statusName))
+            {
+                workflowCase.Status = WorkflowCaseStatuses.Statuses.First(y => y.Key == statusName).Value;
+            }
+
+            if (!string.IsNullOrEmpty(toBeSolvedBy))
+            {
+                workflowCase.ToBeSolvedById = sdkDbContext.Sites.First(y => y.Name == toBeSolvedBy).Id;
+            }
+
+            if (_options.Value.FirstEformId != 0/*if the form is installed*/ && !string.IsNullOrEmpty(incidentPlace))
+            {
+                var fieldWithPlaces = await sdkDbContext.Fields
+                    //.Where(x => x.CheckListId == _options.Value.FirstEformId)
+                    //.Where(x => x.FieldTypeId == 8) // fieldType.id == 8; fieldType.type -> SingleSelect
+                    .Where(x => x.OriginalId == 374097.ToString())
+                    .Select(x => x.Id)
+                    //.Skip(1)
+                    .FirstOrDefaultAsync();
+
+                var languageId = await _userService.GetCurrentUserLanguage();
+
+                workflowCase.IncidentPlace = await sdkDbContext.FieldOptions
+                    .Where(x => x.FieldId == fieldWithPlaces)
+                    .Include(x => x.FieldOptionTranslations)
+                    .SelectMany(x => x.FieldOptionTranslations)
+                    .Where(x => x.LanguageId == languageId.Id)
+                    .Where(x => x.Text == incidentPlace)
+                    .Select(x => x.Id )
+                    .FirstAsync();
+            }
+
+
+            return new OperationDataResult<WorkflowCasesUpdateModel>(true, workflowCase);
+        }
+
+        public async Task<OperationDataResult<List<WorkflowPlacesModel>>> GetPlaces()
+        {
+            try
+            {
+                if (_options.Value.FirstEformId != 0)
+                {
+                    var core = await _coreHelper.GetCore();
+                    var sdkDbContext = core.DbContextHelper.GetDbContext();
+
+                    var fieldWithPlaces = await sdkDbContext.Fields
+                        .Where(x => x.CheckListId == _options.Value.FirstEformId)
+                        .Where(x => x.FieldTypeId == 8) // fieldType.id == 8; fieldType.type -> SingleSelect
+                        .Select(x => x.Id)
+                        .Skip(1)
+                        .FirstOrDefaultAsync();
+
+                    var languageId = await _userService.GetCurrentUserLanguage();
+
+                    var fieldOptionTranslations = await sdkDbContext.FieldOptions
+                        .Where(x => x.FieldId == fieldWithPlaces)
+                        .Include(x => x.FieldOptionTranslations)
+                        .SelectMany(x => x.FieldOptionTranslations)
+                        .Where(x => x.LanguageId == languageId.Id)
+                        .Select(x => new WorkflowPlacesModel { Name = x.Text, Id = x.Id })
+                        .ToListAsync();
+
+                    return new OperationDataResult<List<WorkflowPlacesModel>>(true, fieldOptionTranslations);
+                }
+
+                return new OperationDataResult<List<WorkflowPlacesModel>>(true, new List<WorkflowPlacesModel>());
+            }
+            catch (Exception ex)
+            {
+                Log.LogException(ex.Message);
+                Log.LogException(ex.StackTrace);
+                return new OperationDataResult<List<WorkflowPlacesModel>>(false, $"{_workflowLocalizationService.GetString("ErrorWhileGetPlaces")} Exception: {ex.Message}");
             }
         }
     }

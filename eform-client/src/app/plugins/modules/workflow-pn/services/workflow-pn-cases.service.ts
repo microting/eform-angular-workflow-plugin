@@ -10,6 +10,7 @@ import { WorkflowCaseModel, WorkflowCaseUpdateModel } from '../models';
 
 export let WorkflowPnCasesMethods = {
   Cases: 'api/workflow-pn/cases',
+  Places: 'api/workflow-pn/cases/places',
 };
 
 @Injectable({
@@ -24,7 +25,7 @@ export class WorkflowPnCasesService {
     return this.apiBaseService.post(WorkflowPnCasesMethods.Cases, model);
   }
 
-  updateCase(model: WorkflowCaseUpdateModel): Observable<OperationResult> {
+  updateCase(model: WorkflowCaseModel): Observable<OperationResult> {
     return this.apiBaseService.put(WorkflowPnCasesMethods.Cases, model);
   }
 
@@ -32,5 +33,13 @@ export class WorkflowPnCasesService {
     return this.apiBaseService.delete(
       WorkflowPnCasesMethods.Cases + '?id=' + id
     );
+  }
+
+  readCase(id: number): Observable<OperationDataResult<WorkflowCaseModel>> {
+    return this.apiBaseService.get(WorkflowPnCasesMethods.Cases, { id: id });
+  }
+
+  getPlaces(): Observable<OperationDataResult<{ id: number; name: string }[]>> {
+    return this.apiBaseService.get(WorkflowPnCasesMethods.Places);
   }
 }

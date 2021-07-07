@@ -1,5 +1,5 @@
 import Page from '../Page';
-import { parse } from 'date-fns';
+import { parse, format } from 'date-fns';
 
 export class WorkflowCasesPage extends Page {
   constructor() {
@@ -9,13 +9,6 @@ export class WorkflowCasesPage extends Page {
   public get rowNum(): number {
     browser.pause(500);
     return $$('#tableBody > tr').length;
-  }
-
-  public goToWorkflowCasesPage() {
-    this.workflowPn.click();
-    this.workflowPnCases.click();
-    $('#spinner-animation').waitForDisplayed({ timeout: 90000, reverse: true });
-    this.searchInput.waitForClickable({ timeout: 90000 });
   }
 
   public get idTableHeader() {
@@ -137,6 +130,41 @@ export class WorkflowCasesPage extends Page {
     return ele;
   }
 
+  public get deadlineFormInput() {
+    const ele = $('#deadlineFormInput');
+    ele.waitForDisplayed({ timeout: 40000 });
+    // ele.waitForClickable({ timeout: 40000 });
+    return ele;
+  }
+
+  public get dateOfIncidentFormInput() {
+    const ele = $('#dateOfIncidentFormInput');
+    ele.waitForDisplayed({ timeout: 40000 });
+    // ele.waitForClickable({ timeout: 40000 });
+    return ele;
+  }
+
+  public get descriptionEdit() {
+    const ele = $('#descriptionEdit');
+    ele.waitForDisplayed({ timeout: 40000 });
+    // ele.waitForClickable({ timeout: 40000 });
+    return ele;
+  }
+
+  public get actionPlanEdit() {
+    const ele = $('#actionPlanEdit');
+    ele.waitForDisplayed({ timeout: 40000 });
+    // ele.waitForClickable({ timeout: 40000 });
+    return ele;
+  }
+
+  public goToWorkflowCasesPage() {
+    this.workflowPn.click();
+    this.workflowPnCases.click();
+    $('#spinner-animation').waitForDisplayed({ timeout: 90000, reverse: true });
+    this.searchInput.waitForClickable({ timeout: 90000 });
+  }
+
   public getFirstWorkflowCase(): WorkflowCaseRowObject {
     return this.getWorkflowCaseByNumber(1);
   }
@@ -220,36 +248,56 @@ export class WorkflowCaseRowObject {
     });
   }
 
-  public openEdit() {
+  public openEdit(updateModel: WorkflowCaseForEdit) {
     this.updateBtn.click();
-    $('#spinner-animation').waitForDisplayed({ timeout: 90000, reverse: true });
+    const spinnerAnimation = $('#spinner-animation');
+    spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
     workflowCasesPage.cancelEditBtn.waitForDisplayed({
       timeout: 20000,
     });
+    if (updateModel) {
+      const ngOption = $('.ng-option');
+      if (updateModel.status) {
+        workflowCasesPage.statusEdit.$('input').setValue(updateModel.status);
+        spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
+        ngOption.waitForDisplayed({ timeout: 20000 });
+        workflowCasesPage.statusEdit
+          .$('.ng-dropdown-panel')
+          .$(`.ng-option=${updateModel.status}`)
+          .click();
+      }
+      // if (updateModel.toBeSolvedBy) {
+      //   workflowCasesPage.toBeSolvedByEdit
+      //     .$('input')
+      //     .setValue(updateModel.toBeSolvedBy);
+      //   spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
+      //   ngOption.waitForDisplayed({ timeout: 20000 });
+      //   workflowCasesPage.toBeSolvedByEdit
+      //     .$('.ng-dropdown-panel')
+      //     .$(`.ng-option=${updateModel.toBeSolvedBy}`)
+      //     .click();
+      // }
+      if (updateModel.deadline) {
+        workflowCasesPage.deadlineFormInput.setValue(
+          format(updateModel.deadline, 'M/d/yyyy')
+        );
+      }
+      if (updateModel.dateOfIncident) {
+        workflowCasesPage.dateOfIncidentFormInput.setValue(
+          format(updateModel.dateOfIncident, 'M/d/yyyy')
+        );
+      }
+      if (updateModel.description) {
+        workflowCasesPage.descriptionEdit.setValue(updateModel.description);
+      }
+      if (updateModel.actionPlan) {
+        workflowCasesPage.actionPlanEdit.setValue(updateModel.actionPlan);
+      }
+    }
   }
 
-  update(toBeSolvedBy: string, status: string, clickCancel = false) {
-    this.openEdit();
-    const spinnerAnimation = $('#spinner-animation');
-    const ngOption = $('.ng-option');
-    if (status) {
-      workflowCasesPage.statusEdit.$('input').setValue(status);
-      spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
-      ngOption.waitForDisplayed({ timeout: 20000 });
-      workflowCasesPage.statusEdit
-        .$('.ng-dropdown-panel')
-        .$(`.ng-option=${status}`)
-        .click();
-    }
-    if (toBeSolvedBy) {
-      workflowCasesPage.toBeSolvedByEdit.$('input').setValue(toBeSolvedBy);
-      spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
-      ngOption.waitForDisplayed({ timeout: 20000 });
-      workflowCasesPage.toBeSolvedByEdit
-        .$('.ng-dropdown-panel')
-        .$(`.ng-option=${toBeSolvedBy}`)
-        .click();
-    }
+  update(updateModel: WorkflowCaseForEdit, clickCancel = false) {
+    this.openEdit(updateModel);
     WorkflowCaseRowObject.closeEdit(clickCancel);
   }
 
@@ -257,4 +305,14 @@ export class WorkflowCaseRowObject {
     this.openDelete();
     WorkflowCaseRowObject.closeDelete(clickCancel);
   }
+}
+
+export class WorkflowCaseForEdit {
+  public dateOfIncident: Date;
+  // public incidentPlace: string;
+  public description: string;
+  public deadline: Date;
+  public actionPlan: string;
+  // public toBeSolvedBy: string;
+  public status: string;
 }

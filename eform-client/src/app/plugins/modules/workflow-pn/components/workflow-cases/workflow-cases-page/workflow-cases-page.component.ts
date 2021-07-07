@@ -2,14 +2,8 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import {
-  Paged,
-  SiteNameDto,
-  TableHeaderElementModel,
-} from 'src/app/common/models';
-import { SitesService } from 'src/app/common/services';
-import { WorkflowCaseModel, WorkflowCaseUpdateModel } from '../../../models';
-import { WorkflowPnCasesService } from '../../../services';
+import { Paged, TableHeaderElementModel } from 'src/app/common/models';
+import { WorkflowCaseModel } from '../../../models';
 import { WorkflowCasesStateService } from '../store';
 
 @AutoUnsubscribe()
@@ -23,12 +17,9 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   deleteWorkflowCaseModal;
   @ViewChild('editWorkflowCaseModal', { static: false }) editWorkflowCaseModal;
   workflowCasesModel: Paged<WorkflowCaseModel> = new Paged<WorkflowCaseModel>();
-  deviceUsersList: SiteNameDto[] = [];
 
   searchSubject = new Subject();
   getAllSub$: Subscription;
-  getAllSitesSub$: Subscription;
-  updateSub$: Subscription;
 
   tableHeaders: TableHeaderElementModel[] = [
     { name: 'Id', elementId: 'idTableHeader', sortable: true },
@@ -92,11 +83,7 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     { name: 'Actions', elementId: '', sortable: false },
   ];
 
-  constructor(
-    public workflowCasesStateService: WorkflowCasesStateService,
-    private workflowCasesService: WorkflowPnCasesService,
-    private sitesService: SitesService
-  ) {
+  constructor(public workflowCasesStateService: WorkflowCasesStateService) {
     this.searchSubject.pipe(debounceTime(500)).subscribe((val) => {
       this.workflowCasesStateService.updateNameFilter(val.toString());
       this.getWorkflowCases();
@@ -105,20 +92,9 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getWorkflowCases();
-    this.getSites();
   }
 
-  showDeleteWorkflowCaseModal(model: WorkflowCaseModel) {
-    this.deleteWorkflowCaseModal.show(model);
-  }
-
-  getSites() {
-    this.getAllSitesSub$ = this.sitesService.getAllSites().subscribe((data) => {
-      if (data && data.success) {
-        this.deviceUsersList = data.model;
-      }
-    });
-  }
+  ngOnDestroy(): void {}
 
   getWorkflowCases() {
     this.getAllSub$ = this.workflowCasesStateService
@@ -126,17 +102,6 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       .subscribe((data) => {
         if (data && data.success) {
           this.workflowCasesModel = data.model;
-        }
-      });
-  }
-
-  updateWorkflowCase(model: WorkflowCaseUpdateModel) {
-    this.updateSub$ = this.workflowCasesService
-      .updateCase(model)
-      .subscribe((data) => {
-        if (data && data.success) {
-          this.editWorkflowCaseModal.hide();
-          this.getWorkflowCases();
         }
       });
   }
@@ -155,19 +120,17 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     this.searchSubject.next(e);
   }
 
-  ngOnDestroy(): void {}
-
   onPageSizeChanged(newPageSize: number) {
     this.workflowCasesStateService.updatePageSize(newPageSize);
     this.getWorkflowCases();
   }
 
+  showDeleteWorkflowCaseModal(model: WorkflowCaseModel) {
+    this.deleteWorkflowCaseModal.show(model);
+  }
+
   workflowCaseDeleted() {
     this.workflowCasesStateService.onDelete();
     this.getWorkflowCases();
-  }
-
-  showEditWorkflowCaseModal(model: WorkflowCaseModel) {
-    this.editWorkflowCaseModal.show(model);
   }
 }

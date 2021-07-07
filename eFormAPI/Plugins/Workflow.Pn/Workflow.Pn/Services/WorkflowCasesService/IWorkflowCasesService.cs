@@ -20,9 +20,10 @@ SOFTWARE.
 
 namespace Workflow.Pn.Services.WorkflowCasesService
 {
+    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Infrastructure.Models;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
-    using Microting.eFormApi.BasePn.Infrastructure.Models.Application.Case.CaseEdit;
     using Microting.eFormApi.BasePn.Infrastructure.Models.Common;
     using Infrastructure.Models.Cases;
 
@@ -31,5 +32,9 @@ namespace Workflow.Pn.Services.WorkflowCasesService
         Task<OperationDataResult<Paged<WorkflowCasesModel>>> Index(WorkflowCasesResponse request);
 
         Task<OperationResult> UpdateWorkflowCase(WorkflowCasesUpdateModel model);
+
+        Task<OperationDataResult<WorkflowCasesUpdateModel>> Read(int id);
+
+        Task<OperationDataResult<List<WorkflowPlacesModel>>> GetPlaces();
     }
 }

@@ -20,14 +20,17 @@ SOFTWARE.
 
 namespace Workflow.Pn.Controllers
 {
+    using System.Collections.Generic;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Authorization;
     using Microting.eFormApi.BasePn.Infrastructure.Models.API;
     using System.Threading.Tasks;
+    using Infrastructure.Models;
     using Infrastructure.Models.Cases;
-    using Microting.eFormApi.BasePn.Infrastructure.Models.Application.Case.CaseEdit;
+    using Microting.eFormApi.BasePn.Infrastructure.Models.Common;
     using Services.WorkflowCasesService;
 
+    [Route("api/workflow-pn/cases")]
     public class WorkflowCasesController : Controller
     {
 
@@ -40,7 +43,6 @@ namespace Workflow.Pn.Controllers
         
         [HttpPut]
         [Authorize]
-        [Route("api/workflow-pn/cases")]
         public async Task<OperationResult> UpdateWorkflowCase([FromBody] WorkflowCasesUpdateModel model)
         {
             return await _workflowPnSettingsService.UpdateWorkflowCase(model);
@@ -48,10 +50,25 @@ namespace Workflow.Pn.Controllers
 
         [HttpPost]
         [Authorize]
-        [Route("api/workflow-pn/cases")]
-        public async Task<OperationResult> Index([FromBody] WorkflowCasesResponse model)
+        public async Task<OperationDataResult<Paged<WorkflowCasesModel>>> Index([FromBody] WorkflowCasesResponse model)
         {
             return await _workflowPnSettingsService.Index(model);
+        }
+
+
+        [HttpGet]
+        [Authorize]
+        public async Task<OperationDataResult<WorkflowCasesUpdateModel>> Read(int id)
+        {
+            return await _workflowPnSettingsService.Read(id);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("places")]
+        public async Task<OperationDataResult<List<WorkflowPlacesModel>>> GetPlaces()
+        {
+            return await _workflowPnSettingsService.GetPlaces();
         }
     }
 }
