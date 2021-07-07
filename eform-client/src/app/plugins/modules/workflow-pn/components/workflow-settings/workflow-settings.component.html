@@ -12,34 +12,32 @@
 </eform-subheader>
 
 <div class="container-fluid">
-  <div class="row mt-4">
-    <div class="col-md-12 col-xs-12 control-block">
-      <div class="container-fluid">
-        <div class="col-md-3 col-sm-6 col-xs-6 ng-select-wrapper">
-          <ng-select
-            [items]="templatesModelForFirst()"
-            [bindLabel]="'name'"
-            [placeholder]="'Selected first template' | translate"
-            [bindValue]="'id'"
-            [(ngModel)]="settingsModel.firstEformId"
-            [clearable]="false"
-            id="selectedFirstTemplateSelector"
-          >
-          </ng-select>
-        </div>
-        <div class="col-md-3 col-sm-6 col-xs-6 ng-select-wrapper">
-          <ng-select
-            [items]="templatesModelForSecond()"
-            [bindLabel]="'name'"
-            [placeholder]="'Selected second template' | translate"
-            [bindValue]="'id'"
-            [(ngModel)]="settingsModel.secondEformId"
-            [clearable]="false"
-            id="selectedSecondTemplateSelector"
-          >
-          </ng-select>
-        </div>
-      </div>
+  <div class="col">
+    <div class="col-lg-3 col-sm-6 col-xs-6 ng-select-wrapper">
+      <ng-select
+        [items]="templatesModelForFirst"
+        [bindLabel]="'name'"
+        [placeholder]="'Selected first template' | translate"
+        [bindValue]="'id'"
+        [(ngModel)]="settingsModel.firstEformId"
+        [clearable]="false"
+        id="selectedFirstTemplateSelector"
+        (change)="templatesModelForSecondNeedChange()"
+      >
+      </ng-select>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-6 ng-select-wrapper">
+      <ng-select
+        [items]="templatesModelForSecond"
+        [bindLabel]="'name'"
+        [placeholder]="'Selected second template' | translate"
+        [bindValue]="'id'"
+        [(ngModel)]="settingsModel.secondEformId"
+        [clearable]="false"
+        (change)="templatesModelForFirstNeedChange()"
+        id="selectedSecondTemplateSelector"
+      >
+      </ng-select>
     </div>
   </div>
 </div>

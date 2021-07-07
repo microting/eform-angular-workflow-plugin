@@ -24,6 +24,8 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
   typeahead = new EventEmitter<string>();
   settingsModel: WorkflowBaseSettingsModel = new WorkflowBaseSettingsModel();
   templatesModel: CommonDictionaryModel[] = new Array<CommonDictionaryModel>();
+  templatesModelForFirst: CommonDictionaryModel[] = new Array<CommonDictionaryModel>();
+  templatesModelForSecond: CommonDictionaryModel[] = new Array<CommonDictionaryModel>();
 
   getSettings$: Subscription;
   updateSettings$: Subscription;
@@ -32,9 +34,8 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
   constructor(
     private workflowPnSettingsService: WorkflowPnSettingsService,
     private router: Router,
-    private eFormService: EFormService
-  ) // private cd: ChangeDetectorRef
-  {
+    private eFormService: EFormService // private cd: ChangeDetectorRef
+  ) {
     // this.typeahead
     //   .pipe(
     //     debounceTime(200),
@@ -54,14 +55,14 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
     this.getSettings();
   }
 
-  templatesModelForFirst() {
-    return this.templatesModel.filter(
+  templatesModelForFirstNeedChange() {
+    this.templatesModelForFirst = this.templatesModel.filter(
       (x) => x.id !== this.settingsModel.secondEformId
     );
   }
 
-  templatesModelForSecond() {
-    return this.templatesModel.filter(
+  templatesModelForSecondNeedChange() {
+    this.templatesModelForSecond = this.templatesModel.filter(
       (x) => x.id !== this.settingsModel.firstEformId
     );
   }
@@ -88,6 +89,16 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
   private getEforms() {
     this.getDictionaryTemplates$ = this.eFormService
       .getTemplatesDictionary('')
-      .subscribe((data) => (this.templatesModel = [...data.model]));
+      .subscribe((data) => {
+        this.templatesModel = [...data.model];
+        this.templatesModelForFirst = this.templatesModel;
+        this.templatesModelForSecond = this.templatesModel;
+        if (this.settingsModel.firstEformId) {
+          this.templatesModelForFirstNeedChange();
+        }
+        if (this.settingsModel.secondEformId) {
+          this.templatesModelForSecondNeedChange();
+        }
+      });
   }
 }
