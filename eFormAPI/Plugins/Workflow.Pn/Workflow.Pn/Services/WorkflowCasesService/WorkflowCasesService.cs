@@ -156,7 +156,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             var core = await _coreHelper.GetCore();
             try
             {
-                var solvedByNotSelected = model.ToBeSolvedById == 0;
+                var solvedByNotSelected = !model.ToBeSolvedById.HasValue;
                 var statusClosed = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Closed").Value;
                 var statusOngoing = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Ongoing").Value;
 
@@ -179,10 +179,19 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     workflowCase.SolvedBy = solvedUser.Name;
                 }
 
-                workflowCase.Status = WorkflowCaseStatuses.Statuses.First(x => x.Value == model.Status).Key;
+                if (model.Status.HasValue)
+                {
+                    workflowCase.Status = WorkflowCaseStatuses.Statuses.First(x => x.Value == model.Status).Key;
+                }
                 workflowCase.UpdatedByUserId = _userService.UserId;
                 workflowCase.Deadline = model.Deadline;
-                workflowCase.IncidentPlace = await sdkDbContext.FieldOptionTranslations.Where(x => x.Id == model.IncidentPlace).Select(x => x.Text).FirstAsync();
+                if(model.IncidentPlace.HasValue)
+                {
+                    workflowCase.IncidentPlace = await sdkDbContext.FieldOptionTranslations
+                        .Where(x => x.Id == model.IncidentPlace)
+                        .Select(x => x.Text)
+                        .FirstAsync();
+                }
                 workflowCase.ActionPlan = model.ActionPlan;
                 workflowCase.Description = model.Description;
                 workflowCase.DateOfIncident = model.DateOfIncident;
@@ -299,7 +308,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 workflowCase.ToBeSolvedById = sdkDbContext.Sites.First(y => y.Name == toBeSolvedBy).Id;
             }
 
-            if (!string.IsNullOrEmpty(incidentPlace))
+            if (_options.Value.FirstEformId != 0/*if the form is installed*/ && !string.IsNullOrEmpty(incidentPlace))
             {
                 var fieldWithPlaces = await sdkDbContext.Fields
                     //.Where(x => x.CheckListId == _options.Value.FirstEformId)

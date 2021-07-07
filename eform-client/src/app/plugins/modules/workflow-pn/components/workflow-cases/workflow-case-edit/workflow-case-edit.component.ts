@@ -1,19 +1,10 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
   CaseEditRequest,
-  EformPermissionsSimpleModel,
   SiteNameDto,
   TemplateDto,
 } from 'src/app/common/models';
-import { WorkflowCaseModel, WorkflowCaseUpdateModel } from '../../../models';
+import { WorkflowCaseModel } from '../../../models';
 import { Subscription } from 'rxjs';
 import { UserClaimsEnum } from 'src/app/common/const';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -28,6 +19,7 @@ import { DateTimeAdapter } from '@danielmoncada/angular-datetime-picker';
 import { AuthStateService } from 'src/app/common/store';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Location } from '@angular/common';
+import { format } from 'date-fns';
 
 @AutoUnsubscribe()
 @Component({
@@ -97,7 +89,8 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   updateWorkflowCase() {
     this.workflowCaseModel = {
       ...this.workflowCaseModel,
-      ...this.dataForm.getRawValue(),
+      deadline: format(this.dataForm.value.deadline, 'yyyy-MM-dd'),
+      dateOfIncident: format(this.dataForm.value.dateOfIncident, 'yyyy-MM-dd'),
     };
     this.updateSub$ = this.workflowPnCasesService
       .updateCase(this.workflowCaseModel)
