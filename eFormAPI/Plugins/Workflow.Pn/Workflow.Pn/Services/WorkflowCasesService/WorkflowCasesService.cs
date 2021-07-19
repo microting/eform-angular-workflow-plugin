@@ -138,12 +138,15 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
                 foreach (var workflowCasesModel in workflowCases)
                 {
-                    workflowCasesModel.Status =
-                        WorkflowCaseStatuses.Statuses.First(y => y.Key == workflowCasesModel.StatusName).Value;
-                    if (!string.IsNullOrEmpty(workflowCasesModel.ToBeSolvedBy))
+                    if (workflowCasesModel.StatusName != null)
                     {
-                        workflowCasesModel.ToBeSolvedById =
-                            idsSites.First(y => y.Name == workflowCasesModel.ToBeSolvedBy).Id;
+                        workflowCasesModel.Status =
+                            WorkflowCaseStatuses.Statuses.First(y => y.Key == workflowCasesModel.StatusName).Value;
+                        if (!string.IsNullOrEmpty(workflowCasesModel.ToBeSolvedBy))
+                        {
+                            workflowCasesModel.ToBeSolvedById =
+                                idsSites.First(y => y.Name == workflowCasesModel.ToBeSolvedBy).Id;
+                        }
                     }
                 }
             }
@@ -327,7 +330,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     .Where(x => x.LanguageId == languageId.Id)
                     .Where(x => x.Text == incidentPlace)
                     .Select(x => x.Id )
-                    .FirstAsync();
+                    .FirstOrDefaultAsync();
             }
 
 
