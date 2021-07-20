@@ -5,78 +5,15 @@
     <div class="col-md-9">
       <mdb-card class="sticky-top mb-4 mt-4" style="z-index: 1">
         <mdb-card-header
-          ><p class="h4">{{ 'Edit workflow case' | translate }}</p>
+        ><p class="h4">{{ 'Edit workflow case' | translate }}</p>
         </mdb-card-header>
         <mdb-card-body>
           <div class="container-fluid">
             <div class="row">
-              <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{
-                  'To be solved by' | translate
-                }}</mdb-card-header>
-                <mdb-card-body>
-                  <ng-select
-                    id="toBeSolvedByEdit"
-                    [bindLabel]="'siteName'"
-                    [bindValue]="'id'"
-                    [clearable]="false"
-                    [(ngModel)]="workflowCaseModel.toBeSolvedById"
-                    [items]="deviceUsersList"
-                  ></ng-select>
-                </mdb-card-body>
-              </mdb-card>
-            </div>
-            <div class="row">
-              <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{ 'Status' | translate }}</mdb-card-header>
-                <mdb-card-body>
-                  <ng-select
-                    id="statusEdit"
-                    [bindLabel]="'text'"
-                    [bindValue]="'id'"
-                    [clearable]="false"
-                    [(ngModel)]="workflowCaseModel.status"
-                    [items]="statuses"
-                  ></ng-select>
-                </mdb-card-body>
-              </mdb-card>
-            </div>
-            <div class="row">
-              <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{
-                  'Select deadline' | translate
-                }}</mdb-card-header>
-                <mdb-card-body>
-                  <form [formGroup]="dataForm">
-                    <div class="w-100">
-                      <div
-                        class="md-form"
-                        [owlDateTimeTrigger]="deadlinePicker"
-                      >
-                        <i class="material-icons prefix"> calendar_today </i>
-                        <input
-                          mdbInput
-                          formControlName="deadline"
-                          name="deadline"
-                          required
-                          [(ngModel)]="workflowCaseModel.deadline"
-                          type="text"
-                          [owlDateTime]="deadlinePicker"
-                          [selectMode]="'single'"
-                          class="form-control input-sm"
-                          id="deadlineFormInput"
-                        />
-                      </div>
-                    </div>
-                  </form>
-                </mdb-card-body>
-              </mdb-card>
-            </div>
-            <div class="row">
-              <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{
-                  'Select date incident' | translate
-                }}</mdb-card-header>
+              <mdb-card class="mb-4 mt-4" style="width: 100%;">
+                <mdb-card-header style="background-color: rgb(232, 234, 246);">{{
+                  'Date of incident' | translate
+                  }}</mdb-card-header>
                 <mdb-card-body>
                   <form [formGroup]="dataForm">
                     <div class="w-100">
@@ -105,43 +42,22 @@
             </div>
             <div class="row">
               <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{
-                  'Description' | translate
-                }}</mdb-card-header>
+                <mdb-card-header style="background-color: rgb(232, 234, 246);">{{ 'Incident type' | translate }}</mdb-card-header>
                 <mdb-card-body>
-                  <div class="md-form">
-                    <input
-                      mdbInput
-                      type="text"
-                      class="form-control"
-                      id="descriptionEdit"
-                      [(ngModel)]="workflowCaseModel.description"
-                    />
-                  </div>
+                  <ng-select
+                    id="incidentTypeEdit"
+                    [bindLabel]="'name'"
+                    [bindValue]="'id'"
+                    [clearable]="false"
+                    [(ngModel)]="workflowCaseModel.incidentType"
+                    [items]="incidentTypes"
+                  ></ng-select>
                 </mdb-card-body>
               </mdb-card>
             </div>
             <div class="row">
               <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{
-                  'Action plan' | translate
-                }}</mdb-card-header>
-                <mdb-card-body>
-                  <div class="md-form">
-                    <input
-                      mdbInput
-                      type="text"
-                      class="form-control"
-                      id="actionPlanEdit"
-                      [(ngModel)]="workflowCaseModel.actionPlan"
-                    />
-                  </div>
-                </mdb-card-body>
-              </mdb-card>
-            </div>
-            <div class="row">
-              <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{ 'Places' | translate }}</mdb-card-header>
+                <mdb-card-header style="background-color: rgb(232, 234, 246);">{{ 'Location of incident' | translate }}</mdb-card-header>
                 <mdb-card-body>
                   <ng-select
                     id="placeEdit"
@@ -150,6 +66,106 @@
                     [clearable]="false"
                     [(ngModel)]="workflowCaseModel.incidentPlace"
                     [items]="places"
+                  ></ng-select>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(232, 234, 246);">{{
+                  'Description' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body>
+                  <div class="md-form">
+                    <pell-editor
+                      [(value)]="workflowCaseModel.description"
+                    ></pell-editor>
+                  </div>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{
+                  'ALL FIELDS IN RED TO BE FILLED BY MANAGEMENT' | translate
+                  }}</mdb-card-header>
+              </mdb-card>
+            </div>
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{
+                  'Select deadline' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body>
+                  <form [formGroup]="dataForm">
+                    <div class="w-100">
+                      <div
+                        class="md-form"
+                        [owlDateTimeTrigger]="deadlinePicker"
+                      >
+                        <i class="material-icons prefix"> calendar_today </i>
+                        <input
+                          mdbInput
+                          formControlName="deadline"
+                          name="deadline"
+                          required
+                          [(ngModel)]="workflowCaseModel.deadline"
+                          type="text"
+                          [owlDateTime]="deadlinePicker"
+                          [selectMode]="'single'"
+                          class="form-control input-sm"
+                          id="deadlineFormInput"
+                        />
+                      </div>
+                    </div>
+                  </form>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{
+                  'Action plan' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body>
+                  <div class="md-form">
+                    <pell-editor
+                      [(value)]="workflowCaseModel.actionPlan"
+                    ></pell-editor>
+                  </div>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{
+                  'To be solved by' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body>
+                  <ng-select
+                    id="toBeSolvedByEdit"
+                    [bindLabel]="'siteName'"
+                    [bindValue]="'id'"
+                    [clearable]="false"
+                    [(ngModel)]="workflowCaseModel.toBeSolvedById"
+                    [items]="deviceUsersList"
+                  ></ng-select>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{ 'Status' | translate }}</mdb-card-header>
+                <mdb-card-body>
+                  <ng-select
+                    id="statusEdit"
+                    [bindLabel]="'text'"
+                    [bindValue]="'id'"
+                    [clearable]="false"
+                    [(ngModel)]="workflowCaseModel.status"
+                    [items]="statuses"
                   ></ng-select>
                 </mdb-card-body>
               </mdb-card>

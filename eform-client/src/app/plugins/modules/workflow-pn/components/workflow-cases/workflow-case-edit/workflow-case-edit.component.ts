@@ -42,6 +42,10 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     id: number;
     name: string;
   }>();
+  incidentTypes: { id: number; name: string }[] = new Array<{
+    id: number;
+    name: string;
+  }>();
 
   isSaveClicked = false;
   reverseRoute: string;
