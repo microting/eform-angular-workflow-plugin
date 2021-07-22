@@ -7,7 +7,7 @@ if (( "$GIT_STATUS" > 0 )); then
 	cd eFormAPI/Plugins/Workflow.Pn/Workflow.Pn
   CURRENT_NUMBER_OF_COMMITS=`git log --oneline | wc -l`
 
-	PACKAGES=('Microting.eForm' 'Microting.eFormApi.BasePn' 'Microting.WorkflowBase' 'Magick.NET-Q16-x64')
+	PACKAGES=('Microting.eForm' 'Microting.eFormApi.BasePn' 'Microting.eFormWorkflowBase' 'Magick.NET-Q16-x64')
 	PROJECT_NAME='Workflow.Pn.csproj'
 	REPOSITORY='eform-angular-workflow-plugin'
 
