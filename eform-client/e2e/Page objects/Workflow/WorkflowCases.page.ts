@@ -145,16 +145,18 @@ export class WorkflowCasesPage extends Page {
   }
 
   public get descriptionEdit() {
-    const ele = $('#descriptionEdit');
+    let ele = $('#descriptionEdit .pell-content');
     ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
+    ele = $('#descriptionEdit .pell-content');
     return ele;
   }
 
   public get actionPlanEdit() {
-    const ele = $('#actionPlanEdit');
+    let ele = $('#actionPlanEdit .pell-content');
     ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
+    ele = $('#actionPlanEdit .pell-content');
     return ele;
   }
 
