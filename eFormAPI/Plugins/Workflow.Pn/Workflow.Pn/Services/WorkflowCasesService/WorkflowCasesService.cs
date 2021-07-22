@@ -188,13 +188,14 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 }
                 workflowCase.UpdatedByUserId = _userService.UserId;
                 workflowCase.Deadline = model.Deadline;
-                if(model.IncidentPlace.HasValue)
-                {
-                    workflowCase.IncidentPlace = await sdkDbContext.FieldOptionTranslations
-                        .Where(x => x.Id == model.IncidentPlace)
-                        .Select(x => x.Text)
-                        .FirstAsync();
-                }
+                workflowCase.IncidentPlace = model.IncidentPlace.ToString();
+                //if(model.IncidentPlace.HasValue)
+                // {
+                //     workflowCase.IncidentPlace = await sdkDbContext.FieldOptionTranslations
+                //         .Where(x => x.Id == model.IncidentPlace)
+                //         .Select(x => x.Text)
+                //         .FirstAsync();
+                // }
                 workflowCase.ActionPlan = model.ActionPlan;
                 workflowCase.Description = model.Description;
                 workflowCase.DateOfIncident = model.DateOfIncident;
