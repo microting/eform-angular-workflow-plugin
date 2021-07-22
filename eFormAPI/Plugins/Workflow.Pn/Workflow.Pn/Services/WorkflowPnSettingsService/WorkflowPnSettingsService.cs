@@ -22,6 +22,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microting.eForm.Infrastructure.Constants;
+using Microting.eFormApi.BasePn.Infrastructure.Consts;
+using Microting.eFormWorkflowBase.Infrastructure.Data.Entities;
+using Rebus.Bus;
+using Workflow.Pn.Infrastructure.Models;
+using Workflow.Pn.Services.RebusService;
+
 namespace Workflow.Pn.Services.WorkflowPnSettingsService
 {
     using Infrastructure.Models.Settings;
@@ -44,15 +54,18 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
         private readonly IPluginDbOptions<WorkflowBaseSettings> _options;
         private readonly IUserService _userService;
         private readonly IEFormCoreService _coreHelper;
+        private readonly IRebusService _rebusService;
+        private readonly IBus _bus;
 
 
         public WorkflowPnSettingsService(
-            IEFormCoreService coreHelper, 
+            IEFormCoreService coreHelper,
             ILogger<WorkflowPnSettingsService> logger,
             IWorkflowLocalizationService workflowLocalizationService,
             WorkflowPnDbContext dbContext,
             IPluginDbOptions<WorkflowBaseSettings> options,
-            IUserService userService)
+            IUserService userService,
+            IRebusService rebusService)
         {
             _coreHelper = coreHelper;
             _logger = logger;
@@ -60,77 +73,221 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
             _options = options;
             _userService = userService;
             _workflowLocalizationService = workflowLocalizationService;
+            _rebusService = rebusService;
+            _bus = _rebusService.GetBus();
         }
 
-        public async Task<OperationDataResult<WorkflowSettingsModel>> GetSettings()
+        public async Task<OperationDataResult<WorkflowSettingsModel>> GetAllSettingsAsync()
         {
             try
             {
-                var option = _options.Value;
-
-                var settings = new WorkflowSettingsModel
+                var assignedSitesIds = await _dbContext.AssignedSites.Where(y => y.WorkflowState != Constants.WorkflowStates.Removed).Select(x => x.SiteMicrotingUid).ToListAsync();
+                var workOrdersSettings = new WorkflowSettingsModel()
                 {
-                    FirstEformId = option.FirstEformId == 0 ? (int?) null : option.FirstEformId,
-                    SecondEformId = option.SecondEformId == 0 ? (int?) null : option.SecondEformId,
+                    AssignedSites = new List<SiteNameModel>()
                 };
 
-                return new OperationDataResult<WorkflowSettingsModel>(true, settings);
+                if (assignedSitesIds.Count > 0)
+                {
+                    var allSites = await _coreHelper.GetCore().Result.SiteReadAll(false);
+
+                    foreach (var id in assignedSitesIds)
+                    {
+                        var siteNameModel = allSites.Where(x => x.SiteId == id).Select(x => new SiteNameModel()
+                        {
+                            SiteName = x.SiteName,
+                            SiteUId = x.SiteId
+                        }).FirstOrDefault();
+                        workOrdersSettings.AssignedSites.Add(siteNameModel);
+                    }
+                }
+
+                var option = _options.Value;
+
+                if (option.FolderId > 0)
+                {
+                    workOrdersSettings.FolderId = option.FolderId;
+                }
+                else
+                {
+                    workOrdersSettings.FolderId = null;
+                }
+                if (option.FolderTasksId > 0)
+                {
+                    workOrdersSettings.FolderTasksId = option.FolderTasksId;
+                }
+                else
+                {
+                    workOrdersSettings.FolderTasksId = null;
+                }
+
+                return new OperationDataResult<WorkflowSettingsModel>(true, workOrdersSettings);
             }
             catch (Exception e)
             {
                 Trace.TraceError(e.Message);
                 _logger.LogError(e.Message);
                 return new OperationDataResult<WorkflowSettingsModel>(false,
-                    _workflowLocalizationService.GetString("ErrorWhileGetSettings"));
+                    _workflowLocalizationService.GetString("ErrorWhileObtainingWorkOrdersSettings"));
             }
         }
 
-        public async Task<OperationResult> UpdateSetting(WorkflowSettingsModel workflowSettingsModel)
+        public async Task<OperationResult> AddSiteToSettingsAsync(int siteId)
+        {
+            var option = _options.Value;
+            var newTaskId = option.FirstEformId;
+            var folderId = option.FolderId;
+            var theCore = await _coreHelper.GetCore();
+            await using var sdkDbContext = theCore.DbContextHelper.GetDbContext();
+            var folder = await sdkDbContext.Folders.SingleOrDefaultAsync(x => x.Id == folderId);
+            if (folder == null)
+            {
+                return new OperationResult(false, _workflowLocalizationService.GetString("FolderNotExist"));
+            }
+            var site = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.MicrotingUid == siteId);
+            if (site == null)
+            {
+                return new OperationResult(false, _workflowLocalizationService.GetString("SiteNotFind"));
+            }
+            var language = await sdkDbContext.Languages.SingleAsync(x => x.Id == site.LanguageId);
+            var mainElement = await theCore.ReadeForm(newTaskId, language);
+            switch (language.Name)
+            {
+                case LanguageNames.Danish:
+                {
+                    mainElement.Label = "Nærved ulykke";
+                    break;
+                }
+                case LanguageNames.English:
+                {
+                    mainElement.Label = "Near accident";
+                    break;
+                }
+                case LanguageNames.German:
+                {
+                    mainElement.Label = "Beinahe-Unfall";
+                    break;
+                }
+            }
+
+            mainElement.CheckListFolderName = folder.MicrotingUid.ToString();
+            mainElement.EndDate = DateTime.UtcNow.AddYears(10);
+            mainElement.Repeated = 0;
+            mainElement.PushMessageTitle = mainElement.Label;
+            mainElement.PushMessageBody = "";
+            var ele = mainElement.ElementList.First();
+            ele.Label = mainElement.Label;
+
+            //await using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                var caseId = await theCore.CaseCreate(mainElement, "", siteId, folderId);
+                var assignedSite = new AssignedSite() { SiteMicrotingUid = siteId, CaseMicrotingUid = (int)caseId};
+
+                await assignedSite.Create(_dbContext);
+                //await transaction.CommitAsync();
+                //await _bus.SendLocal(new SiteAdded(siteId));
+                return new OperationResult(true, _workflowLocalizationService.GetString("SiteAddedSuccessfully"));
+            }
+            catch (Exception e)
+            {
+                //await transaction.RollbackAsync();
+                Trace.TraceError(e.Message);
+                _logger.LogError(e.Message);
+                return new OperationResult(false,
+                    _workflowLocalizationService.GetString("ErrorWhileAddingSiteToSettings"));
+            }
+        }
+
+        public async Task<OperationResult> UpdateFolder(int folderId)
         {
             try
             {
-                if (workflowSettingsModel.FirstEformId != null && workflowSettingsModel.FirstEformId != 0)
+                if (folderId > 0)
                 {
                     await _options.UpdateDb(settings =>
                         {
-                            settings.FirstEformId = (int)workflowSettingsModel.FirstEformId;
+                            settings.FolderId = folderId;
                         },
                         _dbContext,
                         _userService.UserId);
+
+                    return new OperationResult(
+                        true,
+                        _workflowLocalizationService.GetString("FolderUpdatedSuccessfully"));
                 }
 
-                if (workflowSettingsModel.SecondEformId != null && workflowSettingsModel.SecondEformId != 0)
-                {
-                    await _options.UpdateDb(settings =>
-                        {
-                            settings.SecondEformId = (int)workflowSettingsModel.SecondEformId;
-                        },
-                        _dbContext,
-                        _userService.UserId);
-                }
-
-                return new OperationResult(
-                    true,
-                    _workflowLocalizationService.GetString("SettingsHaveBeenUpdatedSuccessfully"));
-
+                throw new ArgumentException($"{nameof(folderId)} is 0");
             }
             catch (Exception e)
             {
                 Trace.TraceError(e.Message);
                 _logger.LogError(e.Message);
                 return new OperationResult(false,
-                    _workflowLocalizationService.GetString("ErrorWhileUpdatingSettings"));
+                    _workflowLocalizationService.GetString("ErrorWhileUpdatingFolder"));
             }
         }
 
-        public async Task<OperationDataResult<Template_Dto>> GetTemplate()
+        public async Task<OperationResult> UpdateTaskFolder(int folderId)
         {
-            var core = await _coreHelper.GetCore();
+            try
+            {
+                if (folderId > 0)
+                {
+                    await _options.UpdateDb(settings =>
+                        {
+                            settings.FolderTasksId = folderId;
+                        },
+                        _dbContext,
+                        _userService.UserId);
 
-            var language = await _userService.GetCurrentUserLanguage();
-            var firstTemplate = await core.TemplateItemRead(_options.Value.FirstEformId, language);
-            var secondTemplate = await core.TemplateItemRead(_options.Value.SecondEformId, language);
-            return new OperationDataResult<Template_Dto>(true, firstTemplate);
+                    return new OperationResult(
+                        true,
+                        _workflowLocalizationService.GetString("FolderUpdatedSuccessfully"));
+                }
+
+                throw new ArgumentException($"{nameof(folderId)} is 0");
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError(e.Message);
+                _logger.LogError(e.Message);
+                return new OperationResult(false,
+                    _workflowLocalizationService.GetString("ErrorWhileUpdatingFolder"));
+            }
+        }
+
+        public async Task<OperationResult> RemoveSiteFromSettingsAsync(int siteId)
+        {
+            try
+            {
+                var assignedSite = await _dbContext.AssignedSites
+                    .Where(x => x.SiteMicrotingUid == siteId)
+                    .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
+                    .FirstOrDefaultAsync();
+                var theCore = await _coreHelper.GetCore();
+                await theCore.CaseDelete((int)assignedSite.CaseMicrotingUid);
+                await assignedSite.Delete(_dbContext);
+                // var workOrdersTemplateCases = await _dbContext.WorkflowCases
+                //     .Where(x => x.SdkSiteMicrotingUid == siteId && x.WorkflowState != Constants.WorkflowStates.Removed)
+                //     .ToListAsync();
+                //
+                // foreach (var workOrdersTemplateCase in workOrdersTemplateCases)
+                // {
+                //     await theCore.CaseDelete(workOrdersTemplateCase.CaseId);
+                //     await workOrdersTemplateCase.Delete(_dbContext);
+                // }
+
+                return new OperationResult(true,
+                    _workflowLocalizationService.GetString("SiteDeletedSuccessfully"));
+            }
+            catch (Exception e)
+            {
+                Trace.TraceError(e.Message);
+                _logger.LogError(e.Message);
+                return new OperationResult(false,
+                    _workflowLocalizationService.GetString("ErrorWhileDeletingSiteFromSettings"));
+            }
         }
     }
 }

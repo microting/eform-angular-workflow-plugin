@@ -9,10 +9,11 @@ import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { EformSharedTagsModule } from 'src/app/common/modules/eform-shared-tags/eform-shared-tags.module';
 import { EformSharedModule } from 'src/app/common/modules/eform-shared/eform-shared.module';
 import {
+  SettingsAddSiteModalComponent, SettingsRemoveSiteModalComponent,
   WorkflowCaseDeleteComponent,
   WorkflowCaseEditComponent,
   WorkflowCasesPageComponent,
-  WorkflowSettingsComponent,
+  WorkflowSettingsComponent, WorkflowFoldersModalComponent,
 } from './components';
 import { WorkflowPnLayoutComponent } from './layouts';
 import { WorkflowPnCasesService, WorkflowPnSettingsService } from './services';
@@ -43,6 +44,9 @@ import {EformImportedModule} from 'src/app/common/modules/eform-imported/eform-i
     WorkflowCasesPageComponent,
     WorkflowCaseDeleteComponent,
     WorkflowCaseEditComponent,
+    SettingsAddSiteModalComponent,
+    SettingsRemoveSiteModalComponent,
+    WorkflowFoldersModalComponent,
   ],
   providers: [
     WorkflowPnSettingsService,

@@ -25,5 +25,9 @@ namespace Workflow.Pn.Infrastructure.Models.Settings
         public int FirstEformId { get; set; }
 
         public int SecondEformId { get; set; }
+
+        public int FolderId { get; set; }
+
+        public int FolderTasksId { get; set; }
     }
 }

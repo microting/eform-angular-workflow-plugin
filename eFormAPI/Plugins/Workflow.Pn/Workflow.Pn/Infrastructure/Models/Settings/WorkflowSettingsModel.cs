@@ -18,12 +18,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Collections.Generic;
+
 namespace Workflow.Pn.Infrastructure.Models.Settings
 {
     public class WorkflowSettingsModel
     {
-        public int? FirstEformId { get; set; }
-
-        public int? SecondEformId { get; set; }
+        public int? FolderId { get; set; }
+        public int? FolderTasksId { get; set; }
+        public List<SiteNameModel> AssignedSites { get; set; } = new List<SiteNameModel>();
     }
 }
