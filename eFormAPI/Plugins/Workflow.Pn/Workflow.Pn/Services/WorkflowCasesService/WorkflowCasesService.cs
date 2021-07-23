@@ -151,7 +151,76 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 }
             }
             return new OperationDataResult<Paged<WorkflowCasesModel>>(true, new Paged<WorkflowCasesModel> { Entities = workflowCases, Total = total });
+        }
 
+                public async Task<OperationDataResult<WorkflowCasesUpdateModel>> Read(int id)
+        {
+            var core = await _coreHelper.GetCore();
+            var sdkDbContext = core.DbContextHelper.GetDbContext();
+
+            // get query
+            var query = _workflowPnDbContext.WorkflowCases
+                .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
+                .Where(x => x.Id == id);
+
+            //get from db
+            var workflowCase = await query
+                .Select(x => new WorkflowCasesUpdateModel
+                {
+                    ActionPlan = x.ActionPlan,
+                    DateOfIncident = x.DateOfIncident,
+                    Deadline = x.Deadline,
+                    Description = x.Description,
+                    Id = x.Id,
+                    //it comment because it posible System.InvalidOperationException: The LINQ expression 'y' could not be translated.
+                    //Status = WorkflowCaseStatuses.Statuses.FirstOrDefault(y => y.Key == x.Status).Value,
+                    //ToBeSolvedById = idsSites.FirstOrDefault(y => y.Name == x.SolvedBy).Id,
+                })
+                .FirstOrDefaultAsync();
+
+
+            if (workflowCase == null)
+            {
+                return new OperationDataResult<WorkflowCasesUpdateModel>(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
+            }
+
+            var statusName = await query.Select(x => x.Status).FirstAsync();
+            var toBeSolvedBy = await query.Select(x => x.SolvedBy).FirstAsync();
+            var incidentPlace = await query.Select(x => x.IncidentPlace).FirstAsync();
+            if (!string.IsNullOrEmpty(statusName))
+            {
+                workflowCase.Status = WorkflowCaseStatuses.Statuses.First(y => y.Key == statusName).Value;
+            }
+
+            if (!string.IsNullOrEmpty(toBeSolvedBy))
+            {
+                workflowCase.ToBeSolvedById = sdkDbContext.Sites.First(y => y.Name == toBeSolvedBy).Id;
+            }
+
+            if (_options.Value.FirstEformId != 0/*if the form is installed*/ && !string.IsNullOrEmpty(incidentPlace))
+            {
+                var fieldWithPlaces = await sdkDbContext.Fields
+                    //.Where(x => x.CheckListId == _options.Value.FirstEformId)
+                    //.Where(x => x.FieldTypeId == 8) // fieldType.id == 8; fieldType.type -> SingleSelect
+                    .Where(x => x.OriginalId == 374097.ToString())
+                    .Select(x => x.Id)
+                    //.Skip(1)
+                    .FirstOrDefaultAsync();
+
+                var languageId = await _userService.GetCurrentUserLanguage();
+
+                workflowCase.IncidentPlace = await sdkDbContext.FieldOptions
+                    .Where(x => x.FieldId == fieldWithPlaces)
+                    .Include(x => x.FieldOptionTranslations)
+                    .SelectMany(x => x.FieldOptionTranslations)
+                    .Where(x => x.LanguageId == languageId.Id)
+                    .Where(x => x.Text == incidentPlace)
+                    .Select(x => x.Id )
+                    .FirstOrDefaultAsync();
+            }
+
+
+            return new OperationDataResult<WorkflowCasesUpdateModel>(true, workflowCase);
         }
 
         public async Task<OperationResult> UpdateWorkflowCase(WorkflowCasesUpdateModel model)
@@ -266,76 +335,6 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 Log.LogException(ex.StackTrace);
                 return new OperationResult(false, $"{_workflowLocalizationService.GetString("CaseCouldNotBeUpdated")} Exception: {ex.Message}");
             }
-        }
-
-        public async Task<OperationDataResult<WorkflowCasesUpdateModel>> Read(int id)
-        {
-            var core = await _coreHelper.GetCore();
-            var sdkDbContext = core.DbContextHelper.GetDbContext();
-
-            // get query
-            var query = _workflowPnDbContext.WorkflowCases
-                .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
-                .Where(x => x.Id == id);
-
-            //get from db
-            var workflowCase = await query
-                .Select(x => new WorkflowCasesUpdateModel
-                {
-                    ActionPlan = x.ActionPlan,
-                    DateOfIncident = x.DateOfIncident,
-                    Deadline = x.Deadline,
-                    Description = x.Description,
-                    Id = x.Id,
-                    //it comment because it posible System.InvalidOperationException: The LINQ expression 'y' could not be translated.
-                    //Status = WorkflowCaseStatuses.Statuses.FirstOrDefault(y => y.Key == x.Status).Value,
-                    //ToBeSolvedById = idsSites.FirstOrDefault(y => y.Name == x.SolvedBy).Id,
-                })
-                .FirstOrDefaultAsync();
-
-
-            if (workflowCase == null)
-            {
-                return new OperationDataResult<WorkflowCasesUpdateModel>(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
-            }
-
-            var statusName = await query.Select(x => x.Status).FirstAsync();
-            var toBeSolvedBy = await query.Select(x => x.SolvedBy).FirstAsync();
-            var incidentPlace = await query.Select(x => x.IncidentPlace).FirstAsync();
-            if (!string.IsNullOrEmpty(statusName))
-            {
-                workflowCase.Status = WorkflowCaseStatuses.Statuses.First(y => y.Key == statusName).Value;
-            }
-
-            if (!string.IsNullOrEmpty(toBeSolvedBy))
-            {
-                workflowCase.ToBeSolvedById = sdkDbContext.Sites.First(y => y.Name == toBeSolvedBy).Id;
-            }
-
-            if (_options.Value.FirstEformId != 0/*if the form is installed*/ && !string.IsNullOrEmpty(incidentPlace))
-            {
-                var fieldWithPlaces = await sdkDbContext.Fields
-                    //.Where(x => x.CheckListId == _options.Value.FirstEformId)
-                    //.Where(x => x.FieldTypeId == 8) // fieldType.id == 8; fieldType.type -> SingleSelect
-                    .Where(x => x.OriginalId == 374097.ToString())
-                    .Select(x => x.Id)
-                    //.Skip(1)
-                    .FirstOrDefaultAsync();
-
-                var languageId = await _userService.GetCurrentUserLanguage();
-
-                workflowCase.IncidentPlace = await sdkDbContext.FieldOptions
-                    .Where(x => x.FieldId == fieldWithPlaces)
-                    .Include(x => x.FieldOptionTranslations)
-                    .SelectMany(x => x.FieldOptionTranslations)
-                    .Where(x => x.LanguageId == languageId.Id)
-                    .Where(x => x.Text == incidentPlace)
-                    .Select(x => x.Id )
-                    .FirstOrDefaultAsync();
-            }
-
-
-            return new OperationDataResult<WorkflowCasesUpdateModel>(true, workflowCase);
         }
 
         public async Task<OperationDataResult<List<WorkflowPlacesModel>>> GetPlaces()

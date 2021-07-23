@@ -54,11 +54,11 @@ namespace Workflow.Pn.Installers
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
             Configure.With(new CastleWindsorContainerAdapter(container))
-#if DEBUG
-                .Logging(l => l.ColoredConsole(LogLevel.Debug))
-#else
+// #if DEBUG
+//                 .Logging(l => l.ColoredConsole(LogLevel.Debug))
+// #else
                 .Logging(l => l.ColoredConsole(LogLevel.Info))
-#endif
+// #endif
                 .Transport(t => t.UseRabbitMq($"amqp://{_rabbitMqUser}:{_rabbitMqPassword}@{_rabbitMqHost}", "eform-angular-workflow-plugin"))
                 .Options(o =>
                 {
