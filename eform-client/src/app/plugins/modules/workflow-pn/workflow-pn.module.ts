@@ -21,6 +21,7 @@ import { workflowStoreProviders } from './store/store-providers.config';
 import { WorkflowPnRouting } from './workflow-pn.routing';
 import { OwlDateTimeModule } from '@danielmoncada/angular-datetime-picker';
 import {EformImportedModule} from 'src/app/common/modules/eform-imported/eform-imported.module';
+import {EformCasesModule} from 'src/app/common/modules/eform-cases/eform-cases.module';
 
 @NgModule({
     imports: [
@@ -37,6 +38,7 @@ import {EformImportedModule} from 'src/app/common/modules/eform-imported/eform-i
         MDBBootstrapModule,
         OwlDateTimeModule,
         EformImportedModule,
+        EformCasesModule,
     ],
   declarations: [
     WorkflowPnLayoutComponent,

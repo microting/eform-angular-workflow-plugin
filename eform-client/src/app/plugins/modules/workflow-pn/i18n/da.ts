@@ -24,5 +24,6 @@ export const da = {
   'ALL FIELDS IN RED TO BE FILLED BY MANAGEMENT': 'ALLE FELTER MED RØD UDFYLDESE AF LEDELSEN',
   'Location of incident': 'Vælg hvor hændelsen skete',
   'Date of incident': 'Dato for hændelse',
-  'Edit workflow case': 'Nærvedulykke indberetning'
+  'Edit workflow case': 'Nærvedulykke indberetning',
+  'Pictures': 'Billeder'
 };

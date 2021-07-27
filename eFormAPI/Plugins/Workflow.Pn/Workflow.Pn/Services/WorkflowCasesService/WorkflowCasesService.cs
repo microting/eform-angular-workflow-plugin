@@ -18,6 +18,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using Microting.eFormWorkflowBase.Infrastructure.Data.Entities;
+
 namespace Workflow.Pn.Services.WorkflowCasesService
 {
     using System;
@@ -187,6 +189,48 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             var statusName = await query.Select(x => x.Status).FirstAsync();
             var toBeSolvedBy = await query.Select(x => x.SolvedBy).FirstAsync();
             var incidentPlace = await query.Select(x => x.IncidentPlace).FirstAsync();
+
+            var bla = await _workflowPnDbContext.PicturesOfTasks
+                .Where(x => x.WorkflowCaseId == workflowCase.Id
+                            && x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
+
+            int i = bla.Count;
+            foreach (PicturesOfTask picturesOfTask in bla)
+            {
+                var result = await sdkDbContext.UploadedDatas.SingleOrDefaultAsync(x =>
+                    x.Id == picturesOfTask.UploadedDataId && x.WorkflowState != Constants.WorkflowStates.Removed);
+
+                if (result != null)
+                {
+                    Infrastructure.Models.FieldValue fieldValue = new Infrastructure.Models.FieldValue()
+                    {
+                        Id = picturesOfTask.Id,
+                        Longitude = picturesOfTask.Longitude,
+                        Latitude = picturesOfTask.Latitude,
+                        UploadedDataObj = new UploadedDataObj()
+                        {
+                            Id = result.Id,
+                            FileName = picturesOfTask.FileName
+                        }
+                    };
+                    workflowCase.PicturesOfTask.Add(fieldValue);
+                }
+                else
+                {
+                    await picturesOfTask.Delete(_workflowPnDbContext);
+                }
+            }
+
+            if (i == 0)
+            {
+                var wfCase = await _workflowPnDbContext.WorkflowCases.SingleOrDefaultAsync(x => x.Id == workflowCase.Id);
+                wfCase.PhotosExist = false;
+                await wfCase.Update(_workflowPnDbContext);
+            }
+
+            // workflowCase.PicturesOfTaskDone = await _workflowPnDbContext.PicturesOfTaskDone
+            //     .Where(x => x.WorkflowCaseId == workflowCase.Id).Select(x => x.FileName).ToListAsync();
+
             if (!string.IsNullOrEmpty(statusName))
             {
                 workflowCase.Status = WorkflowCaseStatuses.Statuses.First(y => y.Key == statusName).Value;

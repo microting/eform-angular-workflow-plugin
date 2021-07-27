@@ -1,3 +1,5 @@
+import {FieldValueDto} from 'src/app/common/models';
+
 export class WorkflowCaseModel {
   id: number;
   updatedAt: Date | string;
@@ -12,4 +14,5 @@ export class WorkflowCaseModel {
   toBeSolvedById: number;
   statusName: string;
   status: number;
+  picturesOfTask: FieldValueDto;
 }

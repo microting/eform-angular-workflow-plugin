@@ -74,6 +74,17 @@
             <div class="row">
               <mdb-card class="mb-4 mt-4" style="width: 100%">
                 <mdb-card-header style="background-color: rgb(232, 234, 246);">{{
+                  'Pictures' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body *ngIf="workflowCaseModel.picturesOfTask">
+                  <element-picture [fieldValues]="workflowCaseModel.picturesOfTask"></element-picture>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(232, 234, 246);">{{
                   'Description' | translate
                   }}</mdb-card-header>
                 <mdb-card-body>

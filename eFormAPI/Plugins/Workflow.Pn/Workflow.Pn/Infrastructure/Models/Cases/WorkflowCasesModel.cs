@@ -38,7 +38,7 @@ namespace Workflow.Pn.Infrastructure.Models.Cases
 
         public string Description { get; set; }
 
-        public DateTime Deadline { get; set; }
+        public DateTime? Deadline { get; set; }
 
         public string ActionPlan { get; set; }
 

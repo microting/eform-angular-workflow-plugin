@@ -21,5 +21,6 @@ export const enUS = {
   'Workflow plugin settings': 'Workflow plugin settings',
   'Selected first template': 'Selected first template',
   'Selected second template': 'Selected second template',
-  'ALL FIELDS IN RED TO BE FILLED BY MANAGEMENT': 'ALL FIELDS IN RED TO BE FILLED BY MANAGEMENT'
+  'ALL FIELDS IN RED TO BE FILLED BY MANAGEMENT': 'ALL FIELDS IN RED TO BE FILLED BY MANAGEMENT',
+  Pictures: 'Pictures'
 };
