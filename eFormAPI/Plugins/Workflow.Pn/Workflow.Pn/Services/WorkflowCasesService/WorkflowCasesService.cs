@@ -161,37 +161,26 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             var sdkDbContext = core.DbContextHelper.GetDbContext();
 
             // get query
-            var query = _workflowPnDbContext.WorkflowCases
+            var workflowDbCase = await _workflowPnDbContext.WorkflowCases
                 .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
-                .Where(x => x.Id == id);
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
 
-            //get from db
-            var workflowCase = await query
-                .Select(x => new WorkflowCasesUpdateModel
-                {
-                    ActionPlan = x.ActionPlan,
-                    DateOfIncident = x.DateOfIncident,
-                    Deadline = x.Deadline,
-                    Description = x.Description,
-                    Id = x.Id,
-                    //it comment because it posible System.InvalidOperationException: The LINQ expression 'y' could not be translated.
-                    //Status = WorkflowCaseStatuses.Statuses.FirstOrDefault(y => y.Key == x.Status).Value,
-                    //ToBeSolvedById = idsSites.FirstOrDefault(y => y.Name == x.SolvedBy).Id,
-                })
-                .FirstOrDefaultAsync();
-
-
-            if (workflowCase == null)
+            if (workflowDbCase == null)
             {
                 return new OperationDataResult<WorkflowCasesUpdateModel>(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
             }
 
-            var statusName = await query.Select(x => x.Status).FirstAsync();
-            var toBeSolvedBy = await query.Select(x => x.SolvedBy).FirstAsync();
-            var incidentPlace = await query.Select(x => x.IncidentPlace).FirstAsync();
+            WorkflowCasesUpdateModel workflowCase = new WorkflowCasesUpdateModel
+            {
+                ActionPlan = workflowDbCase.ActionPlan,
+                DateOfIncident = workflowDbCase.DateOfIncident.ToString("yyyy-MM-dd"), // 2021-08-29,
+                Deadline = workflowDbCase.Deadline?.ToString("yyyy-MM-dd"),
+                Description = workflowDbCase.Description,
+                Id = workflowDbCase.Id
+            };
 
             var bla = await _workflowPnDbContext.PicturesOfTasks
-                .Where(x => x.WorkflowCaseId == workflowCase.Id
+                .Where(x => x.WorkflowCaseId == workflowDbCase.Id
                             && x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
 
             int i = bla.Count;
@@ -223,25 +212,21 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
             if (i == 0)
             {
-                var wfCase = await _workflowPnDbContext.WorkflowCases.SingleOrDefaultAsync(x => x.Id == workflowCase.Id);
-                wfCase.PhotosExist = false;
-                await wfCase.Update(_workflowPnDbContext);
+                workflowDbCase.PhotosExist = false;
+                await workflowDbCase.Update(_workflowPnDbContext);
             }
 
-            // workflowCase.PicturesOfTaskDone = await _workflowPnDbContext.PicturesOfTaskDone
-            //     .Where(x => x.WorkflowCaseId == workflowCase.Id).Select(x => x.FileName).ToListAsync();
-
-            if (!string.IsNullOrEmpty(statusName))
+            if (!string.IsNullOrEmpty(workflowDbCase.Status))
             {
-                workflowCase.Status = WorkflowCaseStatuses.Statuses.First(y => y.Key == statusName).Value;
+                workflowCase.Status = WorkflowCaseStatuses.Statuses.First(y => y.Key == workflowDbCase.Status).Value;
             }
 
-            if (!string.IsNullOrEmpty(toBeSolvedBy))
+            if (!string.IsNullOrEmpty(workflowDbCase.SolvedBy))
             {
-                workflowCase.ToBeSolvedById = sdkDbContext.Sites.First(y => y.Name == toBeSolvedBy).Id;
+                workflowCase.ToBeSolvedById = sdkDbContext.Sites.First(y => y.Name == workflowDbCase.SolvedBy).Id;
             }
 
-            if (_options.Value.FirstEformId != 0/*if the form is installed*/ && !string.IsNullOrEmpty(incidentPlace))
+            if (_options.Value.FirstEformId != 0/*if the form is installed*/ && !string.IsNullOrEmpty(workflowDbCase.IncidentPlace))
             {
                 var fieldWithPlaces = await sdkDbContext.Fields
                     //.Where(x => x.CheckListId == _options.Value.FirstEformId)
@@ -258,7 +243,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     .Include(x => x.FieldOptionTranslations)
                     .SelectMany(x => x.FieldOptionTranslations)
                     .Where(x => x.LanguageId == languageId.Id)
-                    .Where(x => x.Text == incidentPlace)
+                    .Where(x => x.Text == workflowDbCase.IncidentPlace)
                     .Select(x => x.Id )
                     .FirstOrDefaultAsync();
             }
@@ -300,7 +285,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     workflowCase.Status = WorkflowCaseStatuses.Statuses.First(x => x.Value == model.Status).Key;
                 }
                 workflowCase.UpdatedByUserId = _userService.UserId;
-                workflowCase.Deadline = model.Deadline;
+                workflowCase.Deadline = string.IsNullOrEmpty(model.Deadline)  ? null : DateTime.Parse(model.Deadline);
                 workflowCase.IncidentPlace = model.IncidentPlace.ToString();
                 //if(model.IncidentPlace.HasValue)
                 // {
@@ -311,7 +296,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 // }
                 workflowCase.ActionPlan = model.ActionPlan;
                 workflowCase.Description = model.Description;
-                workflowCase.DateOfIncident = model.DateOfIncident;
+                workflowCase.DateOfIncident = DateTime.Parse(model.DateOfIncident);
 
                 await workflowCase.Update(_workflowPnDbContext);
 

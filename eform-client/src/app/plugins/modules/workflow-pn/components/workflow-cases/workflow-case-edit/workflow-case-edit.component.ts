@@ -93,8 +93,10 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   updateWorkflowCase() {
     this.workflowCaseModel = {
       ...this.workflowCaseModel,
-      deadline: format(this.dataForm.value.deadline, 'yyyy-MM-dd'),
-      dateOfIncident: format(this.dataForm.value.dateOfIncident, 'yyyy-MM-dd'),
+      deadline: this.workflowCaseModel.deadline,
+      dateOfIncident: this.workflowCaseModel.dateOfIncident
+      // deadline: format(this.dataForm.value.deadline, 'yyyy-MM-dd'),
+      // dateOfIncident: format(this.dataForm.value.dateOfIncident, 'yyyy-MM-dd'),
     };
     this.updateSub$ = this.workflowPnCasesService
       .updateCase(this.workflowCaseModel)

@@ -34,13 +34,13 @@ namespace Workflow.Pn.Infrastructure.Models.Cases
 
         public int Id { get; set; }
 
-        public DateTime DateOfIncident { get; set; }
+        public string DateOfIncident { get; set; }
 
         public int? IncidentPlace { get; set; }
 
         public string Description { get; set; }
 
-        public DateTime? Deadline { get; set; }
+        public string Deadline { get; set; }
 
         public string ActionPlan { get; set; }
 

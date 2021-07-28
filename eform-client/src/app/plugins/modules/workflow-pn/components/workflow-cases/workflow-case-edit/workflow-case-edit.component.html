@@ -15,28 +15,22 @@
                   'Date of incident' | translate
                   }}</mdb-card-header>
                 <mdb-card-body>
-                  <form [formGroup]="dataForm">
-                    <div class="w-100">
-                      <div
-                        class="md-form"
-                        [owlDateTimeTrigger]="dateOfIncidentPicker"
-                      >
-                        <i class="material-icons prefix"> calendar_today </i>
-                        <input
-                          mdbInput
-                          formControlName="dateOfIncident"
-                          name="dateOfIncident"
-                          required
-                          [(ngModel)]="workflowCaseModel.dateOfIncident"
-                          type="text"
-                          [owlDateTime]="dateOfIncidentPicker"
-                          [selectMode]="'single'"
-                          class="form-control input-sm"
-                          id="dateOfIncidentFormInput"
-                        />
-                      </div>
+                  <div class="md-form md-form-case-elem" [owlDateTimeTrigger]="dateOfIncidentPicker">
+                    <div class="md-form" [owlDateTimeTrigger]="dateOfIncidentPicker">
+                      <i class="material-icons prefix">calendar_today</i>
+                      <input mdbInput
+                             [owlDateTime]="dateOfIncidentPicker"
+
+                             [ngModel]="workflowCaseModel.dateOfIncident"
+                             type="text"
+                             id="startDate"
+                             name="startDate"
+                             class="form-control">
+                      <label for="startDate">{{'Start date*' | translate}}</label>
+                      <owl-date-time
+                        [pickerType]="'calendar'" #dateOfIncidentPicker></owl-date-time>
                     </div>
-                  </form>
+                  </div>
                 </mdb-card-body>
               </mdb-card>
             </div>
@@ -111,28 +105,23 @@
                   'Select deadline' | translate
                   }}</mdb-card-header>
                 <mdb-card-body>
-                  <form [formGroup]="dataForm">
-                    <div class="w-100">
-                      <div
-                        class="md-form"
-                        [owlDateTimeTrigger]="deadlinePicker"
-                      >
-                        <i class="material-icons prefix"> calendar_today </i>
-                        <input
-                          mdbInput
-                          formControlName="deadline"
-                          name="deadline"
-                          required
-                          [(ngModel)]="workflowCaseModel.deadline"
-                          type="text"
-                          [owlDateTime]="deadlinePicker"
-                          [selectMode]="'single'"
-                          class="form-control input-sm"
-                          id="deadlineFormInput"
-                        />
-                      </div>
+
+                  <div class="md-form md-form-case-elem" [owlDateTimeTrigger]="deadlinePicker">
+                    <div class="md-form" [owlDateTimeTrigger]="deadlinePicker">
+                      <i class="material-icons prefix">calendar_today</i>
+                      <input mdbInput
+                             [owlDateTime]="deadlinePicker"
+
+                             [ngModel]="workflowCaseModel.deadline"
+                             type="text"
+                             id="deadline"
+                             name="deadline"
+                             class="form-control">
+                      <label for="startDate">{{'Start date*' | translate}}</label>
+                      <owl-date-time
+                        [pickerType]="'calendar'" #deadlinePicker></owl-date-time>
                     </div>
-                  </form>
+                  </div>
                 </mdb-card-body>
               </mdb-card>
             </div>
