@@ -48,6 +48,16 @@ namespace Workflow.Pn.Infrastructure.Data.Seed.Data
                 Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.FolderTasksId)}",
                 Value = 0.ToString(),
             },
+            new PluginConfigurationValue
+            {
+                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.IncidentPlaceListId)}",
+                Value = 0.ToString(),
+            },
+            new PluginConfigurationValue
+            {
+                Name = $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.IncidentTypeListId)}",
+                Value = 0.ToString(),
+            },
         };
     }
 }

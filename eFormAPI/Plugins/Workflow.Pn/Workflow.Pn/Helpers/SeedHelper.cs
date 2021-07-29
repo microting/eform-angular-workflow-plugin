@@ -17,7 +17,7 @@ namespace Workflow.Pn.Helpers
 
     public class SeedHelper
     {
-        private static async Task<int> CreateAccidentTypesList(Core core)
+        public static async Task<int> CreateAccidentTypesList(Core core)
         {
             EntityGroupList model = await core.Advanced_EntityGroupAll(
                 "id",
@@ -40,7 +40,8 @@ namespace Workflow.Pn.Helpers
 
             return int.Parse(group.MicrotingUUID);
         }
-        private static async Task<int> CreateAccidentLocationList(Core core)
+
+        public static async Task<int> CreateAccidentLocationList(Core core)
         {
             EntityGroupList model = await core.Advanced_EntityGroupAll(
                 "id",

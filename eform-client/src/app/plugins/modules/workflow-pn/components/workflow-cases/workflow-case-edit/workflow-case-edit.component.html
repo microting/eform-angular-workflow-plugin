@@ -20,13 +20,13 @@
                       <i class="material-icons prefix">calendar_today</i>
                       <input mdbInput
                              [owlDateTime]="dateOfIncidentPicker"
-
                              [ngModel]="workflowCaseModel.dateOfIncident"
+                             (dateTimeChange)="onDateSelectedIncidentDate($event)"
                              type="text"
-                             id="startDate"
-                             name="startDate"
+                             id="dateOfIncident"
+                             name="dateOfIncident"
                              class="form-control">
-                      <label for="startDate">{{'Start date*' | translate}}</label>
+                      <label for="dateOfIncident">{{'Start date*' | translate}}</label>
                       <owl-date-time
                         [pickerType]="'calendar'" #dateOfIncidentPicker></owl-date-time>
                     </div>
@@ -39,13 +39,12 @@
                 <mdb-card-header style="background-color: rgb(232, 234, 246);">{{ 'Incident type' | translate }}</mdb-card-header>
                 <mdb-card-body>
                   <ng-select
-                    id="incidentTypeEdit"
-                    [bindLabel]="'name'"
+                    [bindLabel]="'text'"
                     [bindValue]="'id'"
                     [clearable]="false"
-                    [(ngModel)]="workflowCaseModel.incidentType"
-                    [items]="incidentTypes"
-                  ></ng-select>
+                    [placeholder]="workflowCaseModel.incidentType"
+                    (change)="onSelectedChangedType($event)"
+                    [items]="incidentTypes"></ng-select>
                 </mdb-card-body>
               </mdb-card>
             </div>
@@ -55,12 +54,14 @@
                 <mdb-card-body>
                   <ng-select
                     id="placeEdit"
-                    [bindLabel]="'name'"
+                    [bindLabel]="'text'"
                     [bindValue]="'id'"
                     [clearable]="false"
-                    [(ngModel)]="workflowCaseModel.incidentPlace"
+                    [placeholder]="workflowCaseModel.incidentPlace"
+                    (change)="onSelectedChangedPlace($event)"
                     [items]="places"
                   ></ng-select>
+                  <!--[(ngModel)]="workflowCaseModel.incidentPlace"-->
                 </mdb-card-body>
               </mdb-card>
             </div>
@@ -111,13 +112,13 @@
                       <i class="material-icons prefix">calendar_today</i>
                       <input mdbInput
                              [owlDateTime]="deadlinePicker"
-
                              [ngModel]="workflowCaseModel.deadline"
+                             (dateTimeChange)="onDateSelectedDeadline($event)"
                              type="text"
                              id="deadline"
                              name="deadline"
                              class="form-control">
-                      <label for="startDate">{{'Start date*' | translate}}</label>
+                      <label for="deadline">{{'Start date*' | translate}}</label>
                       <owl-date-time
                         [pickerType]="'calendar'" #deadlinePicker></owl-date-time>
                     </div>

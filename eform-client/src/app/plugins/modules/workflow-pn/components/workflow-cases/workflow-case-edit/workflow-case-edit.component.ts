@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
-  CaseEditRequest,
+  CaseEditRequest, CommonDictionaryTextModel,
   SiteNameDto,
   TemplateDto,
 } from 'src/app/common/models';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 import { UserClaimsEnum } from 'src/app/common/const';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  AuthService,
+  AuthService, EntitySelectService,
   SecurityGroupEformsPermissionsService,
   SitesService,
 } from 'src/app/common/services';
@@ -29,8 +29,12 @@ import { format } from 'date-fns';
 })
 export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   deviceUsersList: SiteNameDto[] = [];
+  places: Array<CommonDictionaryTextModel> = [];
+  incidentTypes: Array<CommonDictionaryTextModel> = [];
   @ViewChild('frame', { static: true }) frame;
   workflowCaseModel: WorkflowCaseModel = new WorkflowCaseModel();
+  entityGroupUidForPlaces: string;
+  entityGroupUidForIncidentTypes: string;
 
   @ViewChild('caseConfirmation', { static: true }) caseConfirmation;
   id: number;
@@ -38,15 +42,6 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   currentTemplate: TemplateDto = new TemplateDto();
 
   requestModels: Array<CaseEditRequest> = [];
-  places: { id: number; name: string }[] = new Array<{
-    id: number;
-    name: string;
-  }>();
-  incidentTypes: { id: number; name: string }[] = new Array<{
-    id: number;
-    name: string;
-  }>();
-
   isSaveClicked = false;
   reverseRoute: string;
   isNoSaveExitAllowed = false;
@@ -75,7 +70,8 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     authStateService: AuthStateService,
     private formBuilder: FormBuilder,
     private location: Location,
-    private sitesService: SitesService
+    private sitesService: SitesService,
+    private entitySelectService: EntitySelectService
   ) {
     dateTimeAdapter.setLocale(authStateService.currentUserLocale);
     this.activatedRouteSub$ = this.activateRoute.params.subscribe((params) => {
@@ -118,7 +114,6 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     });
     this.getSites();
     this.loadCase();
-    this.loadPlaces();
   }
 
   ngOnDestroy() {}
@@ -130,6 +125,8 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     this.workflowPnCasesService.readCase(this.id).subscribe((operation) => {
       if (operation && operation.success) {
         this.workflowCaseModel = operation.model;
+        this.loadPlaces();
+        this.loadTypes();
       }
     });
   }
@@ -143,10 +140,36 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   }
 
   loadPlaces() {
-    this.workflowPnCasesService.getPlaces().subscribe((operation) => {
+    this.entitySelectService.getEntitySelectableGroupDictionary(this.workflowCaseModel.incidentPlaceListId).subscribe((operation => {
       if (operation && operation.success) {
-        this.places = operation.model;
+        this.places  = operation.model;
       }
-    });
+    }));
+  }
+
+  loadTypes() {
+    this.entitySelectService.getEntitySelectableGroupDictionary(this.workflowCaseModel.incidentTypeListId).subscribe((operation => {
+      if (operation && operation.success) {
+        this.incidentTypes  = operation.model;
+      }
+    }));
+  }
+
+  onSelectedChangedPlace(e: any) {
+    this.workflowCaseModel.incidentPlaceId = e.id;
+    this.workflowCaseModel.incidentPlace = e.text;
+  }
+
+  onSelectedChangedType(e: any) {
+    this.workflowCaseModel.incidentTypeId = e.id;
+    this.workflowCaseModel.incidentType = e.text;
+  }
+
+  onDateSelectedIncidentDate(e: any) {
+    this.workflowCaseModel.dateOfIncident = format(e.value, 'yyyy-MM-dd');
+  }
+
+  onDateSelectedDeadline(e: any) {
+    this.workflowCaseModel.deadline = format(e.value, 'yyyy-MM-dd');
   }
 }

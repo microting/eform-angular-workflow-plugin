@@ -155,7 +155,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             return new OperationDataResult<Paged<WorkflowCasesModel>>(true, new Paged<WorkflowCasesModel> { Entities = workflowCases, Total = total });
         }
 
-                public async Task<OperationDataResult<WorkflowCasesUpdateModel>> Read(int id)
+        public async Task<OperationDataResult<WorkflowCasesUpdateModel>> Read(int id)
         {
             var core = await _coreHelper.GetCore();
             var sdkDbContext = core.DbContextHelper.GetDbContext();
@@ -170,12 +170,24 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 return new OperationDataResult<WorkflowCasesUpdateModel>(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
             }
 
+            var incidentPlaceListId =
+                await _workflowPnDbContext.PluginConfigurationValues.SingleOrDefaultAsync(x => x.Name == $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.IncidentPlaceListId)}");
+
+            var incidentTypeListId = await _workflowPnDbContext.PluginConfigurationValues.SingleOrDefaultAsync(x =>
+                x.Name == $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.IncidentTypeListId)}");
+
             WorkflowCasesUpdateModel workflowCase = new WorkflowCasesUpdateModel
             {
                 ActionPlan = workflowDbCase.ActionPlan,
                 DateOfIncident = workflowDbCase.DateOfIncident.ToString("yyyy-MM-dd"), // 2021-08-29,
                 Deadline = workflowDbCase.Deadline?.ToString("yyyy-MM-dd"),
                 Description = workflowDbCase.Description,
+                IncidentPlace = workflowDbCase.IncidentPlace,
+                IncidentPlaceId = workflowDbCase.IncidentPlaceId,
+                IncidentPlaceListId = incidentPlaceListId.Value,
+                IncidentType = workflowDbCase.IncidentType,
+                IncidentTypeId = workflowDbCase.IncidentTypeId,
+                IncidentTypeListId = incidentTypeListId.Value,
                 Id = workflowDbCase.Id
             };
 
@@ -226,29 +238,6 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 workflowCase.ToBeSolvedById = sdkDbContext.Sites.First(y => y.Name == workflowDbCase.SolvedBy).Id;
             }
 
-            if (_options.Value.FirstEformId != 0/*if the form is installed*/ && !string.IsNullOrEmpty(workflowDbCase.IncidentPlace))
-            {
-                var fieldWithPlaces = await sdkDbContext.Fields
-                    //.Where(x => x.CheckListId == _options.Value.FirstEformId)
-                    //.Where(x => x.FieldTypeId == 8) // fieldType.id == 8; fieldType.type -> SingleSelect
-                    .Where(x => x.OriginalId == 374097.ToString())
-                    .Select(x => x.Id)
-                    //.Skip(1)
-                    .FirstOrDefaultAsync();
-
-                var languageId = await _userService.GetCurrentUserLanguage();
-
-                workflowCase.IncidentPlace = await sdkDbContext.FieldOptions
-                    .Where(x => x.FieldId == fieldWithPlaces)
-                    .Include(x => x.FieldOptionTranslations)
-                    .SelectMany(x => x.FieldOptionTranslations)
-                    .Where(x => x.LanguageId == languageId.Id)
-                    .Where(x => x.Text == workflowDbCase.IncidentPlace)
-                    .Select(x => x.Id )
-                    .FirstOrDefaultAsync();
-            }
-
-
             return new OperationDataResult<WorkflowCasesUpdateModel>(true, workflowCase);
         }
 
@@ -286,7 +275,10 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 }
                 workflowCase.UpdatedByUserId = _userService.UserId;
                 workflowCase.Deadline = string.IsNullOrEmpty(model.Deadline)  ? null : DateTime.Parse(model.Deadline);
-                workflowCase.IncidentPlace = model.IncidentPlace.ToString();
+                workflowCase.IncidentPlace = model.IncidentPlace;
+                if (model.IncidentPlaceId != null) workflowCase.IncidentPlaceId = (int) model.IncidentPlaceId;
+                workflowCase.IncidentType = model.IncidentType;
+                if (model.IncidentTypeId != null) workflowCase.IncidentTypeId = (int) model.IncidentTypeId;
                 //if(model.IncidentPlace.HasValue)
                 // {
                 //     workflowCase.IncidentPlace = await sdkDbContext.FieldOptionTranslations

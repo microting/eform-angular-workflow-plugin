@@ -5,7 +5,11 @@ export class WorkflowCaseModel {
   updatedAt: Date | string;
   dateOfIncident: Date | string;
   incidentType: string;
+  incidentTypeId: number;
+  incidentTypeListId: string;
   incidentPlace: string;
+  incidentPlaceId: number;
+  incidentPlaceListId: string;
   photosExist: boolean;
   description: string;
   deadline: Date | string;

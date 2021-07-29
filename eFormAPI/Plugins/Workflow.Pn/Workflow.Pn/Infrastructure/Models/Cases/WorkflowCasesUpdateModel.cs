@@ -36,7 +36,17 @@ namespace Workflow.Pn.Infrastructure.Models.Cases
 
         public string DateOfIncident { get; set; }
 
-        public int? IncidentPlace { get; set; }
+        public string IncidentPlace { get; set; }
+
+        public int? IncidentPlaceId { get; set; }
+
+        public string IncidentPlaceListId { get; set; }
+
+        public string IncidentType { get; set; }
+
+        public int? IncidentTypeId { get; set; }
+
+        public string IncidentTypeListId { get; set; }
 
         public string Description { get; set; }
 

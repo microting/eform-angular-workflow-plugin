@@ -29,5 +29,9 @@ namespace Workflow.Pn.Infrastructure.Models.Settings
         public int FolderId { get; set; }
 
         public int FolderTasksId { get; set; }
+
+        public int IncidentPlaceListId { get; set; }
+
+        public int IncidentTypeListId { get; set; }
     }
 }

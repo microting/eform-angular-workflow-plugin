@@ -280,6 +280,18 @@ namespace Workflow.Pn
             Core core = await serviceProvider.GetRequiredService<IEFormCoreService>().GetCore();
             WorkflowPnDbContext context = serviceProvider.GetRequiredService<WorkflowPnDbContext>();
 
+            if (pluginDbOptions.Value.IncidentPlaceListId == 0)
+            {
+                int incidentPlaceListId = await SeedHelper.CreateAccidentLocationList(core);
+                await pluginDbOptions.UpdateDb(settings => settings.IncidentPlaceListId = incidentPlaceListId, context, 1);
+            }
+
+            if (pluginDbOptions.Value.IncidentTypeListId == 0)
+            {
+                int incidentPlaceListId = await SeedHelper.CreateAccidentTypesList(core);
+                await pluginDbOptions.UpdateDb(settings => settings.IncidentTypeListId = incidentPlaceListId, context, 1);
+            }
+
             if (pluginDbOptions.Value.FirstEformId == 0)
             {
                 int newTaskId = await SeedHelper.CreateNewTaskEform(core);
