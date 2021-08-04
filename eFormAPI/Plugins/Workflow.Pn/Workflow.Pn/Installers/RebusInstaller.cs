@@ -59,7 +59,7 @@ namespace Workflow.Pn.Installers
 // #else
                 .Logging(l => l.ColoredConsole(LogLevel.Info))
 // #endif
-                .Transport(t => t.UseRabbitMq($"amqp://{_rabbitMqUser}:{_rabbitMqPassword}@{_rabbitMqHost}", "eform-angular-workflow-plugin"))
+                .Transport(t => t.UseRabbitMq($"amqp://{_rabbitMqUser}:{_rabbitMqPassword}@{_rabbitMqHost}", "eform-service-workflow-plugin"))
                 .Options(o =>
                 {
                     o.SetMaxParallelism(_maxParallelism);

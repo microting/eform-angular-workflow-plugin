@@ -18,7 +18,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.IO;
+using System.Reflection;
+using eFormCore;
+using ImageMagick;
+using Microting.eForm.Dto;
+using Microting.eForm.Helpers;
+using Microting.eForm.Infrastructure.Models;
 using Microting.eFormWorkflowBase.Infrastructure.Data.Entities;
+using Microting.eFormWorkflowBase.Messages;
+using Workflow.Pn.Helpers;
 
 namespace Workflow.Pn.Services.WorkflowCasesService
 {
@@ -30,7 +39,6 @@ namespace Workflow.Pn.Services.WorkflowCasesService
     using Infrastructure.Models;
     using Infrastructure.Models.Cases;
     using Infrastructure.Models.Settings;
-    using Messages;
     using Microsoft.EntityFrameworkCore;
     using Microting.eForm.Infrastructure.Constants;
     using Microting.eForm.Infrastructure.Data.Entities;
@@ -298,52 +306,172 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                         // send email with pdf report to device user
                         await _bus.SendLocal(new QueueEformEmail
                         {
-                            CaseId = model.Id,
-                            UserName = await _userService.GetCurrentUserFullName(),
-                            CurrentUserLanguage = await _userService.GetCurrentUserLanguage(),
-                            SolvedUser = new List<KeyValuePair<string, Language>>()
+                            CaseId = workflowCase.Id,
+                            // UserName = await _userService.GetCurrentUserFullName(),
+                            // CurrentUserLanguageId = _userService.GetCurrentUserLanguage().GetAwaiter().GetResult().Id,
+                            // SolvedUser = new List<KeyValuePair<string, int>>()
                         });
+
+                        if (workflowCase.DeployedMicrotingUid != null)
+                        {
+                            await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
+                        }
+
+                        workflowCase.DeployedMicrotingUid = null;
+                        await workflowCase.Update(_workflowPnDbContext);
                         break;
                     case false when statusClosed:
                         {
-                            var language = await sdkDbContext.Languages.FirstAsync(x => x.Id == solvedUser.LanguageId);
-                            var solvedUsers = new List<KeyValuePair<string, Language>>
-                            {
-                                new(solvedUser.Name, language),
-                            };
+                            // var language = await sdkDbContext.Languages.FirstAsync(x => x.Id == solvedUser.LanguageId);
+                            // var solvedUsers = new List<KeyValuePair<string, int>>
+                            // {
+                            //     new(solvedUser.Name, language.Id),
+                            // };
 
                             // send email with pdf report to device user and solved user
                             await _bus.SendLocal(new QueueEformEmail
                             {
-                                CaseId = model.Id,
-                                UserName = await _userService.GetCurrentUserFullName(),
-                                CurrentUserLanguage = await _userService.GetCurrentUserLanguage(),
-                                SolvedUser = solvedUsers
+                                CaseId = workflowCase.Id,
+                                // UserName = await _userService.GetCurrentUserFullName(),
+                                // CurrentUserLanguageId = _userService.GetCurrentUserLanguage().GetAwaiter().GetResult().Id,
+                                // SolvedUser = solvedUsers
                             });
+
+                            if (workflowCase.DeployedMicrotingUid != null)
+                            {
+                                await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
+                            }
+
+                            workflowCase.DeployedMicrotingUid = null;
+                            await workflowCase.Update(_workflowPnDbContext);
                             break;
                         }
                     case false when statusOngoing:
                         {
+
+                            // Docx and PDF files
+                            string timeStamp = DateTime.UtcNow.ToString("yyyyMMdd") + "_" + DateTime.UtcNow.ToString("hhmmss");
+                            string downloadPath = Path.Combine(Path.GetTempPath(), "pdf");
+                            string docxFileName = $"{timeStamp}{model.ToBeSolvedById}_temp.docx";
+                            string tempPDFFileName = $"{timeStamp}{model.ToBeSolvedById}_temp.pdf";
+                            string tempPDFFilePath = Path.Combine(downloadPath, tempPDFFileName);
+
+                            var resourceString = "Workflow.Pn.Resources.Templates.page.html";
+                            var assembly = Assembly.GetExecutingAssembly();
+                            string html;
+                            await using (var resourceStream = assembly.GetManifestResourceStream(resourceString))
+                            {
+                                using var reader = new StreamReader(resourceStream ?? throw new InvalidOperationException($"{nameof(resourceStream)} is null"));
+                                html = await reader.ReadToEndAsync();
+                            }
+
+                            // Read docx stream
+                            resourceString = "Workflow.Pn.Resources.Templates.file.docx";
+                            var docxFileResourceStream = assembly.GetManifestResourceStream(resourceString);
+                            if (docxFileResourceStream == null)
+                            {
+                                throw new InvalidOperationException($"{nameof(docxFileResourceStream)} is null");
+                            }
+
+                            var docxFileStream = new MemoryStream();
+                            await docxFileResourceStream.CopyToAsync(docxFileStream);
+                            await docxFileResourceStream.DisposeAsync();
+                            string basePicturePath = Path.Combine(Path.GetTempPath(), "pictures");
+                            var word = new WordProcessor(docxFileStream);
+                            string imagesHtml = "";
+                            var picturesOfTasks = new List<string>();
+
+                            var pictures =
+                                await _workflowPnDbContext.PicturesOfTasks.Where(x =>
+                                    x.WorkflowCaseId == workflowCase.Id).ToListAsync();
+
+                            foreach (PicturesOfTask picturesOfTask in pictures)
+                            {
+                                picturesOfTasks.Add(picturesOfTask.FileName);
+                            }
+
+                            foreach (var imagesName in picturesOfTasks)
+                            {
+                                Console.WriteLine($"Trying to insert image into document : {imagesName}");
+                                imagesHtml = await InsertImage(core, imagesName, imagesHtml, 700, 650, basePicturePath);
+                            }
+
+                            html = html.Replace("{%Content%}", imagesHtml);
+
+                            word.AddHtml(html);
+                            word.Dispose();
+                            docxFileStream.Position = 0;
+
+                            // Build docx
+                            await using (var docxFile = new FileStream(docxFileName, FileMode.Create, FileAccess.Write))
+                            {
+                                docxFileStream.WriteTo(docxFile);
+                            }
+
+                            // Convert to PDF
+                            ReportHelper.ConvertToPdf(docxFileName, downloadPath);
+                            File.Delete(docxFileName);
+
+                            // Upload PDF
+                            // string pdfFileName = null;
+                            string hash = await core.PdfUpload(tempPDFFilePath);
+                            if (hash != null)
+                            {
+                                //rename local file
+                                FileInfo fileInfo = new FileInfo(tempPDFFilePath);
+                                fileInfo.CopyTo(downloadPath + hash + ".pdf", true);
+                                fileInfo.Delete();
+                                await core.PutFileToStorageSystem(Path.Combine(downloadPath, $"{hash}.pdf"), $"{hash}.pdf");
+
+                                // TODO Remove from file storage?
+                            }
+
                             // eform is deployed to solver device user
+                            Folder folder =
+                                await sdkDbContext.Folders.SingleOrDefaultAsync(x =>
+                                    x.Id == _options.Value.FolderTasksId);
                             var mainElement = await core.ReadeForm(_options.Value.SecondEformId, await _userService.GetCurrentUserLanguage());
                             mainElement.Repeated = 1;
                             mainElement.EndDate = DateTime.Now.AddYears(10).ToUniversalTime();
                             mainElement.StartDate = DateTime.Now.ToUniversalTime();
+                            mainElement.CheckListFolderName = folder.MicrotingUid.ToString();
+                            mainElement.PushMessageTitle = workflowCase.IncidentType;
 
-                            var checkListValue = mainElement.ElementList[0] as CheckListValue;
-                            var info = checkListValue!.DataItemList[0];
+                            var dataElement = mainElement.ElementList[0] as DataElement;
+                            mainElement.Label = workflowCase.IncidentType;
+                            dataElement.Label = workflowCase.IncidentType;
+                            dataElement.Description = new CDataValue()
+                            {
+                                InderValue = $"{workflowCase.IncidentPlace}<br><strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}"
+                            };
+                            var info = dataElement!.DataItemList[0];
+                            mainElement.PushMessageBody = $"{workflowCase.IncidentPlace}\nDeadline: {workflowCase.Deadline?.ToString("dd.MM.yyyy")}";
 
-                            info.Label = $@"INFO<br><strong>Event created by: {workflowCase.SolvedBy}</strong><br>";
-                            info.Label += $@"<strong>Event date: {workflowCase.DateOfIncident}</strong><br>";
-                            info.Label += $@"<strong>Event: {workflowCase.IncidentType}</strong><br>";
-                            info.Label += $@"<strong>Event location: {workflowCase.IncidentPlace}</strong><br>";
-                            info.Label += $@"<strong>Deadline: {workflowCase.Deadline}</strong><br>";
-                            info.Label += $@"<strong>Status: {workflowCase.Status}</strong><br>";
+                            info.Label = $@"<strong>Event created by:</strong> {workflowCase.SolvedBy}<br>";
+                            info.Label += $@"<strong>Event date:</strong> {workflowCase.DateOfIncident:dd.MM.yyyy}<br>";
+                            info.Label += $@"<strong>Event:</strong> {workflowCase.IncidentType}<br>";
+                            info.Label += $@"<strong>Event location:</strong> {workflowCase.IncidentPlace}<br>";
+                            info.Label += $@"<strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}<br>";
+                            info.Label += $@"<strong>Status:</strong> {workflowCase.Status}<br>";
 
-                            checkListValue!.DataItemList[0] = info;
-                            mainElement.ElementList[0] = checkListValue;
+                            dataElement!.DataItemList[0] = info;
+                            mainElement.ElementList[0] = dataElement;
 
-                            await core.CaseCreate(mainElement, "", (int)model.ToBeSolvedById, 0);
+                            if (hash != null)
+                            {
+                                ((ShowPdf)dataElement.DataItemList[1]).Value = hash;
+                            }
+
+                            if (workflowCase.DeployedMicrotingUid != null)
+                            {
+                                await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
+                            }
+
+                            Site site = await sdkDbContext.Sites.SingleOrDefaultAsync(x =>
+                                x.Id == model.ToBeSolvedById);
+
+                            workflowCase.DeployedMicrotingUid = (int)await core.CaseCreate(mainElement, "", (int)site.MicrotingUid, folder.Id);
+                            await workflowCase.Update(_workflowPnDbContext);
                             break;
                         }
                 }
@@ -395,6 +523,64 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 Log.LogException(ex.StackTrace);
                 return new OperationDataResult<List<WorkflowPlacesModel>>(false, $"{_workflowLocalizationService.GetString("ErrorWhileGetPlaces")} Exception: {ex.Message}");
             }
+        }
+
+        private async Task<string> InsertImage(Core core, string imageName, string itemsHtml, int imageSize, int imageWidth, string basePicturePath)
+        {
+
+            bool s3Enabled = core.GetSdkSetting(Settings.s3Enabled).Result.ToLower() == "true";
+            bool swiftEnabled = core.GetSdkSetting(Settings.swiftEnabled).Result.ToLower() == "true";
+            var filePath = Path.Combine(basePicturePath, imageName);
+            Stream stream;
+            if (swiftEnabled)
+            {
+                var storageResult = await core.GetFileFromSwiftStorage(imageName);
+                stream = storageResult.ObjectStreamContent;
+            }
+            else if (s3Enabled)
+            {
+                var storageResult = await core.GetFileFromS3Storage(imageName);
+                stream = storageResult.ResponseStream;
+            }
+            else if (!File.Exists(filePath))
+            {
+                return null;
+                // return new OperationDataResult<Stream>(
+                //     false,
+                //     _localizationService.GetString($"{imagesName} not found"));
+            }
+            else
+            {
+                stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            }
+
+            using (var image = new MagickImage(stream))
+            {
+                var profile = image.GetExifProfile();
+                // Write all values to the console
+                foreach (var value in profile.Values)
+                {
+                    Console.WriteLine("{0}({1}): {2}", value.Tag, value.DataType, value.ToString());
+                }
+                //image.AutoOrient();
+                // decimal currentRation = image.Height / (decimal)image.Width;
+                // int newWidth = imageSize;
+                // int newHeight = (int)Math.Round((currentRation * newWidth));
+                //
+                // image.Resize(newWidth, newHeight);
+                // image.Crop(newWidth, newHeight);
+                // if (newWidth > newHeight)
+                // {
+                     image.Rotate(90);
+                // }
+                var base64String = image.ToBase64();
+                itemsHtml +=
+                    $@"<p><img src=""data:image/png;base64,{base64String}"" width=""{imageWidth}px"" alt="""" /></p>";
+            }
+
+            await stream.DisposeAsync();
+
+            return itemsHtml;
         }
     }
 }
