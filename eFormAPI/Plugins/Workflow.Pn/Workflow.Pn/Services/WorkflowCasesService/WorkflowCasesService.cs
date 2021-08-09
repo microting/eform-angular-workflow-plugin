@@ -462,6 +462,10 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                                 ((ShowPdf)dataElement.DataItemList[1]).Value = hash;
                             }
 
+                            ((Comment) dataElement.DataItemList[2]).Value = workflowCase.Description;
+
+                            ((Comment) dataElement.DataItemList[3]).Value = workflowCase.ActionPlan;
+
                             if (workflowCase.DeployedMicrotingUid != null)
                             {
                                 await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);

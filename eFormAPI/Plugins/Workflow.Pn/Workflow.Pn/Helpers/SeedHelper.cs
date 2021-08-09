@@ -161,7 +161,7 @@ namespace Workflow.Pn.Helpers
                     0,
                     false
                 ),
-                new Text(
+                new Comment(
                     371264,
                     true,
                     false,
@@ -172,11 +172,7 @@ namespace Workflow.Pn.Helpers
                     false,
                     "",
                     0,
-                    false,
-                    false,
-                    false,
-                    false,
-                    ""
+                    false
                 ),
                 new SaveButton(
                     371266,
@@ -279,7 +275,7 @@ namespace Workflow.Pn.Helpers
                     false,
                     "https://eform.microting.com/app_files/uploads/20200914114927_14937_9fae9a0b11bda418201523437984027c.pdf"
                 ),
-                new Text(
+                new Comment(
                     371271,
                     false,
                     false,
@@ -290,13 +286,9 @@ namespace Workflow.Pn.Helpers
                     false,
                     "",
                     0,
-                    false,
-                    false,
-                    false,
-                    false,
-                    ""
-                ),
-                new Text(
+                    false
+                    ),
+                new Comment(
                     371271,
                     false,
                     false,
@@ -307,11 +299,7 @@ namespace Workflow.Pn.Helpers
                     false,
                     "",
                     0,
-                    false,
-                    false,
-                    false,
-                    false,
-                    ""
+                    false
                 ),
                 new Picture(
                     371270,
