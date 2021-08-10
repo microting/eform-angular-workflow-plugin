@@ -19,4 +19,5 @@ export class WorkflowCaseModel {
   statusName: string;
   status: number;
   picturesOfTask: FieldValueDto;
+  picturesOfTaskDone: FieldValueDto;
 }

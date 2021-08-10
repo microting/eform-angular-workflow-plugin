@@ -199,12 +199,12 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 Id = workflowDbCase.Id
             };
 
-            var bla = await _workflowPnDbContext.PicturesOfTasks
+            var picturesOfTasks = await _workflowPnDbContext.PicturesOfTasks
                 .Where(x => x.WorkflowCaseId == workflowDbCase.Id
                             && x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
 
-            int i = bla.Count;
-            foreach (PicturesOfTask picturesOfTask in bla)
+            int i = picturesOfTasks.Count;
+            foreach (PicturesOfTask picturesOfTask in picturesOfTasks)
             {
                 var result = await sdkDbContext.UploadedDatas.SingleOrDefaultAsync(x =>
                     x.Id == picturesOfTask.UploadedDataId && x.WorkflowState != Constants.WorkflowStates.Removed);
@@ -234,6 +234,36 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             {
                 workflowDbCase.PhotosExist = false;
                 await workflowDbCase.Update(_workflowPnDbContext);
+            }
+
+            var picturesOfTaskDones = await _workflowPnDbContext.PicturesOfTaskDone
+                .Where(x => x.WorkflowCaseId == workflowDbCase.Id
+                            && x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
+
+            foreach (PicturesOfTaskDone picturesOfTask in picturesOfTaskDones)
+            {
+                var result = await sdkDbContext.UploadedDatas.SingleOrDefaultAsync(x =>
+                    x.Id == picturesOfTask.UploadedDataId && x.WorkflowState != Constants.WorkflowStates.Removed);
+
+                if (result != null)
+                {
+                    Infrastructure.Models.FieldValue fieldValue = new Infrastructure.Models.FieldValue()
+                    {
+                        Id = picturesOfTask.Id,
+                        Longitude = picturesOfTask.Longitude,
+                        Latitude = picturesOfTask.Latitude,
+                        UploadedDataObj = new UploadedDataObj()
+                        {
+                            Id = result.Id,
+                            FileName = picturesOfTask.FileName
+                        }
+                    };
+                    workflowCase.PicturesOfTaskDone.Add(fieldValue);
+                }
+                else
+                {
+                    await picturesOfTask.Delete(_workflowPnDbContext);
+                }
             }
 
             if (!string.IsNullOrEmpty(workflowDbCase.Status))

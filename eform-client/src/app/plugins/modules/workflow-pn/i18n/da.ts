@@ -25,5 +25,6 @@ export const da = {
   'Location of incident': 'Vælg hvor hændelsen skete',
   'Date of incident': 'Dato for hændelse',
   'Edit workflow case': 'Nærvedulykke indberetning',
-  'Pictures': 'Billeder'
+  'Pictures': 'Billeder',
+  'Pictures of task done': 'Billeder af løst opgave'
 };
