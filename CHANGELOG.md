@@ -1,5 +1,15 @@
 # Changelog
 
+## [v1.0.10](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.10) (2021-08-10)
+
+[Full Changelog](https://github.com/microting/eform-angular-workflow-plugin/compare/v1.0.9...v1.0.10)
+
+**Implemented enhancements:**
+
+- Bump Microting.eFormWorkflowBase from 1.0.21 to 1.0.22 [\#30](https://github.com/microting/eform-angular-workflow-plugin/issues/30)
+- Bump Microting.eFormApi.BasePn from 3.0.38 to 3.0.40 [\#29](https://github.com/microting/eform-angular-workflow-plugin/issues/29)
+- Bump Microting.eForm from 5.2.27 to 5.2.30 [\#28](https://github.com/microting/eform-angular-workflow-plugin/issues/28)
+
 ## [v1.0.9](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.9) (2021-08-10)
 
 [Full Changelog](https://github.com/microting/eform-angular-workflow-plugin/compare/v1.0.8...v1.0.9)
