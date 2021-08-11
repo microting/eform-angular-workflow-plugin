@@ -3,6 +3,9 @@ name: .NET Master
 on:
   push:
     branches: [ master, stable ]
+    paths-ignore:
+    - '**.md'
+    - '.github/**'
 
 jobs:
   build:
