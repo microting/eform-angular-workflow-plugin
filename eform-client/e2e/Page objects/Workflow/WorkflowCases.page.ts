@@ -131,14 +131,14 @@ export class WorkflowCasesPage extends Page {
   }
 
   public get deadlineFormInput() {
-    const ele = $('#deadlineFormInput');
+    const ele = $('#deadline');
     ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
   public get dateOfIncidentFormInput() {
-    const ele = $('#dateOfIncidentFormInput');
+    const ele = $('#dateOfIncident');
     ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
     return ele;
@@ -185,7 +185,7 @@ export class WorkflowCaseRowObject {
     if (row) {
       this.id = +row.$('#workflowCaseId').getText();
       let date = row.$('#workflowCaseDateOfIncident').getText();
-      this.dateOfIncident = parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
+      this.dateOfIncident = date; // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
       date = row.$('#workflowCaseUpdatedAt').getText();
       this.updateAt = parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
       this.incidentType = row.$('#workflowCaseIncidentType').getText();
@@ -193,7 +193,7 @@ export class WorkflowCaseRowObject {
       this.photo = row.$('#workflowCasePhotosExists').getText() === 'true';
       this.description = row.$('#workflowCaseDescription').getText();
       date = row.$('#workflowCaseDeadline').getText();
-      this.deadline = parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
+      this.deadline = date; // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
       this.actionPlan = row.$('#workflowCaseActionPlan').getText();
       this.toBeSolvedBy = row.$('#workflowCaseToBeSolvedBy').getText();
       this.status = row.$('#workflowCaseStatus').getText();
@@ -203,13 +203,13 @@ export class WorkflowCaseRowObject {
   }
 
   public id: number;
-  public dateOfIncident: Date;
+  public dateOfIncident: string;
   public updateAt: Date;
   public incidentType: string;
   public incidentPlace: string;
   public photo: boolean;
   public description: string;
-  public deadline: Date;
+  public deadline: string;
   public actionPlan: string;
   public toBeSolvedBy: string;
   public status: string;
@@ -227,6 +227,7 @@ export class WorkflowCaseRowObject {
       workflowCasesPage.cancelEditBtn.click();
     }
     workflowCasesPage.searchInput.waitForDisplayed();
+    browser.pause(500);
   }
 
   public static closeDelete(clickCancel = false) {
@@ -281,12 +282,12 @@ export class WorkflowCaseRowObject {
       // }
       if (updateModel.deadline) {
         workflowCasesPage.deadlineFormInput.setValue(
-          format(updateModel.deadline, 'M/d/yyyy')
+          format(updateModel.deadline, 'MM.dd.yyyy')
         );
       }
       if (updateModel.dateOfIncident) {
         workflowCasesPage.dateOfIncidentFormInput.setValue(
-          format(updateModel.dateOfIncident, 'M/d/yyyy')
+          format(updateModel.dateOfIncident, 'MM.dd.yyyy')
         );
       }
       if (updateModel.description) {

@@ -36,10 +36,10 @@
             {{ workflowCase.id }}
           </td>
           <td id="workflowCaseDateOfIncident">
-            {{ workflowCase.dateOfIncident | date: 'dd.MM.y' }}
+            {{ workflowCase.dateOfIncident | date: 'dd.MM.yyyy' }}
           </td>
           <td id="workflowCaseUpdatedAt">
-            {{ workflowCase.updatedAt | date: 'dd.MM.y HH:mm:ss' }}
+            {{ workflowCase.updatedAt | date: 'dd.MM.yyyy HH:mm:ss' }}
           </td>
           <td id="workflowCaseIncidentType">
             {{ workflowCase.incidentType }}

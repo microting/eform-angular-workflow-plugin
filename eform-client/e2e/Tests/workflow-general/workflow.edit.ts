@@ -22,18 +22,18 @@ describe('Workflow cases - Edit', function () {
     modelForUpdate.dateOfIncident = new Date();
     firstWorkflowCase.update(modelForUpdate, true);
     const findWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
-    expect(findWorkflowCase.id).equal(1);
+    // expect(findWorkflowCase.id).equal(1);
     expect(findWorkflowCase.status, 'status has been updated').equal(
-      firstWorkflowCase.status
+      'No status'
     );
     expect(
-      format(findWorkflowCase.dateOfIncident, 'M/d/yyyy'),
+      findWorkflowCase.dateOfIncident,
       'dateOfIncident has been updated'
-    ).equal(format(firstWorkflowCase.dateOfIncident, 'M/d/yyyy'));
+    ).equal(firstWorkflowCase.dateOfIncident);
     expect(
-      format(findWorkflowCase.deadline, 'M/d/yyyy'),
+      findWorkflowCase.deadline,
       'deadline has been updated'
-    ).equal(format(firstWorkflowCase.deadline, 'M/d/yyyy'));
+    ).equal(firstWorkflowCase.deadline);
     expect(findWorkflowCase.description, 'description has been updated').equal(
       firstWorkflowCase.description
     );
@@ -56,13 +56,13 @@ describe('Workflow cases - Edit', function () {
       modelForUpdate.status
     );
     expect(
-      format(findWorkflowCase.dateOfIncident, 'M/d/yyyy'),
+      findWorkflowCase.dateOfIncident,
       'dateOfIncident not updated'
-    ).equal(format(modelForUpdate.dateOfIncident, 'M/d/yyyy'));
+    ).equal(format(modelForUpdate.dateOfIncident, 'dd.MM.yyyy'));
     expect(
-      format(findWorkflowCase.deadline, 'M/d/yyyy'),
+      findWorkflowCase.deadline,
       'deadline not updated'
-    ).equal(format(modelForUpdate.deadline, 'M/d/yyyy'));
+    ).equal(format(modelForUpdate.deadline, 'dd.MM.yyyy'));
     expect(findWorkflowCase.description, 'description not updated').equal(
       modelForUpdate.description
     );
