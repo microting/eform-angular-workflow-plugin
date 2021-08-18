@@ -14,6 +14,10 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\localization.json" />
+    <None Remove="Resources\Templates\page.html" />
+    <EmbeddedResource Include="Resources\Templates\page.html" />
+    <None Remove="Resources\Templates\file.docx" />
+    <EmbeddedResource Include="Resources\Templates\file.docx" />
   </ItemGroup>
 
   <ItemGroup>
