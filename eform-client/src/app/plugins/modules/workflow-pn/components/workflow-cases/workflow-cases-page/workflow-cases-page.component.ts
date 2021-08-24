@@ -30,10 +30,10 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       visibleName: 'Date of incident',
     },
     {
-      name: 'UpdatedAt',
-      elementId: 'updatedAtHeader',
-      sortable: false,
-      visibleName: 'Updated at',
+      name: 'CreatedBy',
+      elementId: 'createdByHeader',
+      sortable: true,
+      visibleName: 'Created by',
     },
     {
       name: 'IncidentType',

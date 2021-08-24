@@ -4,6 +4,7 @@ export class WorkflowCaseModel {
   id: number;
   updatedAt: Date | string;
   dateOfIncident: Date | string;
+  createdBy: string;
   incidentType: string;
   incidentTypeId: number;
   incidentTypeListId: string;

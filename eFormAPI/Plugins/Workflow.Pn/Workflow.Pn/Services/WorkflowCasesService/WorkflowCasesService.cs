@@ -196,7 +196,8 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 IncidentType = workflowDbCase.IncidentType,
                 IncidentTypeId = workflowDbCase.IncidentTypeId,
                 IncidentTypeListId = incidentTypeListId.Value,
-                Id = workflowDbCase.Id
+                Id = workflowDbCase.Id,
+                //CreatedBy = workflowDbCase.
             };
 
             var picturesOfTasks = await _workflowPnDbContext.PicturesOfTasks
@@ -557,6 +558,23 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 Log.LogException(ex.StackTrace);
                 return new OperationDataResult<List<WorkflowPlacesModel>>(false, $"{_workflowLocalizationService.GetString("ErrorWhileGetPlaces")} Exception: {ex.Message}");
             }
+        }
+
+        public async Task<OperationResult> Delete(int id)
+        {
+            var workflowDbCase = await _workflowPnDbContext.WorkflowCases
+                .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            if (workflowDbCase == null)
+            {
+                return new OperationDataResult<WorkflowCasesUpdateModel>(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
+            }
+
+            await workflowDbCase.Delete(_workflowPnDbContext);
+
+            return new OperationDataResult<WorkflowCasesUpdateModel>(true);
+
         }
 
         private async Task<string> InsertImage(Core core, string imageName, string itemsHtml, int imageSize, int imageWidth, string basePicturePath)
