@@ -2,7 +2,7 @@
   {
     "Key": "Workflow",
     "LocalizedValue": {
-      "da": "Arbejdsproces",
+      "da": "Nærvedhændelser",
       "en-US": "Workflow",
       "de-DE": "Workflow"
     }
@@ -10,7 +10,7 @@
   {
     "Key": "Cases",
     "LocalizedValue": {
-      "da": "Tilfælde",
+      "da": "Hændelser",
       "en-US": "Cases",
       "de-DE": "Fallen"
     }

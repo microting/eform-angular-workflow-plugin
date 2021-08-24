@@ -131,7 +131,7 @@ namespace Workflow.Pn.Helpers
                     371261,
                     false,
                     false,
-                    "Ved hændelse|Incident|Vorfall",
+                    "Type|Incident|Vorfall",
                     "",
                     Constants.FieldColors.Default,
                     1,
@@ -142,7 +142,7 @@ namespace Workflow.Pn.Helpers
                     371262,
                     false,
                     false,
-                    "Vælg hvor hændelsen skete|Location of incident|Ort des Vorfalls",
+                    "Sted|Location of incident|Ort des Vorfalls",
                     "",
                     Constants.FieldColors.Default,
                     2,
@@ -165,7 +165,7 @@ namespace Workflow.Pn.Helpers
                     371264,
                     true,
                     false,
-                    "Beskrive hændelsen|Description of incident|Beschreibung des Vorfalls",
+                    "Beskrivelse|Description of incident|Beschreibung des Vorfalls",
                     "",
                     Constants.FieldColors.Default,
                     4,
@@ -183,7 +183,7 @@ namespace Workflow.Pn.Helpers
                     Constants.FieldColors.Green,
                     5,
                     false,
-                    "GEM|SAVE|AUFGABE ERSTELLEN"
+                    "Gem og send|Save and send|Speichern und senden"
                 )
             };
 
@@ -279,7 +279,7 @@ namespace Workflow.Pn.Helpers
                     371271,
                     false,
                     false,
-                    "Beskrivelse af hændelsen|Description of incident|Beschreibung des Vorfalls",
+                    "Beskrivelse|Description of incident|Beschreibung des Vorfalls",
                     "",
                     Constants.FieldColors.Default,
                     2,
@@ -322,7 +322,7 @@ namespace Workflow.Pn.Helpers
                     Constants.FieldColors.Green,
                     5,
                     false,
-                    "GEM|SAVE|AUFGABE ERSTELLEN"
+                    "Gem og send|Save and send|Speichern und senden"
                 )
             };
 

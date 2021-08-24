@@ -36,5 +36,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
         Task<OperationDataResult<WorkflowCasesUpdateModel>> Read(int id);
 
         Task<OperationDataResult<List<WorkflowPlacesModel>>> GetPlaces();
+
+        Task<OperationResult> Delete(int id);
     }
 }

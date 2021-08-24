@@ -4,8 +4,47 @@
   <div class="row">
     <div class="col-md-9">
       <mdb-card class="sticky-top mb-4 mt-4" style="z-index: 1">
-        <mdb-card-header
-        ><p class="h4">{{ 'Edit workflow case' | translate }}</p>
+        <mdb-card-header>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>ID : </strong>{{ workflowCaseModel.id }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Date of incident' | translate}} : </strong>{{ workflowCaseModel.dateOfIncident | date: 'dd.MM.yyyy' }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Created by' | translate}} : </strong>{{ workflowCaseModel.createdBy }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Incident type' | translate}} : </strong>{{ workflowCaseModel.incidentType }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Incident place' | translate}} : </strong>{{ workflowCaseModel.incidentPlace }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Deadline' | translate}} : </strong>{{ workflowCaseModel.deadline | date: 'dd.MM.yyyy' }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'To be solved by' | translate}} : </strong>{{ workflowCaseModel.toBeSolvedBy }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Status' | translate}} : </strong>{{ workflowCaseModel.status }}
+            </div>
+          </div>
         </mdb-card-header>
         <mdb-card-body>
           <div class="container-fluid">
@@ -84,10 +123,17 @@
                   }}</mdb-card-header>
                 <mdb-card-body>
                   <div class="md-form">
-                    <pell-editor
+                    <textarea
+                      mdbInput
+                      type="text"
+                      class="form-control"
                       id="descriptionEdit"
-                      [(value)]="workflowCaseModel.description"
-                    ></pell-editor>
+                      [(ngModel)]="workflowCaseModel.description"
+                    ></textarea>
+<!--                    <pell-editor-->
+<!--                      id="descriptionEdit"-->
+<!--                      [(value)]="workflowCaseModel.description"-->
+<!--                    ></pell-editor>-->
                   </div>
                 </mdb-card-body>
               </mdb-card>
@@ -133,10 +179,17 @@
                   }}</mdb-card-header>
                 <mdb-card-body>
                   <div class="md-form">
-                    <pell-editor
+                    <textarea
+                      mdbInput
+                      type="text"
+                      class="form-control"
                       id="actionPlanEdit"
-                      [(value)]="workflowCaseModel.actionPlan"
-                    ></pell-editor>
+                      [(ngModel)]="workflowCaseModel.actionPlan"
+                    ></textarea>
+<!--                    <pell-editor-->
+<!--                      id="actionPlanEdit"-->
+<!--                      [(value)]="workflowCaseModel.actionPlan"-->
+<!--                    ></pell-editor>-->
                   </div>
                 </mdb-card-body>
               </mdb-card>

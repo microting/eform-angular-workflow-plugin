@@ -40,7 +40,7 @@ namespace Workflow.Pn.Controllers
         {
             _workflowPnSettingsService = workflowPnSettingsService;
         }
-        
+
         [HttpPut]
         [Authorize]
         public async Task<OperationResult> UpdateWorkflowCase([FromBody] WorkflowCasesUpdateModel model)
@@ -69,6 +69,13 @@ namespace Workflow.Pn.Controllers
         public async Task<OperationDataResult<List<WorkflowPlacesModel>>> GetPlaces()
         {
             return await _workflowPnSettingsService.GetPlaces();
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<OperationResult> Delete(int id)
+        {
+            return await _workflowPnSettingsService.Delete(id);
         }
     }
 }
