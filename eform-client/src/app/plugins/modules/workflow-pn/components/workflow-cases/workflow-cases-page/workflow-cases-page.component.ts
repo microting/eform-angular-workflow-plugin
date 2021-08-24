@@ -30,7 +30,7 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       visibleName: 'Date of incident',
     },
     {
-      name: 'CreatedBy',
+      name: 'CreatedBySiteName',
       elementId: 'createdByHeader',
       sortable: true,
       visibleName: 'Created by',
@@ -48,7 +48,7 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       visibleName: 'Incident place',
     },
     {
-      name: 'PhotosExist',
+      name: 'NumberOfPhotos',
       elementId: 'photosExistsHeader',
       sortable: true,
       visibleName: 'Photo',
@@ -70,15 +70,15 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       visibleName: 'Action plan',
     },
     {
-      name: 'ToBeSolvedBy',
+      name: 'SolvedBy',
       elementId: 'toBeSolvedByHeader',
-      sortable: false,
+      sortable: true,
       visibleName: 'To be solved by',
     },
     {
       name: 'Status',
       elementId: 'statusHeader',
-      sortable: false,
+      sortable: true,
     },
     { name: 'Actions', elementId: '', sortable: false },
   ];

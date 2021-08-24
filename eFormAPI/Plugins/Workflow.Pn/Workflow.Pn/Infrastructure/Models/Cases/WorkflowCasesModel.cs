@@ -30,11 +30,15 @@ namespace Workflow.Pn.Infrastructure.Models.Cases
 
         public DateTime DateOfIncident { get; set; }
 
+        public string CreatedBySiteName { get; set; }
+
         public string IncidentType { get; set; }
 
         public string IncidentPlace { get; set; }
 
         public bool PhotosExist { get; set; }
+
+        public int? NumberOfPhotos { get; set; }
 
         public string Description { get; set; }
 
@@ -42,7 +46,7 @@ namespace Workflow.Pn.Infrastructure.Models.Cases
 
         public string ActionPlan { get; set; }
 
-        public string ToBeSolvedBy { get; set; }
+        public string SolvedBy { get; set; }
 
         public int? ToBeSolvedById { get; set; }
 

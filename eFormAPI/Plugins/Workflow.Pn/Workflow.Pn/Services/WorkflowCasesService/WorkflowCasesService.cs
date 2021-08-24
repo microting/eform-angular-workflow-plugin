@@ -138,11 +138,13 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                         IncidentType = x.IncidentType,
                         PhotosExist = x.PhotosExist,
                         StatusName = x.Status,
+                        NumberOfPhotos = x.NumberOfPhotos,
                         //it comment because it posible System.InvalidOperationException: The LINQ expression 'y' could not be translated.
                         //Status = WorkflowCaseStatuses.Statuses.FirstOrDefault(y => y.Key == x.Status).Value,
                         //ToBeSolvedById = idsSites.FirstOrDefault(y => y.Name == x.SolvedBy).Id,
-                        ToBeSolvedBy = x.SolvedBy,
+                        SolvedBy = x.SolvedBy,
                         UpdatedAt = (DateTime)x.UpdatedAt,
+                        CreatedBySiteName = x.CreatedBySiteName
                     })
                     .ToListAsync();
 
@@ -152,10 +154,10 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     {
                         workflowCasesModel.Status =
                             WorkflowCaseStatuses.Statuses.First(y => y.Key == workflowCasesModel.StatusName).Value;
-                        if (!string.IsNullOrEmpty(workflowCasesModel.ToBeSolvedBy))
+                        if (!string.IsNullOrEmpty(workflowCasesModel.SolvedBy))
                         {
                             workflowCasesModel.ToBeSolvedById =
-                                idsSites.First(y => y.Name == workflowCasesModel.ToBeSolvedBy).Id;
+                                idsSites.First(y => y.Name == workflowCasesModel.SolvedBy).Id;
                         }
                     }
                 }
@@ -197,7 +199,8 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 IncidentTypeId = workflowDbCase.IncidentTypeId,
                 IncidentTypeListId = incidentTypeListId.Value,
                 Id = workflowDbCase.Id,
-                //CreatedBy = workflowDbCase.
+                CreatedBy = workflowDbCase.CreatedBySiteName,
+
             };
 
             var picturesOfTasks = await _workflowPnDbContext.PicturesOfTasks

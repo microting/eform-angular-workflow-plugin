@@ -4,7 +4,7 @@ export class WorkflowCaseModel {
   id: number;
   updatedAt: Date | string;
   dateOfIncident: Date | string;
-  createdBy: string;
+  createdBySiteName: string;
   incidentType: string;
   incidentTypeId: number;
   incidentTypeListId: string;
@@ -12,10 +12,11 @@ export class WorkflowCaseModel {
   incidentPlaceId: number;
   incidentPlaceListId: string;
   photosExist: boolean;
+  numberOfPhotos: number;
   description: string;
   deadline: Date | string;
   actionPlan: string;
-  toBeSolvedBy: string;
+  solvedBy: string;
   toBeSolvedById: number;
   statusName: string;
   status: number;

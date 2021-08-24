@@ -42,7 +42,7 @@
 <!--            {{ workflowCase.updatedAt | date: 'dd.MM.yyyy HH:mm:ss' }}-->
 <!--          </td>-->
           <td id="workflowCaseCreatedBy">
-            {{ workflowCase.createdBy }}
+            {{ workflowCase.createdBySiteName }}
           </td>
           <td id="workflowCaseIncidentType">
             {{ workflowCase.incidentType }}
@@ -51,7 +51,7 @@
             {{ workflowCase.incidentPlace }}
           </td>
           <td id="workflowCasePhotosExists">
-            {{ workflowCase.photosExist.toString() }}
+            ({{ workflowCase.numberOfPhotos }})
           </td>
           <td id="workflowCaseDescription" style="text-align: left">
             {{ workflowCase.description }}
@@ -63,7 +63,7 @@
             {{ workflowCase.actionPlan }}
           </td>
           <td id="workflowCaseToBeSolvedBy">
-            {{ workflowCase.toBeSolvedBy }}
+            {{ workflowCase.solvedBy }}
           </td>
           <td id="workflowCaseStatus">
             {{ workflowCase.statusName }}

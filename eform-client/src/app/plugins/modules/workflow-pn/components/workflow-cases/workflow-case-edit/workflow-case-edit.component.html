@@ -17,7 +17,7 @@
           </div>
           <div class="row">
             <div class="col-md-6">
-              <strong>{{'Created by' | translate}} : </strong>{{ workflowCaseModel.createdBy }}
+              <strong>{{'Created by' | translate}} : </strong>{{ workflowCaseModel.createdBySiteName }}
             </div>
           </div>
           <div class="row">
@@ -30,6 +30,7 @@
               <strong>{{'Incident place' | translate}} : </strong>{{ workflowCaseModel.incidentPlace }}
             </div>
           </div>
+          <div class="row"><br></div>
           <div class="row">
             <div class="col-md-6">
               <strong>{{'Deadline' | translate}} : </strong>{{ workflowCaseModel.deadline | date: 'dd.MM.yyyy' }}
