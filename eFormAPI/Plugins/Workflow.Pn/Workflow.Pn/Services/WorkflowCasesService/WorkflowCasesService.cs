@@ -476,17 +476,17 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                             dataElement.Label = workflowCase.IncidentType;
                             dataElement.Description = new CDataValue()
                             {
-                                InderValue = $"{workflowCase.IncidentPlace}<br><strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}"
+                                InderValue = $"{workflowCase.IncidentPlace}<br><strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}" // Deadline
                             };
                             var info = dataElement!.DataItemList[0];
-                            mainElement.PushMessageBody = $"{workflowCase.IncidentPlace}\nDeadline: {workflowCase.Deadline?.ToString("dd.MM.yyyy")}";
+                            mainElement.PushMessageBody = $"{workflowCase.IncidentPlace}\nDeadline: {workflowCase.Deadline?.ToString("dd.MM.yyyy")}"; // Deadline
 
-                            info.Label = $@"<strong>Event created by:</strong> {workflowCase.SolvedBy}<br>";
-                            info.Label += $@"<strong>Event date:</strong> {workflowCase.DateOfIncident:dd.MM.yyyy}<br>";
-                            info.Label += $@"<strong>Event:</strong> {workflowCase.IncidentType}<br>";
-                            info.Label += $@"<strong>Event location:</strong> {workflowCase.IncidentPlace}<br>";
-                            info.Label += $@"<strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}<br>";
-                            info.Label += $@"<strong>Status:</strong> {workflowCase.Status}<br>";
+                            info.Label = $@"<strong>Oprettet af:</strong> {workflowCase.CreatedBySiteName}<br>"; // Event created by
+                            info.Label += $@"<strong>Dato:</strong> {workflowCase.DateOfIncident:dd.MM.yyyy}<br>"; // Event date
+                            info.Label += $@"<strong>Type:</strong> {workflowCase.IncidentType}<br>"; // Event
+                            info.Label += $@"<strong>Sted:</strong> {workflowCase.IncidentPlace}<br>"; // Event location
+                            info.Label += $@"<strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}<br>"; // Deadline
+                            info.Label += $@"<strong>Status:</strong> {workflowCase.Status}<br>"; // Status
 
                             dataElement!.DataItemList[0] = info;
                             mainElement.ElementList[0] = dataElement;
