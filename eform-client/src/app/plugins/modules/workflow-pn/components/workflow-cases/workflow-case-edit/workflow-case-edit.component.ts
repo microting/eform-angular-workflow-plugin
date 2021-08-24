@@ -86,6 +86,10 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     this.location.back();
   }
 
+  getSolverName(id: number) {
+    return this.deviceUsersList.find(x => x.id === id).siteName;
+  }
+
   updateWorkflowCase() {
     this.workflowCaseModel = {
       ...this.workflowCaseModel,
