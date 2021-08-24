@@ -53,11 +53,11 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   dataForm: FormGroup;
 
   statuses = [
-    { id: 0, text: 'Ongoing' },
-    { id: 1, text: 'Closed' },
-    { id: 2, text: 'No status' },
-    { id: 3, text: 'Not initiated' },
-    { id: 4, text: 'Canceled' },
+    { id: 2, text: 'Vælg status' }, // No status
+    { id: 0, text: 'Ingangværende' }, // Ongoing
+    { id: 3, text: 'Ikke igangsat' }, // Not initiated
+    { id: 1, text: 'Afsluttet' }, // Closed
+    { id: 4, text: 'Annulleeret' }, // Canceled
   ];
 
   constructor(
