@@ -138,7 +138,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                         IncidentType = x.IncidentType,
                         PhotosExist = x.PhotosExist,
                         StatusName = x.Status,
-                        NumberOfPhotos = x.NumberOfPhotos,
+                        NumberOfPhotos = x.NumberOfPhotos ?? 0,
                         //it comment because it posible System.InvalidOperationException: The LINQ expression 'y' could not be translated.
                         //Status = WorkflowCaseStatuses.Statuses.FirstOrDefault(y => y.Key == x.Status).Value,
                         //ToBeSolvedById = idsSites.FirstOrDefault(y => y.Name == x.SolvedBy).Id,

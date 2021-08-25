@@ -92,6 +92,9 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
 
   getStatusText(id: number) {
     if (this.statuses.length > 0) {
+      if (id === null) {
+        return '';
+      }
       return this.statuses.find(x => x.id === id).text;
     } else {
       return '';
@@ -100,6 +103,9 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
 
   getSolverName(id: number) {
     if (this.deviceUsersList.length > 0) {
+      if (id === null) {
+        return '';
+      }
       return this.deviceUsersList.find(x => x.id === id).siteName;
     } else {
       return '';
