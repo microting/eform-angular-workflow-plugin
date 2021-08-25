@@ -42,8 +42,8 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6">
-              <strong>{{'Status' | translate}} : </strong>{{ statuses[workflowCaseModel.status].text }}
+            <div class="col-md-6" *ngIf="workflowCaseModel.status">
+              <strong>{{'Status' | translate}} : </strong>{{ getStatusText(workflowCaseModel.status) }}
             </div>
           </div>
         </mdb-card-header>

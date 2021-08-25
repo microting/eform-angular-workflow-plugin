@@ -97,8 +97,8 @@ export class WorkflowCasesPage extends Page {
 
   public get statusEdit() {
     const ele = $('#statusEdit');
-    ele.waitForDisplayed({ timeout: 40000 });
-    // ele.waitForClickable({ timeout: 40000 });
+    // ele.waitForDisplayed({ timeout: 40000 });
+    ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
@@ -145,18 +145,18 @@ export class WorkflowCasesPage extends Page {
   }
 
   public get descriptionEdit() {
-    let ele = $('#descriptionEdit .pell-content');
+    const ele = $('#descriptionEdit');
     ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
-    ele = $('#descriptionEdit .pell-content');
+    // ele = $('#descriptionEdit .pell-content');
     return ele;
   }
 
   public get actionPlanEdit() {
-    let ele = $('#actionPlanEdit .pell-content');
+    const ele = $('#actionPlanEdit');
     ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
-    ele = $('#actionPlanEdit .pell-content');
+    // ele = $('#actionPlanEdit .pell-content');
     return ele;
   }
 
@@ -186,11 +186,11 @@ export class WorkflowCaseRowObject {
       this.id = +row.$('#workflowCaseId').getText();
       let date = row.$('#workflowCaseDateOfIncident').getText();
       this.dateOfIncident = date; // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
-      date = row.$('#workflowCaseUpdatedAt').getText();
-      this.updateAt = parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
+      // date = row.$('#workflowCaseUpdatedAt').getText();
+      // this.updateAt = parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
       this.incidentType = row.$('#workflowCaseIncidentType').getText();
       this.incidentPlace = row.$('#workflowCaseIncidentPlace').getText();
-      this.photo = row.$('#workflowCasePhotosExists').getText() === 'true';
+      // this.photo = row.$('#workflowCasePhotosExists').getText() === 'true';
       this.description = row.$('#workflowCaseDescription').getText();
       date = row.$('#workflowCaseDeadline').getText();
       this.deadline = date; // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
@@ -204,10 +204,10 @@ export class WorkflowCaseRowObject {
 
   public id: number;
   public dateOfIncident: string;
-  public updateAt: Date;
+  // public updateAt: Date;
   public incidentType: string;
   public incidentPlace: string;
-  public photo: boolean;
+  // public photo: boolean;
   public description: string;
   public deadline: string;
   public actionPlan: string;
@@ -259,15 +259,20 @@ export class WorkflowCaseRowObject {
       timeout: 20000,
     });
     if (updateModel) {
-      const ngOption = $('.ng-option');
+      const ngOption = $('.ng-option-label');
       if (updateModel.status) {
         workflowCasesPage.statusEdit.$('input').setValue(updateModel.status);
-        spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
-        ngOption.waitForDisplayed({ timeout: 20000 });
-        workflowCasesPage.statusEdit
-          .$('.ng-dropdown-panel')
-          .$(`.ng-option=${updateModel.status}`)
-          .click();
+        // spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
+        // ngOption.waitForDisplayed({ timeout: 20000 });
+        browser.pause(1000);
+        const ele = $(`//*[@id="statusEdit"]//*[text()="${updateModel.status}"]`);
+        ele.waitForDisplayed({timeout: 20000});
+        ele.click();
+
+        // workflowCasesPage.statusEdit
+        //   .$('.ng-dropdown-panel')
+        //   .$(`.ng-option-label`)
+        //   .click();
       }
       // if (updateModel.toBeSolvedBy) {
       //   workflowCasesPage.toBeSolvedByEdit

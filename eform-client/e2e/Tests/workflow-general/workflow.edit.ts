@@ -15,7 +15,7 @@ describe('Workflow cases - Edit', function () {
   it('should not edit workflow case', function () {
     const firstWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
     const modelForUpdate = new WorkflowCaseForEdit();
-    modelForUpdate.status = 'Ongoing';
+    modelForUpdate.status = 'Igangværende';
     modelForUpdate.actionPlan = generateRandmString();
     modelForUpdate.description = generateRandmString();
     modelForUpdate.deadline = new Date();
@@ -24,7 +24,7 @@ describe('Workflow cases - Edit', function () {
     const findWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
     // expect(findWorkflowCase.id).equal(1);
     expect(findWorkflowCase.status, 'status has been updated').equal(
-      'No status'
+      'Vælg status'
     );
     expect(
       findWorkflowCase.dateOfIncident,
@@ -44,7 +44,7 @@ describe('Workflow cases - Edit', function () {
   it('should edit workflow case', function () {
     const firstWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
     const modelForUpdate = new WorkflowCaseForEdit();
-    modelForUpdate.status = 'Ongoing';
+    modelForUpdate.status = 'Igangværende';
     modelForUpdate.actionPlan = generateRandmString();
     modelForUpdate.description = generateRandmString();
     modelForUpdate.deadline = new Date();

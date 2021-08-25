@@ -54,10 +54,10 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
 
   statuses = [
     { id: 2, text: 'Vælg status' }, // No status
-    { id: 0, text: 'Ingangværende' }, // Ongoing
+    { id: 0, text: 'Igangværende' }, // Ongoing
     { id: 3, text: 'Ikke igangsat' }, // Not initiated
     { id: 1, text: 'Afsluttet' }, // Closed
-    { id: 4, text: 'Annulleeret' }, // Canceled
+    { id: 4, text: 'Annulleret' }, // Canceled
   ];
 
   constructor(
@@ -83,11 +83,27 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.location.back();
+    this.router
+      .navigate([
+        '/plugins/workflow-pn/cases'
+      ])
+      .then();
+  }
+
+  getStatusText(id: number) {
+    if (this.statuses.length > 0) {
+      return this.statuses.find(x => x.id === id).text;
+    } else {
+      return '';
+    }
   }
 
   getSolverName(id: number) {
-    return this.deviceUsersList.find(x => x.id === id).siteName;
+    if (this.deviceUsersList.length > 0) {
+      return this.deviceUsersList.find(x => x.id === id).siteName;
+    } else {
+      return '';
+    }
   }
 
   updateWorkflowCase() {
@@ -102,7 +118,11 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
       .updateCase(this.workflowCaseModel)
       .subscribe((data) => {
         if (data && data.success) {
-          this.goBack();
+          this.router
+            .navigate([
+              '/plugins/workflow-pn/cases'
+            ])
+            .then();
         }
       });
   }

@@ -83,6 +83,14 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     { name: 'Actions', elementId: '', sortable: false },
   ];
 
+  statuses = [
+    { id: 2, text: 'Vælg status' }, // No status
+    { id: 0, text: 'Igangværende' }, // Ongoing
+    { id: 3, text: 'Ikke igangsat' }, // Not initiated
+    { id: 1, text: 'Afsluttet' }, // Closed
+    { id: 4, text: 'Annulleret' }, // Canceled
+  ];
+
   constructor(public workflowCasesStateService: WorkflowCasesStateService) {
     this.searchSubject.pipe(debounceTime(500)).subscribe((val) => {
       this.workflowCasesStateService.updateNameFilter(val.toString());
@@ -95,6 +103,15 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {}
+
+
+  getStatusText(id: number) {
+    if (this.statuses.length > 0) {
+      return this.statuses.find(x => x.id === id).text;
+    } else {
+      return '';
+    }
+  }
 
   getWorkflowCases() {
     this.getAllSub$ = this.workflowCasesStateService
