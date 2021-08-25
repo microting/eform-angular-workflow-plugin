@@ -33,13 +33,13 @@ describe('Workflow cases - Sorting', function () {
       'incident place'
     );
   });
-  it('should be able to sort by photos exists', function () {
-    testSorting(
-      workflowCasesPage.photosExistsHeader,
-      '#workflowCasePhotosExists',
-      'photos exists'
-    );
-  });
+  // it('should be able to sort by photos exists', function () {
+  //   testSorting(
+  //     workflowCasesPage.photosExistsHeader,
+  //     '#workflowCasePhotosExists',
+  //     'photos exists'
+  //   );
+  // });
   it('should be able to sort by description', function () {
     testSorting(
       workflowCasesPage.descriptionHeader,
