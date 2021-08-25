@@ -106,6 +106,9 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
 
 
   getStatusText(id: number) {
+    if (id === null) {
+      return '';
+    }
     if (this.statuses.length > 0) {
       return this.statuses.find(x => x.id === id).text;
     } else {
