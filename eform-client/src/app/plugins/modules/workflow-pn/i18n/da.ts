@@ -28,5 +28,5 @@ export const da = {
   'Edit Workflow Case': 'Redigér',
   'Edit workflow case': 'Redigér hændelse',
   'Pictures': 'Billeder',
-  'Pictures of task done': 'Billeder af løst opgaveTilfælde'
+  'Pictures of task done': 'Billeder af løst opgave'
 };
