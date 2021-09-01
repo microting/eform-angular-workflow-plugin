@@ -77,5 +77,12 @@ namespace Workflow.Pn.Controllers
         {
             return await _workflowPnSettingsService.Delete(id);
         }
+
+        [HttpGet]
+        [Route("download-case-pdf/{templateId}")]
+        public async Task<IActionResult> DownloadEFormPdf(int caseId, string fileType)
+        {
+            return await _workflowPnSettingsService.DownloadEFormPdf(caseId, fileType);
+        }
     }
 }

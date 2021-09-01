@@ -22,9 +22,11 @@ using System.IO;
 using System.Reflection;
 using eFormCore;
 using ImageMagick;
+using Microsoft.AspNetCore.Mvc;
 using Microting.eForm.Dto;
 using Microting.eForm.Helpers;
 using Microting.eForm.Infrastructure.Models;
+using Microting.eFormWorkflowBase.Helpers;
 using Microting.eFormWorkflowBase.Infrastructure.Data.Entities;
 using Microting.eFormWorkflowBase.Messages;
 using Workflow.Pn.Helpers;
@@ -578,6 +580,21 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
             return new OperationDataResult<WorkflowCasesUpdateModel>(true);
 
+        }
+
+        public async Task<IActionResult> DownloadEFormPdf(int caseId, string fileType)
+        {
+            var workflowDbCase = await _workflowPnDbContext.WorkflowCases
+                .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
+                .Where(x => x.Id == caseId).FirstOrDefaultAsync();
+
+            if (workflowDbCase == null)
+            {
+                return new NotFoundResult();
+            }
+            var core = await _coreHelper.GetCore();
+            var sdkDbContext = core.DbContextHelper.GetDbContext();
+            var reportHelper = new WorkflowReportHelper(core, _workflowPnDbContext);
         }
 
         private async Task<string> InsertImage(Core core, string imageName, string itemsHtml, int imageSize, int imageWidth, string basePicturePath)
