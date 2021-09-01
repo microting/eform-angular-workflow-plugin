@@ -18,6 +18,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Text;
+
 namespace Workflow.Pn.Controllers
 {
     using System.Collections.Generic;
@@ -79,10 +81,41 @@ namespace Workflow.Pn.Controllers
         }
 
         [HttpGet]
-        [Route("download-case-pdf/{templateId}")]
-        public async Task<IActionResult> DownloadEFormPdf(int caseId, string fileType)
+        [Authorize]
+        [Route("download-case-pdf/{caseId}")]
+        public async Task DownloadEFormPdf(int caseId, string fileType)
         {
-            return await _workflowPnSettingsService.DownloadEFormPdf(caseId, fileType);
+            var result =  await _workflowPnSettingsService.DownloadEFormPdf(caseId, fileType);
+            const int bufferSize = 4086;
+            byte[] buffer = new byte[bufferSize];
+            Response.OnStarting(async () =>
+            {
+                if (!result.Success)
+                {
+                    Response.ContentLength = result.Message.Length;
+                    Response.ContentType = "text/plain";
+                    Response.StatusCode = 400;
+                    byte[] bytes = Encoding.UTF8.GetBytes(result.Message);
+                    await Response.Body.WriteAsync(bytes, 0, result.Message.Length);
+                    await Response.Body.FlushAsync();
+                }
+                else
+                {
+                    await using var wordStream = result.Model;
+                    int bytesRead;
+                    Response.ContentLength = wordStream.Length;
+                    Response.ContentType = fileType == "docx"
+                        ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        : "application/pdf";
+
+                    while ((bytesRead = await wordStream.ReadAsync(buffer, 0, buffer.Length)) > 0 &&
+                           !HttpContext.RequestAborted.IsCancellationRequested)
+                    {
+                        await Response.Body.WriteAsync(buffer, 0, bytesRead);
+                        await Response.Body.FlushAsync();
+                    }
+                }
+            });
         }
     }
 }

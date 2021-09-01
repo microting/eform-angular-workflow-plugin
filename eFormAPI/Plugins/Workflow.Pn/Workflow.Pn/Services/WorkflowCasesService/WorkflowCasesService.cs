@@ -582,7 +582,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
         }
 
-        public async Task<IActionResult> DownloadEFormPdf(int caseId, string fileType)
+        public async Task<OperationDataResult<Stream>> DownloadEFormPdf(int caseId, string fileType)
         {
             var workflowDbCase = await _workflowPnDbContext.WorkflowCases
                 .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
@@ -590,11 +590,19 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
             if (workflowDbCase == null)
             {
-                return new NotFoundResult();
+                return new OperationDataResult<Stream>(
+                    false,
+                    "ErrorWhileGeneratingReportFile");
             }
             var core = await _coreHelper.GetCore();
             var sdkDbContext = core.DbContextHelper.GetDbContext();
             var reportHelper = new WorkflowReportHelper(core, _workflowPnDbContext);
+
+            var filePath = await reportHelper.GenerateReportAnd(0, workflowDbCase);
+
+            FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+
+            return new OperationDataResult<Stream>(true, fileStream);
         }
 
         private async Task<string> InsertImage(Core core, string imageName, string itemsHtml, int imageSize, int imageWidth, string basePicturePath)

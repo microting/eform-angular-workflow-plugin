@@ -18,6 +18,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.IO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Workflow.Pn.Services.WorkflowCasesService
@@ -41,6 +42,6 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
         Task<OperationResult> Delete(int id);
 
-        Task<IActionResult> DownloadEFormPdf(int caseId, string fileType);
+        Task<OperationDataResult<Stream>> DownloadEFormPdf(int caseId, string fileType);
     }
 }
