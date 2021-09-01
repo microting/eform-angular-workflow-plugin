@@ -201,7 +201,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 IncidentTypeId = workflowDbCase.IncidentTypeId,
                 IncidentTypeListId = incidentTypeListId.Value,
                 Id = workflowDbCase.Id,
-                CreatedBy = workflowDbCase.CreatedBySiteName,
+                CreatedBySiteName = workflowDbCase.CreatedBySiteName,
 
             };
 
