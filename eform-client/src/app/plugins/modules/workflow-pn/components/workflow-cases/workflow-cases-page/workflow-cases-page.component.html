@@ -83,6 +83,31 @@
               >
                 <fa-icon icon="pen" [fixedWidth]="true" size="lg"></fa-icon>
               </button>
+
+              <button
+                mdbBtn
+                class="btn-success btn-icon mb-2"
+                (click)="downloadFile(workflowCase.id, 'pdf')"
+                mdbTooltip="{{ 'Download PDF' | translate }}"
+              >
+                <fa-icon
+                  icon="file-pdf"
+                  size="lg"
+                  [fixedWidth]="true"
+                ></fa-icon>
+              </button>
+              <button
+                mdbBtn
+                class="btn-info btn-icon mb-2"
+                (click)="downloadFile(workflowCase.id, 'docx')"
+                mdbTooltip="{{ 'Download Docx' | translate }}"
+              >
+                <fa-icon
+                  icon="file-word"
+                  size="lg"
+                  [fixedWidth]="true"
+                ></fa-icon>
+              </button>
               <button
                 id="deleteBtn"
                 class="btn btn-danger btn-icon mb-2"

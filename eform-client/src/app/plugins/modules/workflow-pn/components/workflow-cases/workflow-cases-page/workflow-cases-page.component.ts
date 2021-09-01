@@ -5,6 +5,8 @@ import { debounceTime } from 'rxjs/operators';
 import { Paged, TableHeaderElementModel } from 'src/app/common/models';
 import { WorkflowCaseModel } from '../../../models';
 import { WorkflowCasesStateService } from '../store';
+import {saveAs} from 'file-saver';
+import {WorkflowPnCasesService} from 'src/app/plugins/modules/workflow-pn/services';
 
 @AutoUnsubscribe()
 @Component({
@@ -91,7 +93,8 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     { id: 4, text: 'Annulleret' }, // Canceled
   ];
 
-  constructor(public workflowCasesStateService: WorkflowCasesStateService) {
+  constructor(public workflowCasesStateService: WorkflowCasesStateService,
+  private service: WorkflowPnCasesService) {
     this.searchSubject.pipe(debounceTime(500)).subscribe((val) => {
       this.workflowCasesStateService.updateNameFilter(val.toString());
       this.getWorkflowCases();
@@ -153,4 +156,15 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     this.workflowCasesStateService.onDelete();
     this.getWorkflowCases();
   }
+
+
+  downloadFile(caseId: number, fileType: string) {
+    this.service
+      .downloadEformPDF(caseId, fileType)
+      .subscribe((data) => {
+        const blob = new Blob([data]);
+        saveAs(blob, `template_${caseId}.${fileType}`);
+      });
+  }
+
 }

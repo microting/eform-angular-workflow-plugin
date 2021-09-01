@@ -11,6 +11,7 @@ import { WorkflowCaseModel, WorkflowCaseUpdateModel } from '../models';
 export let WorkflowPnCasesMethods = {
   Cases: 'api/workflow-pn/cases',
   Places: 'api/workflow-pn/cases/places',
+  DownloadPDF: '/api/workflow-pn/download-case-pdf',
 };
 
 @Injectable({
@@ -41,5 +42,18 @@ export class WorkflowPnCasesService {
 
   getPlaces(): Observable<OperationDataResult<{ id: number; name: string }[]>> {
     return this.apiBaseService.get(WorkflowPnCasesMethods.Places);
+  }
+
+  downloadEformPDF(
+    caseId: number,
+    fileType: string
+  ): Observable<any> {
+    return this.apiBaseService.getBlobData(
+      WorkflowPnCasesMethods.DownloadPDF +
+      '/?caseId=' +
+      caseId +
+      '&fileType=' +
+      fileType
+    );
   }
 }
