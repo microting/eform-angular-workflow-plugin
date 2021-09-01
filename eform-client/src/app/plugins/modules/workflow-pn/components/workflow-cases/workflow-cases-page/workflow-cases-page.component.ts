@@ -163,7 +163,7 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       .downloadEformPDF(caseId, fileType)
       .subscribe((data) => {
         const blob = new Blob([data]);
-        saveAs(blob, `template_${caseId}.${fileType}`);
+        saveAs(blob, `sag_nr_${caseId}.${fileType}`);
       });
   }
 

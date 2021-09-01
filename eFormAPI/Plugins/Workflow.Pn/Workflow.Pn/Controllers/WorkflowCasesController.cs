@@ -82,10 +82,10 @@ namespace Workflow.Pn.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("download-case-pdf/{caseId}")]
-        public async Task DownloadEFormPdf(int caseId, string fileType)
+        [Route("download-case-pdf")]
+        public async Task DownloadEFormPdf(int id, string fileType)
         {
-            var result =  await _workflowPnSettingsService.DownloadEFormPdf(caseId, fileType);
+            var result =  await _workflowPnSettingsService.DownloadEFormPdf(id, fileType);
             const int bufferSize = 4086;
             byte[] buffer = new byte[bufferSize];
             Response.OnStarting(async () =>

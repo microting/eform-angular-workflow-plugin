@@ -50,7 +50,7 @@ export class WorkflowPnCasesService {
   ): Observable<any> {
     return this.apiBaseService.getBlobData(
       WorkflowPnCasesMethods.DownloadPDF +
-      '/caseId=' +
+      '/?id=' +
       caseId +
       '&fileType=' +
       fileType
