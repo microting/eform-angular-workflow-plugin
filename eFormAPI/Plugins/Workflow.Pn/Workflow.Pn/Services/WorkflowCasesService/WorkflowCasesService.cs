@@ -488,7 +488,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                             info.Label += $@"<strong>Type:</strong> {workflowCase.IncidentType}<br>"; // Event
                             info.Label += $@"<strong>Sted:</strong> {workflowCase.IncidentPlace}<br>"; // Event location
                             info.Label += $@"<strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}<br>"; // Deadline
-                            info.Label += $@"<strong>Status:</strong> {workflowCase.Status}<br>"; // Status
+                            info.Label += $@"<strong>Status:</strong> {GetStatusTranslated(workflowCase.Status)}<br>"; // Status
 
                             dataElement!.DataItemList[0] = info;
                             mainElement.ElementList[0] = dataElement;
@@ -661,6 +661,25 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             await stream.DisposeAsync();
 
             return itemsHtml;
+        }
+
+        private string GetStatusTranslated(string constant)
+        {
+            switch (constant)
+            {
+                case "Not initiated":
+                    return "Ikke igangsat";
+                case "Ongoing":
+                    return "Igangværende";
+                case "No status":
+                    return "Vælg status";
+                case "Closed":
+                    return "Afsluttet";
+                case "Canceled":
+                    return "Annulleret";
+                default:
+                    return "Ikke igangsat";
+            }
         }
     }
 }
