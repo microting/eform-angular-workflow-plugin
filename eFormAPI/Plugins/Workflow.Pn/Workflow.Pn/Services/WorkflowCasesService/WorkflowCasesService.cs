@@ -293,6 +293,9 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 var solvedByNotSelected = !model.ToBeSolvedById.HasValue;
                 var statusClosed = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Closed").Value;
                 var statusOngoing = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Ongoing").Value;
+                var notInitiated = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Not initiated").Value;
+                var canceled = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Canceled").Value;
+                var noStatus = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "No status").Value;
 
                 var workflowCase = await _workflowPnDbContext.WorkflowCases.Where(x => x.Id == model.Id).FirstOrDefaultAsync();
                 if (workflowCase == null)
@@ -348,6 +351,17 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                             // SolvedUser = new List<KeyValuePair<string, int>>()
                         });
 
+                        if (workflowCase.DeployedMicrotingUid != null)
+                        {
+                            await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
+                        }
+
+                        workflowCase.DeployedMicrotingUid = null;
+                        await workflowCase.Update(_workflowPnDbContext);
+                        break;
+                    case false when canceled:
+                    case false when notInitiated:
+                    case false when noStatus:
                         if (workflowCase.DeployedMicrotingUid != null)
                         {
                             await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
@@ -476,6 +490,8 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                             var dataElement = mainElement.ElementList[0] as DataElement;
                             mainElement.Label = workflowCase.IncidentType;
                             dataElement.Label = workflowCase.IncidentType;
+                            DateTime startDate = new DateTime(2020, 1, 1);
+                            mainElement.DisplayOrder = (workflowCase.Deadline - startDate).Value.Days;
                             dataElement.Description = new CDataValue()
                             {
                                 InderValue = $"{workflowCase.IncidentPlace}<br><strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}" // Deadline
