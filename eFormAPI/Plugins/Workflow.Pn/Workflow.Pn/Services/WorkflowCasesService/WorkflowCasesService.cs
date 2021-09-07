@@ -583,6 +583,8 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
         public async Task<OperationResult> Delete(int id)
         {
+
+            var core = await _coreHelper.GetCore();
             var workflowDbCase = await _workflowPnDbContext.WorkflowCases
                 .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
                 .Where(x => x.Id == id).FirstOrDefaultAsync();
@@ -592,6 +594,14 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 return new OperationDataResult<WorkflowCasesUpdateModel>(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
             }
 
+            if (workflowDbCase.DeployedMicrotingUid != null)
+            {
+                await core.CaseDelete((int)workflowDbCase.DeployedMicrotingUid);
+            }
+
+            workflowDbCase.DeployedMicrotingUid = null;
+
+            await workflowDbCase.Update(_workflowPnDbContext);
             await workflowDbCase.Delete(_workflowPnDbContext);
 
             return new OperationDataResult<WorkflowCasesUpdateModel>(true);
