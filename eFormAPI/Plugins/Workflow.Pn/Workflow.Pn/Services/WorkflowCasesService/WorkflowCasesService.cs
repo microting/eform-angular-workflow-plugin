@@ -624,7 +624,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             var sdkDbContext = core.DbContextHelper.GetDbContext();
             var reportHelper = new WorkflowReportHelper(core, _workflowPnDbContext);
 
-            var filePath = await reportHelper.GenerateReportAnd(0, workflowDbCase);
+            var filePath = await reportHelper.GenerateReportAnd(0, workflowDbCase, fileType);
 
             FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
