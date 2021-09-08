@@ -399,6 +399,11 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     case false when statusOngoing:
                         {
 
+                            if (workflowCase.Deadline == null)
+                            {
+                                return new OperationResult(false, _workflowLocalizationService.GetString("DeadlineIsMissing"));
+                            }
+
                             // Docx and PDF files
                             string timeStamp = DateTime.UtcNow.ToString("yyyyMMdd") + "_" + DateTime.UtcNow.ToString("hhmmss");
                             string downloadPath = Path.Combine(Path.GetTempPath(), "pdf");

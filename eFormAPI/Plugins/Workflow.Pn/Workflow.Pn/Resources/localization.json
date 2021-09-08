@@ -62,5 +62,13 @@
       "en-US": "Workflow case not found",
       "de-DE": "Workflow Fall nicht gefunden"
     }
+  },
+  {
+    "Key": "DeadlineIsMissing",
+    "LocalizedValue": {
+      "da": "Sæt deadline",
+      "en-US": "Set deadline",
+      "de-DE": "Frist setzen"
+    }
   }
 ]
