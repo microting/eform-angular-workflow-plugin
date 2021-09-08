@@ -155,17 +155,17 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
             {
                 case LanguageNames.Danish:
                 {
-                    mainElement.Label = "Nærved ulykke";
+                    mainElement.Label = "Ny hændelse";
                     break;
                 }
                 case LanguageNames.English:
                 {
-                    mainElement.Label = "Near accident";
+                    mainElement.Label = "Near incidet";
                     break;
                 }
                 case LanguageNames.German:
                 {
-                    mainElement.Label = "Beinahe-Unfall";
+                    mainElement.Label = "Neuer Vorfall";
                     break;
                 }
             }
