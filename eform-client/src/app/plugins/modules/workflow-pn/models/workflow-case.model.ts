@@ -20,6 +20,6 @@ export class WorkflowCaseModel {
   toBeSolvedById: number;
   statusName: string;
   status: number;
-  picturesOfTask: FieldValueDto;
-  picturesOfTaskDone: FieldValueDto;
+  picturesOfTask: Array<FieldValueDto>;
+  picturesOfTaskDone: Array<FieldValueDto>;
 }
