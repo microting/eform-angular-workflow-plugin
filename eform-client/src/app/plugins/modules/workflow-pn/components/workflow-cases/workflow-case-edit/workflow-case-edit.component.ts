@@ -107,7 +107,7 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
         return '';
       }
       const result =  this.deviceUsersList.find(x => x.id === id);
-      if (result === null) {
+      if (result === undefined) {
         return '';
       } else {
         return result.siteName;
