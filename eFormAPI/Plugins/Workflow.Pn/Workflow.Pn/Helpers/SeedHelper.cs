@@ -346,5 +346,96 @@ namespace Workflow.Pn.Helpers
             taskListForm = await core.TemplateUploadData(taskListForm);
             return await core.TemplateCreate(taskListForm);
         }
+
+        public static async Task<int> CreateInstructioneForm(Core core)
+        {
+            string timeZone = "Europe/Copenhagen";
+            TimeZoneInfo timeZoneInfo;
+
+            try
+            {
+                timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+            }
+            catch
+            {
+                timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time");
+            }
+
+            Language language = await core.DbContextHelper.GetDbContext().Languages.FirstAsync();
+            List<Template_Dto> templatesDto = await core.TemplateItemReadAll(false,
+                "",
+                "eform-angular-workflow-plugin-instructions",
+                false,
+                "",
+                new List<int>(),
+                timeZoneInfo,
+                language
+            );
+
+            if (templatesDto.Count > 0)
+            {
+                return templatesDto.First().Id;
+            }
+
+            MainElement taskListForm = new MainElement
+            {
+                Id = 7680,
+                Repeated = 0,
+                Label = "eform-angular-workflow-plugin-instructions|eform-angular-workflow-plugin-instructions|eform-angular-workflow-plugin-instructions",
+                StartDate = new DateTime(2020, 09, 14),
+                EndDate = new DateTime(2030, 09, 14),
+                Language = "da",
+                MultiApproval = false,
+                FastNavigation = false,
+                DisplayOrder = 0,
+                EnableQuickSync = true
+            };
+
+            List<DataItem> dataItems = new List<DataItem>
+            {
+                new None(
+                    371267,
+                    false,
+                    false,
+                    "1. Tryk på PDF for at se billeder af hændelsen.<br>2. Tilføj evt. egen beskrivelse af hændelsen.<br>3. Tilføj evt. til handlingsplan hvad du har gjort for at løse opgaven.<br>4. Tag evt. et eller flere billeder af udført arbejde.<br>|Press PDF to view photos of the event. <br> 2. Add any. own description of the incident. <br> 3. Add any. to action plan what you have done to solve the task. <br> 4. Take evt. one or more pictures of work done. <br>|Klicken Sie auf PDF, um Fotos der Veranstaltung anzuzeigen. <br> 2. Fügen Sie beliebige hinzu. eigene Beschreibung des Vorfalls. <br> 3. Fügen Sie beliebige hinzu. zum Aktionsplan, was Sie getan haben, um die Aufgabe zu lösen. <br> 4. Nehmen Sie evt. ein oder mehrere Bilder der geleisteten Arbeit. <br>",
+                    "",
+                    Constants.FieldColors.Yellow,
+                    0,
+                    false
+                ),
+                new SaveButton(
+                    371266,
+                    false,
+                    false,
+                    "Tryk for at vende tilbage til opgaveoversigt|Tap to return to task overview|Tippen Sie hier, um zur Aufgabenübersicht zurückzukehren",
+                    "",
+                    Constants.FieldColors.Green,
+                    5,
+                    false,
+                    "TILBAGE|BACK|ZURÜCK"
+                )
+            };
+
+
+
+            DataElement dataElement = new DataElement(
+                142109,
+                "Brugervejledning|User Manual|Benutzerhandbuch",
+                0,
+                "",
+                false,
+                false,
+                false,
+                false,
+                "",
+                false,
+                new List<DataItemGroup>(),
+                dataItems);
+
+            taskListForm.ElementList.Add(dataElement);
+
+            return await core.TemplateCreate(taskListForm);
+
+        }
     }
 }

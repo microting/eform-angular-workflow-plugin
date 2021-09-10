@@ -185,6 +185,14 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
                 var assignedSite = new AssignedSite() { SiteMicrotingUid = siteId, CaseMicrotingUid = (int)caseId};
 
                 await assignedSite.Create(_dbContext);
+
+                mainElement = await theCore.ReadeForm(option.InstructionseFormId, language);
+
+                ele = mainElement.ElementList.First();
+                mainElement.Label = ele.Label;
+                mainElement.DisplayOrder = int.MinValue;
+
+                await theCore.CaseCreate(mainElement, "", siteId, option.FolderTasksId);
                 //await transaction.CommitAsync();
                 //await _bus.SendLocal(new SiteAdded(siteId));
                 return new OperationResult(true, _workflowLocalizationService.GetString("SiteAddedSuccessfully"));
@@ -261,6 +269,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
         {
             try
             {
+                var option = _options.Value;
                 var assignedSite = await _dbContext.AssignedSites
                     .Where(x => x.SiteMicrotingUid == siteId)
                     .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
@@ -268,15 +277,14 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
                 var theCore = await _coreHelper.GetCore();
                 await theCore.CaseDelete((int)assignedSite.CaseMicrotingUid);
                 await assignedSite.Delete(_dbContext);
-                // var workOrdersTemplateCases = await _dbContext.WorkflowCases
-                //     .Where(x => x.SdkSiteMicrotingUid == siteId && x.WorkflowState != Constants.WorkflowStates.Removed)
-                //     .ToListAsync();
-                //
-                // foreach (var workOrdersTemplateCase in workOrdersTemplateCases)
-                // {
-                //     await theCore.CaseDelete(workOrdersTemplateCase.CaseId);
-                //     await workOrdersTemplateCase.Delete(_dbContext);
-                // }
+
+                var dbcontext = theCore.DbContextHelper.GetDbContext();
+                var instructionsId = await dbcontext.CheckListSites.SingleOrDefaultAsync(x =>
+                    x.CheckListId == option.InstructionseFormId && x.SiteId == siteId);
+                if (instructionsId != null)
+                {
+                    await theCore.CaseDelete(instructionsId.MicrotingUid);
+                }
 
                 return new OperationResult(true,
                     _workflowLocalizationService.GetString("SiteDeletedSuccessfully"));

@@ -33,5 +33,7 @@ namespace Workflow.Pn.Infrastructure.Models.Settings
         public int IncidentPlaceListId { get; set; }
 
         public int IncidentTypeListId { get; set; }
+
+        public int InstructionseFormId { get; set; }
     }
 }

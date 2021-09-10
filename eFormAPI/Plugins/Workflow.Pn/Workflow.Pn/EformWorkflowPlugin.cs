@@ -303,6 +303,12 @@ namespace Workflow.Pn
                 int taskListId = await SeedHelper.CreateTaskListEform(core);
                 await pluginDbOptions.UpdateDb(settings => settings.SecondEformId = taskListId, context, 1);
             }
+
+            if (pluginDbOptions.Value.InstructionseFormId == 0)
+            {
+                int formId = await SeedHelper.CreateInstructioneForm(core);
+                await pluginDbOptions.UpdateDb(settings => settings.InstructionseFormId = formId, context, 1);
+            }
         }
 
     }
