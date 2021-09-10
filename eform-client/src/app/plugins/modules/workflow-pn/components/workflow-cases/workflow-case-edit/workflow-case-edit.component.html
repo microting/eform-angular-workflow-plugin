@@ -112,6 +112,7 @@
                   'Pictures' | translate
                   }}</mdb-card-header>
                 <mdb-card-body *ngIf="workflowCaseModel.picturesOfTask">
+                  <div *ngIf="workflowCaseModel.picturesOfTask.uploadedDataObj">{{workflowCaseModel.picturesOfTask.uploadedDataObj.fileName}}</div>
                   <element-picture [fieldValues]="workflowCaseModel.picturesOfTask"></element-picture>
                 </mdb-card-body>
               </mdb-card>

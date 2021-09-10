@@ -161,19 +161,19 @@ namespace Workflow.Pn
                             new PluginMenuTranslationModel
                             {
                                  LocaleName = LocaleNames.English,
-                                 Name = "Workflow",
+                                 Name = "Incidents",
                                  Language = LanguageNames.English,
                             },
                             new PluginMenuTranslationModel
                             {
                                  LocaleName = LocaleNames.German,
-                                 Name = "Arbeitsablauf",
+                                 Name = "Vorfälle",
                                  Language = LanguageNames.German,
                             },
                             new PluginMenuTranslationModel
                             {
                                  LocaleName = LocaleNames.Danish,
-                                 Name = "Arbejdsproces",
+                                 Name = "Hændelser",
                                  Language = LanguageNames.Danish,
                             },
                         },
@@ -209,7 +209,7 @@ namespace Workflow.Pn
                                         new PluginMenuTranslationModel
                                         {
                                             LocaleName = LocaleNames.Danish,
-                                            Name = "Tilfælde",
+                                            Name = "Hændelser",
                                             Language = LanguageNames.Danish,
                                         },
                                     }
@@ -231,7 +231,7 @@ namespace Workflow.Pn
                                     new PluginMenuTranslationModel
                                     {
                                         LocaleName = LocaleNames.Danish,
-                                        Name = "Tilfælde",
+                                        Name = "Hændelser",
                                         Language = LanguageNames.Danish,
                                     },
                                 }

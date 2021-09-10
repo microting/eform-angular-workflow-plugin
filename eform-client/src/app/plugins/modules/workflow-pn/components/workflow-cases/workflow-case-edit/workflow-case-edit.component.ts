@@ -103,10 +103,15 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
 
   getSolverName(id: number) {
     if (this.deviceUsersList.length > 0) {
-      if (id === null) {
+      if (id === undefined) {
         return '';
       }
-      return this.deviceUsersList.find(x => x.id === id).siteName;
+      const result =  this.deviceUsersList.find(x => x.id === id);
+      if (result === null) {
+        return '';
+      } else {
+        return result.siteName;
+      }
     } else {
       return '';
     }
