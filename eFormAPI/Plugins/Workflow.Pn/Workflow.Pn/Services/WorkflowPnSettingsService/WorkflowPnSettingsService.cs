@@ -190,6 +190,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
 
                 ele = mainElement.ElementList.First();
                 mainElement.Label = ele.Label;
+                mainElement.CheckListFolderName = folder.MicrotingUid.ToString();
                 mainElement.DisplayOrder = int.MinValue;
 
                 await theCore.CaseCreate(mainElement, "", siteId, option.FolderTasksId);
