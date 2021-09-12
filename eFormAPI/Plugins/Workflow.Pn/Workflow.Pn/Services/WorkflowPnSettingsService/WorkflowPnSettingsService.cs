@@ -190,6 +190,8 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
 
                 ele = mainElement.ElementList.First();
                 mainElement.Label = ele.Label;
+                folderId = option.FolderTasksId;
+                folder = await sdkDbContext.Folders.SingleOrDefaultAsync(x => x.Id == folderId);
                 mainElement.CheckListFolderName = folder.MicrotingUid.ToString();
                 mainElement.DisplayOrder = int.MinValue;
 
