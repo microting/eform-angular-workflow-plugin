@@ -283,7 +283,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
 
                 var dbcontext = theCore.DbContextHelper.GetDbContext();
                 var instructionsId = await dbcontext.CheckListSites.SingleOrDefaultAsync(x =>
-                    x.CheckListId == option.InstructionseFormId && x.SiteId == siteId);
+                    x.CheckListId == option.InstructionseFormId && x.SiteId == siteId && x.WorkflowState != Constants.WorkflowStates.Removed);
                 if (instructionsId != null)
                 {
                     await theCore.CaseDelete(instructionsId.MicrotingUid);
