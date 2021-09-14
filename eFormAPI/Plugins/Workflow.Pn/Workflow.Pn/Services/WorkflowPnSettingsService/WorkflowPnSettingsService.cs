@@ -193,6 +193,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
                 folderId = option.FolderTasksId;
                 folder = await sdkDbContext.Folders.SingleOrDefaultAsync(x => x.Id == folderId);
                 mainElement.CheckListFolderName = folder.MicrotingUid.ToString();
+                mainElement.EndDate = DateTime.UtcNow.AddYears(10);
                 mainElement.DisplayOrder = int.MinValue;
 
                 await theCore.CaseCreate(mainElement, "", siteId, option.FolderTasksId);
