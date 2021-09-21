@@ -194,7 +194,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
                 folder = await sdkDbContext.Folders.SingleOrDefaultAsync(x => x.Id == folderId);
                 mainElement.CheckListFolderName = folder.MicrotingUid.ToString();
                 mainElement.EndDate = DateTime.UtcNow.AddYears(10);
-                mainElement.DisplayOrder = int.MinValue;
+                mainElement.DisplayOrder = int.MaxValue;
 
                 await theCore.CaseCreate(mainElement, "", siteId, option.FolderTasksId);
                 //await transaction.CommitAsync();
