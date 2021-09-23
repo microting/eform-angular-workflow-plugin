@@ -7,21 +7,21 @@ import { generateRandmString } from '../../Helpers/helper-functions';
 import { format } from 'date-fns';
 
 describe('Workflow cases - Edit', function () {
-  before(function () {
-    loginPage.open('/auth');
-    loginPage.login();
-    workflowCasesPage.goToWorkflowCasesPage();
+  before(async () => {
+    await loginPage.open('/auth');
+    await loginPage.login();
+    await workflowCasesPage.goToWorkflowCasesPage();
   });
-  it('should not edit workflow case', function () {
-    const firstWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
+  it('should not edit workflow case', async () => {
+    const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     const modelForUpdate = new WorkflowCaseForEdit();
     modelForUpdate.status = 'Igangværende';
     modelForUpdate.actionPlan = generateRandmString();
     modelForUpdate.description = generateRandmString();
     modelForUpdate.deadline = new Date();
     modelForUpdate.dateOfIncident = new Date();
-    firstWorkflowCase.update(modelForUpdate, true);
-    const findWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
+    await firstWorkflowCase.update(modelForUpdate, true);
+    const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     // expect(findWorkflowCase.id).equal(1);
     expect(findWorkflowCase.status, 'status has been updated').equal(
       'Vælg status'
@@ -41,16 +41,16 @@ describe('Workflow cases - Edit', function () {
       firstWorkflowCase.actionPlan
     );
   });
-  it('should edit workflow case', function () {
-    const firstWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
+  it('should edit workflow case', async () => {
+    const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     const modelForUpdate = new WorkflowCaseForEdit();
     modelForUpdate.status = 'Igangværende';
     modelForUpdate.actionPlan = generateRandmString();
     modelForUpdate.description = generateRandmString();
     modelForUpdate.deadline = new Date();
     modelForUpdate.dateOfIncident = new Date();
-    firstWorkflowCase.update(modelForUpdate);
-    const findWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
+    await firstWorkflowCase.update(modelForUpdate);
+    const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     expect(findWorkflowCase.id).equal(1);
     expect(findWorkflowCase.status, 'status not updated').equal(
       modelForUpdate.status
