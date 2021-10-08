@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microting.eForm.Infrastructure.Constants;
+using Microting.eForm.Infrastructure.Data.Entities;
 using Microting.eFormApi.BasePn.Infrastructure.Consts;
 using Microting.eFormWorkflowBase.Infrastructure.Data.Entities;
 using Rebus.Bus;
@@ -194,7 +195,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
                 folder = await sdkDbContext.Folders.SingleOrDefaultAsync(x => x.Id == folderId);
                 mainElement.CheckListFolderName = folder.MicrotingUid.ToString();
                 mainElement.EndDate = DateTime.UtcNow.AddYears(10);
-                mainElement.DisplayOrder = int.MinValue;
+                mainElement.DisplayOrder = int.MaxValue;
 
                 await theCore.CaseCreate(mainElement, "", siteId, option.FolderTasksId);
                 //await transaction.CommitAsync();
@@ -283,11 +284,14 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
                 await assignedSite.Delete(_dbContext);
 
                 var dbcontext = theCore.DbContextHelper.GetDbContext();
-                var instructionsId = await dbcontext.CheckListSites.SingleOrDefaultAsync(x =>
-                    x.CheckListId == option.InstructionseFormId && x.SiteId == siteId && x.WorkflowState != Constants.WorkflowStates.Removed);
-                if (instructionsId != null)
+                var checkListSites = await dbcontext.CheckListSites.Where(x =>
+                    x.CheckListId == option.InstructionseFormId && x.SiteId == siteId && x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
+                if (checkListSites != null)
                 {
-                    await theCore.CaseDelete(instructionsId.MicrotingUid);
+                    foreach (CheckListSite checkListSite in checkListSites)
+                    {
+                        await theCore.CaseDelete(checkListSite.MicrotingUid);
+                    }
                 }
 
                 return new OperationResult(true,

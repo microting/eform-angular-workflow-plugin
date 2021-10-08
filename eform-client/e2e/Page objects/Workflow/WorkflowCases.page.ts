@@ -6,173 +6,174 @@ export class WorkflowCasesPage extends Page {
     super();
   }
 
-  public get rowNum(): number {
-    browser.pause(500);
-    return $$('#tableBody > tr').length;
+  public async rowNum(): Promise<number> {
+    await browser.pause(500);
+    return (await $$('#tableBody > tr')).length;
   }
 
-  public get idTableHeader() {
-    const ele = $('#idTableHeader');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async idTableHeader(): Promise<WebdriverIO.Element> {
+    const ele = await $('#idTableHeader');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get dateOfIncidentHeader() {
-    const ele = $('#dateOfIncidentHeader');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async dateOfIncidentHeader(): Promise<WebdriverIO.Element> {
+    const ele = await $('#dateOfIncidentHeader');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get incidentTypeHeader() {
-    const ele = $('#incidentTypeHeader');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async incidentTypeHeader(): Promise<WebdriverIO.Element> {
+    const ele = await $('#incidentTypeHeader');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get incidentPlaceHeader() {
-    const ele = $('#incidentPlaceHeader');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async incidentPlaceHeader(): Promise<WebdriverIO.Element> {
+    const ele = await $('#incidentPlaceHeader');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get photosExistsHeader() {
-    const ele = $('#photosExistsHeader');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async photosExistsHeader(): Promise<WebdriverIO.Element> {
+    const ele = await $('#photosExistsHeader');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get descriptionHeader() {
-    const ele = $('#descriptionHeader');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async descriptionHeader(): Promise<WebdriverIO.Element> {
+    const ele = await $('#descriptionHeader');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get deadlineHeader() {
-    const ele = $('#deadlineHeader');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async deadlineHeader(): Promise<WebdriverIO.Element> {
+    const ele = await $('#deadlineHeader');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get actionPlanHeader() {
-    const ele = $('#actionPlanHeader');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async actionPlanHeader(): Promise<WebdriverIO.Element> {
+    const ele = await $('#actionPlanHeader');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get searchInput() {
-    const ele = $('#searchInput');
-    ele.waitForDisplayed({ timeout: 40000 });
+  public async searchInput(): Promise<WebdriverIO.Element> {
+    const ele = await $('#searchInput');
+    await ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get saveEditBtn() {
-    const ele = $('#saveEditBtn');
-    ele.waitForDisplayed({ timeout: 40000 });
+  public async saveEditBtn(): Promise<WebdriverIO.Element> {
+    const ele = await $('#saveEditBtn');
+    await ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get cancelEditBtn() {
-    const ele = $('#cancelEditBtn');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async cancelEditBtn(): Promise<WebdriverIO.Element> {
+    const ele = await $('#cancelEditBtn');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get toBeSolvedByEdit() {
-    const ele = $('#toBeSolvedByEdit');
-    ele.waitForDisplayed({ timeout: 40000 });
+  public async toBeSolvedByEdit(): Promise<WebdriverIO.Element> {
+    const ele = await $('#toBeSolvedByEdit');
+    await ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get statusEdit() {
-    const ele = $('#statusEdit');
+  public async statusEdit(): Promise<WebdriverIO.Element> {
+    const ele = await $('#statusEdit');
     // ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get workflowCaseDeleteDeleteBtn() {
-    const ele = $('#workflowCaseDeleteDeleteBtn');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async workflowCaseDeleteDeleteBtn(): Promise<WebdriverIO.Element> {
+    const ele = await $('#workflowCaseDeleteDeleteBtn');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get workflowCaseDeleteCancelBtn() {
-    const ele = $('#workflowCaseDeleteCancelBtn');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async workflowCaseDeleteCancelBtn(): Promise<WebdriverIO.Element> {
+    const ele = await $('#workflowCaseDeleteCancelBtn');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get workflowPnCases() {
-    const ele = $('#workflow-pn-cases');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async workflowPnCases(): Promise<WebdriverIO.Element> {
+    const ele = await $('#workflow-pn-cases');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get workflowPn() {
-    const ele = $('#workflow-pn');
-    ele.waitForDisplayed({ timeout: 40000 });
-    ele.waitForClickable({ timeout: 40000 });
+  public async workflowPn(): Promise<WebdriverIO.Element> {
+    const ele = await $('#workflow-pn');
+    await ele.waitForDisplayed({ timeout: 40000 });
+    await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get deadlineFormInput() {
-    const ele = $('#deadline');
-    ele.waitForDisplayed({ timeout: 40000 });
+  public async deadlineFormInput(): Promise<WebdriverIO.Element> {
+    const ele = await $('#deadline');
+    await ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get dateOfIncidentFormInput() {
-    const ele = $('#dateOfIncident');
-    ele.waitForDisplayed({ timeout: 40000 });
+  public async dateOfIncidentFormInput(): Promise<WebdriverIO.Element> {
+    const ele = await $('#dateOfIncident');
+    await ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
-  public get descriptionEdit() {
-    const ele = $('#descriptionEdit');
-    ele.waitForDisplayed({ timeout: 40000 });
+  public async descriptionEdit(): Promise<WebdriverIO.Element> {
+    const ele = await $('#descriptionEdit');
+    await ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
     // ele = $('#descriptionEdit .pell-content');
     return ele;
   }
 
-  public get actionPlanEdit() {
-    const ele = $('#actionPlanEdit');
-    ele.waitForDisplayed({ timeout: 40000 });
+  public async actionPlanEdit(): Promise<WebdriverIO.Element> {
+    const ele = await $('#actionPlanEdit');
+    await ele.waitForDisplayed({ timeout: 40000 });
     // ele.waitForClickable({ timeout: 40000 });
     // ele = $('#actionPlanEdit .pell-content');
     return ele;
   }
 
-  public goToWorkflowCasesPage() {
-    this.workflowPn.click();
-    this.workflowPnCases.click();
-    $('#spinner-animation').waitForDisplayed({ timeout: 90000, reverse: true });
-    this.searchInput.waitForClickable({ timeout: 90000 });
+  public async goToWorkflowCasesPage() {
+    await (await this.workflowPn()).click();
+    await (await this.workflowPnCases()).click();
+    await (await $('#spinner-animation')).waitForDisplayed({ timeout: 90000, reverse: true });
+    await (await this.searchInput()).waitForClickable({ timeout: 90000 });
   }
 
-  public getFirstWorkflowCase(): WorkflowCaseRowObject {
+  public async getFirstWorkflowCase(): Promise<WorkflowCaseRowObject> {
     return this.getWorkflowCaseByNumber(1);
   }
 
-  public getWorkflowCaseByNumber(number: number): WorkflowCaseRowObject {
-    return new WorkflowCaseRowObject(number);
+  public async getWorkflowCaseByNumber(number: number): Promise<WorkflowCaseRowObject> {
+    const obj = new WorkflowCaseRowObject();
+    return await obj.getRow(number);
   }
 }
 
@@ -180,26 +181,7 @@ const workflowCasesPage = new WorkflowCasesPage();
 export default workflowCasesPage;
 
 export class WorkflowCaseRowObject {
-  constructor(rowNumber) {
-    const row = $$('#tableBody tr')[rowNumber - 1];
-    if (row) {
-      this.id = +row.$('#workflowCaseId').getText();
-      let date = row.$('#workflowCaseDateOfIncident').getText();
-      this.dateOfIncident = date; // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
-      // date = row.$('#workflowCaseUpdatedAt').getText();
-      // this.updateAt = parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
-      this.incidentType = row.$('#workflowCaseIncidentType').getText();
-      this.incidentPlace = row.$('#workflowCaseIncidentPlace').getText();
-      // this.photo = row.$('#workflowCasePhotosExists').getText() === 'true';
-      this.description = row.$('#workflowCaseDescription').getText();
-      date = row.$('#workflowCaseDeadline').getText();
-      this.deadline = date; // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
-      this.actionPlan = row.$('#workflowCaseActionPlan').getText();
-      this.toBeSolvedBy = row.$('#workflowCaseToBeSolvedBy').getText();
-      this.status = row.$('#workflowCaseStatus').getText();
-      this.updateBtn = row.$('#editWorkflowCaseBtn');
-      this.deleteBtn = row.$('#deleteBtn');
-    }
+  constructor() {
   }
 
   public id: number;
@@ -216,58 +198,81 @@ export class WorkflowCaseRowObject {
   public updateBtn: WebdriverIO.Element;
   public deleteBtn: WebdriverIO.Element;
 
-  public static closeEdit(clickCancel = false) {
+  public static async closeEdit(clickCancel = false) {
     if (!clickCancel) {
-      workflowCasesPage.saveEditBtn.click();
-      $('#spinner-animation').waitForDisplayed({
+      await (await workflowCasesPage.saveEditBtn()).click();
+      await (await $('#spinner-animation')).waitForDisplayed({
         timeout: 90000,
         reverse: true,
       });
     } else {
-      workflowCasesPage.cancelEditBtn.click();
+      await (await workflowCasesPage.cancelEditBtn()).click();
     }
-    workflowCasesPage.searchInput.waitForDisplayed();
+    await (await workflowCasesPage.searchInput()).waitForDisplayed();
     browser.pause(500);
   }
 
-  public static closeDelete(clickCancel = false) {
+  public static async closeDelete(clickCancel = false) {
     if (!clickCancel) {
-      workflowCasesPage.workflowCaseDeleteDeleteBtn.click();
-      $('#spinner-animation').waitForDisplayed({
+      await (await workflowCasesPage.workflowCaseDeleteDeleteBtn()).click();
+      await (await $('#spinner-animation')).waitForDisplayed({
         timeout: 90000,
         reverse: true,
       });
     } else {
-      workflowCasesPage.workflowCaseDeleteCancelBtn.click();
+      await (await workflowCasesPage.workflowCaseDeleteCancelBtn()).click();
     }
-    workflowCasesPage.searchInput.waitForDisplayed();
+    await (await workflowCasesPage.searchInput()).waitForDisplayed();
+  }
+  async getRow(rowNum: number): Promise<WorkflowCaseRowObject> {
+    const row = (await $$('#tableBody tr'))[rowNum - 1];
+    if (row) {
+      this.id = +await (await row.$('#workflowCaseId')).getText();
+      let date = await (await row.$('#workflowCaseDateOfIncident')).getText();
+      this.dateOfIncident = date; // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
+      // date = row.$('#workflowCaseUpdatedAt').getText();
+      // this.updateAt = parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
+      this.incidentType = await (await row.$('#workflowCaseIncidentType')).getText();
+      this.incidentPlace = await (await row.$('#workflowCaseIncidentPlace')).getText();
+      // this.photo = row.$('#workflowCasePhotosExists').getText() === 'true';
+      this.description = await (await row.$('#workflowCaseDescription')).getText();
+      date = await (await row.$('#workflowCaseDeadline')).getText();
+      this.deadline = date; // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
+      this.actionPlan = await (await row.$('#workflowCaseActionPlan')).getText();
+      this.toBeSolvedBy = await (await row.$('#workflowCaseToBeSolvedBy')).getText();
+      this.status = await (await row.$('#workflowCaseStatus')).getText();
+      this.updateBtn = await row.$('#editWorkflowCaseBtn');
+      this.deleteBtn = await row.$('#deleteBtn');
+    }
+    return this;
   }
 
-  public openDelete() {
-    this.deleteBtn.waitForClickable({ timeout: 20000 });
-    this.deleteBtn.click();
-    workflowCasesPage.workflowCaseDeleteCancelBtn.waitForDisplayed({
+
+  public async openDelete() {
+    await this.deleteBtn.waitForClickable({ timeout: 20000 });
+    await this.deleteBtn.click();
+    await (await workflowCasesPage.workflowCaseDeleteCancelBtn()).waitForDisplayed({
       timeout: 20000,
     });
   }
 
-  public openEdit(updateModel: WorkflowCaseForEdit) {
-    this.updateBtn.click();
-    const spinnerAnimation = $('#spinner-animation');
-    spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
-    workflowCasesPage.cancelEditBtn.waitForDisplayed({
+  public async openEdit(updateModel: WorkflowCaseForEdit) {
+    await this.updateBtn.click();
+    const spinnerAnimation = await $('#spinner-animation');
+    await spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
+    await (await workflowCasesPage.cancelEditBtn()).waitForDisplayed({
       timeout: 20000,
     });
     if (updateModel) {
-      const ngOption = $('.ng-option-label');
+      const ngOption = await $('.ng-option-label');
       if (updateModel.status) {
-        workflowCasesPage.statusEdit.$('input').setValue(updateModel.status);
+        await (await workflowCasesPage.statusEdit()).$('input').setValue(updateModel.status);
         // spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
         // ngOption.waitForDisplayed({ timeout: 20000 });
         browser.pause(1000);
-        const ele = $(`//*[@id="statusEdit"]//*[text()="${updateModel.status}"]`);
-        ele.waitForDisplayed({timeout: 20000});
-        ele.click();
+        const ele = await $(`//*[@id="statusEdit"]//*[text()="${updateModel.status}"]`);
+        await ele.waitForDisplayed({timeout: 20000});
+        await ele.click();
 
         // workflowCasesPage.statusEdit
         //   .$('.ng-dropdown-panel')
@@ -286,32 +291,32 @@ export class WorkflowCaseRowObject {
       //     .click();
       // }
       if (updateModel.deadline) {
-        workflowCasesPage.deadlineFormInput.setValue(
+        await (await workflowCasesPage.deadlineFormInput()).setValue(
           format(updateModel.deadline, 'MM.dd.yyyy')
         );
       }
       if (updateModel.dateOfIncident) {
-        workflowCasesPage.dateOfIncidentFormInput.setValue(
+        await (await workflowCasesPage.dateOfIncidentFormInput()).setValue(
           format(updateModel.dateOfIncident, 'MM.dd.yyyy')
         );
       }
       if (updateModel.description) {
-        workflowCasesPage.descriptionEdit.setValue(updateModel.description);
+        await (await workflowCasesPage.descriptionEdit()).setValue(updateModel.description);
       }
       if (updateModel.actionPlan) {
-        workflowCasesPage.actionPlanEdit.setValue(updateModel.actionPlan);
+        await (await workflowCasesPage.actionPlanEdit()).setValue(updateModel.actionPlan);
       }
     }
   }
 
-  update(updateModel: WorkflowCaseForEdit, clickCancel = false) {
-    this.openEdit(updateModel);
-    WorkflowCaseRowObject.closeEdit(clickCancel);
+  async update(updateModel: WorkflowCaseForEdit, clickCancel = false) {
+    await this.openEdit(updateModel);
+    await WorkflowCaseRowObject.closeEdit(clickCancel);
   }
 
-  delete(clickCancel = false) {
-    this.openDelete();
-    WorkflowCaseRowObject.closeDelete(clickCancel);
+  async delete(clickCancel = false) {
+    await this.openDelete();
+    await WorkflowCaseRowObject.closeDelete(clickCancel);
   }
 }
 

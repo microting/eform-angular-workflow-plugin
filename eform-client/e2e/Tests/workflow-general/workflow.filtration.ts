@@ -4,18 +4,18 @@ import { expect } from 'chai';
 import { format } from 'date-fns';
 
 describe('Workflow cases - Filtration', function () {
-  before(function () {
-    loginPage.open('/auth');
-    loginPage.login();
-    workflowCasesPage.goToWorkflowCasesPage();
+  before(async () => {
+    await loginPage.open('/auth');
+    await loginPage.login();
+    await workflowCasesPage.goToWorkflowCasesPage();
   });
-  it('should be able to filtration of all workflow cases', function () {
-    workflowCasesPage.searchInput.setValue(
+  it('should be able to filtration of all workflow cases', async () => {
+    (await workflowCasesPage.searchInput()).setValue(
       '9971c397-61a9-4b6d-aa68-38bf30123360'
     );
-    browser.pause(2000);
-    $('#spinner-animation').waitForDisplayed({ timeout: 90000, reverse: true });
-    const findWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
+    await browser.pause(2000);
+    await (await $('#spinner-animation')).waitForDisplayed({ timeout: 90000, reverse: true });
+    const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     expect(findWorkflowCase.id).equal(3);
     expect(
       findWorkflowCase.dateOfIncident
