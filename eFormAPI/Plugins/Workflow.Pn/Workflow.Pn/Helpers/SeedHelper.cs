@@ -26,19 +26,13 @@ namespace Workflow.Pn.Helpers
                 false,
                 Constants.WorkflowStates.NotRemoved);
 
-            EntityGroup group;
-
             if (!model.EntityGroups.Any())
             {
-                group = await core.EntityGroupCreate(Constants.FieldTypes.EntitySelect,
-                    "eform-angular-workflow-plugin-editable-AccidentType", "Hændelsestyper");
+                var eg = await core.EntityGroupCreate(Constants.FieldTypes.EntitySelect,
+                    "eform-angular-workflow-plugin-editable-AccidentType", "Hændelsestyper", true, true);
+                return int.Parse(eg.MicrotingUid);
             }
-            else
-            {
-                group = model.EntityGroups.First();
-            }
-
-            return int.Parse(group.MicrotingUUID);
+            return int.Parse(model.EntityGroups.First().MicrotingUUID);
         }
 
         public static async Task<int> CreateAccidentLocationList(Core core)
@@ -50,19 +44,13 @@ namespace Workflow.Pn.Helpers
                 false,
                 Constants.WorkflowStates.NotRemoved);
 
-            EntityGroup group;
-
             if (!model.EntityGroups.Any())
             {
-                group = await core.EntityGroupCreate(Constants.FieldTypes.EntitySelect,
-                    "eform-angular-workflow-plugin-editable-AccidentLocations", "Hændelsestyper");
+                var eg = await core.EntityGroupCreate(Constants.FieldTypes.EntitySelect,
+                    "eform-angular-workflow-plugin-editable-AccidentLocations", "Hændelsestyper", true, true);
+                return int.Parse(eg.MicrotingUid);
             }
-            else
-            {
-                group = model.EntityGroups.First();
-            }
-
-            return int.Parse(group.MicrotingUUID);
+            return int.Parse(model.EntityGroups.First().MicrotingUUID);
         }
 
         public static async Task<int> CreateNewTaskEform(Core core)
