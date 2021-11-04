@@ -1,5 +1,15 @@
 # Changelog
 
+## [v1.0.37](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.37) (2021-11-04)
+
+[Full Changelog](https://github.com/microting/eform-angular-workflow-plugin/compare/v1.0.36...v1.0.37)
+
+**Implemented enhancements:**
+
+- Bump Microting.eFormWorkflowBase from 1.0.60 to 1.0.61 [\#81](https://github.com/microting/eform-angular-workflow-plugin/issues/81)
+- Bump Microting.eFormApi.BasePn from 3.0.63 to 3.0.64 [\#80](https://github.com/microting/eform-angular-workflow-plugin/issues/80)
+- Bump Microting.eForm from 5.2.56 to 5.2.57 [\#79](https://github.com/microting/eform-angular-workflow-plugin/issues/79)
+
 ## [v1.0.36](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.36) (2021-10-30)
 
 [Full Changelog](https://github.com/microting/eform-angular-workflow-plugin/compare/v1.0.35...v1.0.36)
@@ -75,7 +85,6 @@
 
 - Bump Microting.eFormWorkflowBase from 1.0.40 to 1.0.41 [\#62](https://github.com/microting/eform-angular-workflow-plugin/issues/62)
 - Bump Microting.eFormApi.BasePn from 3.0.47 to 3.0.49 [\#61](https://github.com/microting/eform-angular-workflow-plugin/issues/61)
-- Bump Microting.eForm from 5.2.37 to 5.2.39 [\#60](https://github.com/microting/eform-angular-workflow-plugin/issues/60)
 
 ## [v1.0.26](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.26) (2021-09-14)
 
@@ -93,9 +102,11 @@
 
 **Implemented enhancements:**
 
+- Bump Microting.eForm from 5.2.37 to 5.2.39 [\#60](https://github.com/microting/eform-angular-workflow-plugin/issues/60)
 - Bump Magick.NET-Q16-x64 from 8.3.0 to 8.3.1 [\#56](https://github.com/microting/eform-angular-workflow-plugin/issues/56)
 - Bump Microting.eFormWorkflowBase from 1.0.38 to 1.0.39 [\#55](https://github.com/microting/eform-angular-workflow-plugin/issues/55)
 - Bump Microting.eFormApi.BasePn from 3.0.45 to 3.0.46 [\#54](https://github.com/microting/eform-angular-workflow-plugin/issues/54)
+- Bump Microting.eForm from 5.2.35 to 5.2.36 [\#53](https://github.com/microting/eform-angular-workflow-plugin/issues/53)
 
 ## [v1.0.24](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.24) (2021-09-09)
 
@@ -123,7 +134,6 @@
 
 **Implemented enhancements:**
 
-- Bump Microting.eForm from 5.2.35 to 5.2.36 [\#53](https://github.com/microting/eform-angular-workflow-plugin/issues/53)
 - Bump Microting.eFormWorkflowBase from 1.0.34 to 1.0.35 [\#50](https://github.com/microting/eform-angular-workflow-plugin/issues/50)
 
 ## [v1.0.20](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.20) (2021-09-06)
@@ -135,6 +145,7 @@
 - Bump Magick.NET-Q16-x64 from 8.2.1 to 8.3.0 [\#49](https://github.com/microting/eform-angular-workflow-plugin/issues/49)
 - Bump Microting.eFormWorkflowBase from 1.0.33 to 1.0.34 [\#48](https://github.com/microting/eform-angular-workflow-plugin/issues/48)
 - Bump Microting.eFormApi.BasePn from 3.0.44 to 3.0.45 [\#47](https://github.com/microting/eform-angular-workflow-plugin/issues/47)
+- Bump Microting.eForm from 5.2.33 to 5.2.35 [\#46](https://github.com/microting/eform-angular-workflow-plugin/issues/46)
 
 ## [v1.0.19](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.19) (2021-09-03)
 
@@ -151,7 +162,6 @@
 
 **Implemented enhancements:**
 
-- Bump Microting.eForm from 5.2.33 to 5.2.35 [\#46](https://github.com/microting/eform-angular-workflow-plugin/issues/46)
 - Bump Microting.eFormWorkflowBase from 1.0.31 to 1.0.32 [\#43](https://github.com/microting/eform-angular-workflow-plugin/issues/43)
 
 ## [v1.0.17](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.17) (2021-09-01)
@@ -225,8 +235,6 @@
 **Implemented enhancements:**
 
 - Bump Microting.eFormWorkflowBase from 1.0.21 to 1.0.22 [\#30](https://github.com/microting/eform-angular-workflow-plugin/issues/30)
-- Bump Microting.eFormApi.BasePn from 3.0.38 to 3.0.40 [\#29](https://github.com/microting/eform-angular-workflow-plugin/issues/29)
-- Bump Microting.eForm from 5.2.27 to 5.2.30 [\#28](https://github.com/microting/eform-angular-workflow-plugin/issues/28)
 
 ## [v1.0.9](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.9) (2021-08-10)
 
@@ -234,6 +242,9 @@
 
 **Implemented enhancements:**
 
+- Bump Microting.eFormApi.BasePn from 3.0.38 to 3.0.40 [\#29](https://github.com/microting/eform-angular-workflow-plugin/issues/29)
+- Bump Microting.eForm from 5.2.27 to 5.2.30 [\#28](https://github.com/microting/eform-angular-workflow-plugin/issues/28)
+- Bump Magick.NET-Q16-x64 from 8.1.0 to 8.2.1 [\#27](https://github.com/microting/eform-angular-workflow-plugin/issues/27)
 - Bump Microting.eFormWorkflowBase from 1.0.18 to 1.0.21 [\#26](https://github.com/microting/eform-angular-workflow-plugin/issues/26)
 - Bump Microting.eFormApi.BasePn from 3.0.34 to 3.0.38 [\#25](https://github.com/microting/eform-angular-workflow-plugin/issues/25)
 
@@ -253,7 +264,6 @@
 
 **Implemented enhancements:**
 
-- Bump Magick.NET-Q16-x64 from 8.1.0 to 8.2.1 [\#27](https://github.com/microting/eform-angular-workflow-plugin/issues/27)
 - Bump Microting.eFormWorkflowBase from 1.0.14 to 1.0.15 [\#21](https://github.com/microting/eform-angular-workflow-plugin/issues/21)
 - Bump Microting.eFormApi.BasePn from 3.0.31 to 3.0.33 [\#20](https://github.com/microting/eform-angular-workflow-plugin/issues/20)
 
@@ -290,7 +300,6 @@
 - Bump Magick.NET-Q16-x64 from 8.0.1 to 8.1.0 [\#16](https://github.com/microting/eform-angular-workflow-plugin/issues/16)
 - Bump Microting.eFormApi.BasePn from 3.0.30 to 3.0.31 [\#14](https://github.com/microting/eform-angular-workflow-plugin/issues/14)
 - Bump Microting.eForm from 5.2.17 to 5.2.18 [\#13](https://github.com/microting/eform-angular-workflow-plugin/issues/13)
-- Bump Microting.eForm from 5.2.15 to 5.2.17 [\#7](https://github.com/microting/eform-angular-workflow-plugin/issues/7)
 
 ## [v1.0.2](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.2) (2021-07-15)
 
@@ -299,6 +308,7 @@
 **Implemented enhancements:**
 
 - Bump Microting.eFormApi.BasePn from 3.0.28 to 3.0.30 [\#8](https://github.com/microting/eform-angular-workflow-plugin/issues/8)
+- Bump Microting.eForm from 5.2.15 to 5.2.17 [\#7](https://github.com/microting/eform-angular-workflow-plugin/issues/7)
 
 ## [v1.0.1](https://github.com/microting/eform-angular-workflow-plugin/tree/v1.0.1) (2021-07-08)
 
