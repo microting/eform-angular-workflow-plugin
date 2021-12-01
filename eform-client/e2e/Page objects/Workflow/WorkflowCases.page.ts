@@ -209,7 +209,7 @@ export class WorkflowCaseRowObject {
       await (await workflowCasesPage.cancelEditBtn()).click();
     }
     await (await workflowCasesPage.searchInput()).waitForDisplayed();
-    browser.pause(500);
+    await browser.pause(500);
   }
 
   public static async closeDelete(clickCancel = false) {
@@ -269,7 +269,7 @@ export class WorkflowCaseRowObject {
         await (await workflowCasesPage.statusEdit()).$('input').setValue(updateModel.status);
         // spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
         // ngOption.waitForDisplayed({ timeout: 20000 });
-        browser.pause(1000);
+        await browser.pause(1000);
         const ele = await $(`//*[@id="statusEdit"]//*[text()="${updateModel.status}"]`);
         await ele.waitForDisplayed({timeout: 20000});
         await ele.click();
