@@ -208,6 +208,7 @@ export class WorkflowCaseRowObject {
     } else {
       await (await workflowCasesPage.cancelEditBtn()).click();
     }
+    await browser.pause(500);
     await (await workflowCasesPage.searchInput()).waitForDisplayed();
     await browser.pause(500);
   }
@@ -222,7 +223,9 @@ export class WorkflowCaseRowObject {
     } else {
       await (await workflowCasesPage.workflowCaseDeleteCancelBtn()).click();
     }
+    await browser.pause(500);
     await (await workflowCasesPage.searchInput()).waitForDisplayed();
+    await browser.pause(500);
   }
   async getRow(rowNum: number): Promise<WorkflowCaseRowObject> {
     const row = (await $$('#tableBody tr'))[rowNum - 1];
