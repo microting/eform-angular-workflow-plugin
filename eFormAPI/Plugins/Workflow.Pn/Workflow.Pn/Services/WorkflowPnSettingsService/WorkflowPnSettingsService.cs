@@ -83,23 +83,30 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
             try
             {
                 var assignedSitesIds = await _dbContext.AssignedSites.Where(y => y.WorkflowState != Constants.WorkflowStates.Removed).Select(x => x.SiteMicrotingUid).ToListAsync();
-                var workOrdersSettings = new WorkflowSettingsModel()
+                var workOrdersSettings = new WorkflowSettingsModel
                 {
                     AssignedSites = new List<SiteNameModel>()
                 };
 
                 if (assignedSitesIds.Count > 0)
                 {
-                    var allSites = await _coreHelper.GetCore().Result.SiteReadAll(false);
+                    var allSites = await _coreHelper.GetCore().Result.SiteReadAll(true);
 
                     foreach (var id in assignedSitesIds)
                     {
-                        var siteNameModel = allSites.Where(x => x.SiteId == id).Select(x => new SiteNameModel()
+                        var siteNameModel = allSites.Where(x => x.SiteId == id).Select(x => new SiteNameModel
                         {
                             SiteName = x.SiteName,
                             SiteUId = x.SiteId
                         }).FirstOrDefault();
-                        workOrdersSettings.AssignedSites.Add(siteNameModel);
+                        if (siteNameModel != null)
+                        {
+                            workOrdersSettings.AssignedSites.Add(siteNameModel);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Could not find an active site for");
+                        }
                     }
                 }
 
