@@ -22,7 +22,6 @@ using System.IO;
 using System.Reflection;
 using eFormCore;
 using ImageMagick;
-using Microsoft.AspNetCore.Mvc;
 using Microting.eForm.Dto;
 using Microting.eForm.Helpers;
 using Microting.eForm.Infrastructure.Models;
@@ -35,7 +34,6 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using Infrastructure.Models;
@@ -54,7 +52,6 @@ namespace Workflow.Pn.Services.WorkflowCasesService
     using Rebus.Bus;
     using RebusService;
     using WorkflowLocalizationService;
-    using CheckListValue = Microting.eForm.Infrastructure.Models.CheckListValue;
 
     public class WorkflowCasesService : IWorkflowCasesService
     {
@@ -643,12 +640,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             bool swiftEnabled = core.GetSdkSetting(Settings.swiftEnabled).Result.ToLower() == "true";
             var filePath = Path.Combine(basePicturePath, imageName);
             Stream stream;
-            if (swiftEnabled)
-            {
-                var storageResult = await core.GetFileFromSwiftStorage(imageName);
-                stream = storageResult.ObjectStreamContent;
-            }
-            else if (s3Enabled)
+            if (s3Enabled)
             {
                 var storageResult = await core.GetFileFromS3Storage(imageName);
                 stream = storageResult.ResponseStream;
