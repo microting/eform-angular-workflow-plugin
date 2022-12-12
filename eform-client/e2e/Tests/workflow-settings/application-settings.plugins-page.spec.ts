@@ -11,7 +11,7 @@ describe('Application settings page - site header section', function () {
   it('should go to plugin settings page', async () => {
     await loginPage.login();
     await myEformsPage.Navbar.goToPluginsPage();
-    await (await $('#plugin-name')).waitForDisplayed({ timeout: 50000 });
+    //await (await $('#plugin-name')).waitForDisplayed({ timeout: 50000 });
 
     const plugin = await pluginPage.getFirstPluginRowObj();
     expect(plugin.id).equal(1);
@@ -24,6 +24,7 @@ describe('Application settings page - site header section', function () {
     let plugin = await pluginPage.getFirstPluginRowObj();
     await plugin.enableOrDisablePlugin();
 
+    // $('Microting Items Planning Plugin').waitForDisplayed({timeout: 10000});
     plugin = await pluginPage.getFirstPluginRowObj();
     expect(plugin.id).equal(1);
     expect(plugin.name).equal('Microting Workflow Plugin');
