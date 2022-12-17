@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
-  CaseEditRequest,
+  CaseEditRequest, CommonDictionaryTextModel,
   SiteNameDto,
   TemplateDto,
 } from 'src/app/common/models';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 import { UserClaimsEnum } from 'src/app/common/const';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  AuthService,
+  AuthService, EntitySelectService,
   SecurityGroupEformsPermissionsService,
   SitesService,
 } from 'src/app/common/services';
@@ -29,8 +29,12 @@ import { format } from 'date-fns';
 })
 export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   deviceUsersList: SiteNameDto[] = [];
+  places: Array<CommonDictionaryTextModel> = [];
+  incidentTypes: Array<CommonDictionaryTextModel> = [];
   @ViewChild('frame', { static: true }) frame;
   workflowCaseModel: WorkflowCaseModel = new WorkflowCaseModel();
+  entityGroupUidForPlaces: string;
+  entityGroupUidForIncidentTypes: string;
 
   @ViewChild('caseConfirmation', { static: true }) caseConfirmation;
   id: number;
@@ -38,11 +42,6 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   currentTemplate: TemplateDto = new TemplateDto();
 
   requestModels: Array<CaseEditRequest> = [];
-  places: { id: number; name: string }[] = new Array<{
-    id: number;
-    name: string;
-  }>();
-
   isSaveClicked = false;
   reverseRoute: string;
   isNoSaveExitAllowed = false;
@@ -54,11 +53,11 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   dataForm: FormGroup;
 
   statuses = [
-    { id: 0, text: 'Ongoing' },
-    { id: 1, text: 'Closed' },
-    { id: 2, text: 'No status' },
-    { id: 3, text: 'Not initiated' },
-    { id: 4, text: 'Canceled' },
+    { id: 2, text: 'Vælg status' }, // No status
+    { id: 0, text: 'Igangværende' }, // Ongoing
+    { id: 3, text: 'Ikke igangsat' }, // Not initiated
+    { id: 1, text: 'Afsluttet' }, // Closed
+    { id: 4, text: 'Annulleret' }, // Canceled
   ];
 
   constructor(
@@ -71,7 +70,8 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     authStateService: AuthStateService,
     private formBuilder: FormBuilder,
     private location: Location,
-    private sitesService: SitesService
+    private sitesService: SitesService,
+    private entitySelectService: EntitySelectService
   ) {
     dateTimeAdapter.setLocale(authStateService.currentUserLocale);
     this.activatedRouteSub$ = this.activateRoute.params.subscribe((params) => {
@@ -83,20 +83,57 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.location.back();
+    this.router
+      .navigate([
+        '/plugins/workflow-pn/cases'
+      ])
+      .then();
+  }
+
+  getStatusText(id: number) {
+    if (this.statuses.length > 0) {
+      if (id === null) {
+        return '';
+      }
+      return this.statuses.find(x => x.id === id).text;
+    } else {
+      return '';
+    }
+  }
+
+  getSolverName(id: number) {
+    if (this.deviceUsersList.length > 0) {
+      if (id === undefined) {
+        return '';
+      }
+      const result =  this.deviceUsersList.find(x => x.id === id);
+      if (result === undefined) {
+        return '';
+      } else {
+        return result.siteName;
+      }
+    } else {
+      return '';
+    }
   }
 
   updateWorkflowCase() {
     this.workflowCaseModel = {
       ...this.workflowCaseModel,
-      deadline: format(this.dataForm.value.deadline, 'yyyy-MM-dd'),
-      dateOfIncident: format(this.dataForm.value.dateOfIncident, 'yyyy-MM-dd'),
+      deadline: this.workflowCaseModel.deadline,
+      dateOfIncident: this.workflowCaseModel.dateOfIncident
+      // deadline: format(this.dataForm.value.deadline, 'yyyy-MM-dd'),
+      // dateOfIncident: format(this.dataForm.value.dateOfIncident, 'yyyy-MM-dd'),
     };
     this.updateSub$ = this.workflowPnCasesService
       .updateCase(this.workflowCaseModel)
       .subscribe((data) => {
         if (data && data.success) {
-          this.goBack();
+          this.router
+            .navigate([
+              '/plugins/workflow-pn/cases'
+            ])
+            .then();
         }
       });
   }
@@ -112,7 +149,6 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     });
     this.getSites();
     this.loadCase();
-    this.loadPlaces();
   }
 
   ngOnDestroy() {}
@@ -124,6 +160,8 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     this.workflowPnCasesService.readCase(this.id).subscribe((operation) => {
       if (operation && operation.success) {
         this.workflowCaseModel = operation.model;
+        this.loadPlaces();
+        this.loadTypes();
       }
     });
   }
@@ -137,10 +175,36 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   }
 
   loadPlaces() {
-    this.workflowPnCasesService.getPlaces().subscribe((operation) => {
+    this.entitySelectService.getEntitySelectableGroupDictionary(this.workflowCaseModel.incidentPlaceListId).subscribe((operation => {
       if (operation && operation.success) {
-        this.places = operation.model;
+        this.places  = operation.model;
       }
-    });
+    }));
+  }
+
+  loadTypes() {
+    this.entitySelectService.getEntitySelectableGroupDictionary(this.workflowCaseModel.incidentTypeListId).subscribe((operation => {
+      if (operation && operation.success) {
+        this.incidentTypes  = operation.model;
+      }
+    }));
+  }
+
+  onSelectedChangedPlace(e: any) {
+    this.workflowCaseModel.incidentPlaceId = e.id;
+    this.workflowCaseModel.incidentPlace = e.text;
+  }
+
+  onSelectedChangedType(e: any) {
+    this.workflowCaseModel.incidentTypeId = e.id;
+    this.workflowCaseModel.incidentType = e.text;
+  }
+
+  onDateSelectedIncidentDate(e: any) {
+    this.workflowCaseModel.dateOfIncident = format(e.value, 'yyyy-MM-dd');
+  }
+
+  onDateSelectedDeadline(e: any) {
+    this.workflowCaseModel.deadline = format(e.value, 'yyyy-MM-dd');
   }
 }

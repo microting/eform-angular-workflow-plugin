@@ -15,6 +15,38 @@
                 <strong>{{ workflowCaseModel.id }}</strong>
               </div>
             </div>
+            <div class="row">
+              <div class="col-md-6">
+                <h6>{{'Date of incident' | translate}}</h6>
+              </div>
+              <div class="col-md-6">
+                <strong>{{ workflowCaseModel.dateOfIncident | date: 'dd.MM.yyyy' }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <h6>{{'Created by' | translate}}</h6>
+              </div>
+              <div class="col-md-6">
+                <strong>{{ workflowCaseModel.createdBySiteName }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <h6>{{'Incident type' | translate}}</h6>
+              </div>
+              <div class="col-md-6">
+                <strong>{{ workflowCaseModel.incidentType }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <h6>{{'Incident place' | translate}}</h6>
+              </div>
+              <div class="col-md-6">
+                <strong>{{ workflowCaseModel.incidentPlace }}</strong>
+              </div>
+            </div>
 
             <div class="row">
               <div class="col-md-6">

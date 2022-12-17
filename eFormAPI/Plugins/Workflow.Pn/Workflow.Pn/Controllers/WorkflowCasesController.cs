@@ -18,6 +18,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Text;
+
 namespace Workflow.Pn.Controllers
 {
     using System.Collections.Generic;
@@ -40,7 +42,7 @@ namespace Workflow.Pn.Controllers
         {
             _workflowPnSettingsService = workflowPnSettingsService;
         }
-        
+
         [HttpPut]
         [Authorize]
         public async Task<OperationResult> UpdateWorkflowCase([FromBody] WorkflowCasesUpdateModel model)
@@ -69,6 +71,51 @@ namespace Workflow.Pn.Controllers
         public async Task<OperationDataResult<List<WorkflowPlacesModel>>> GetPlaces()
         {
             return await _workflowPnSettingsService.GetPlaces();
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<OperationResult> Delete(int id)
+        {
+            return await _workflowPnSettingsService.Delete(id);
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("download-case-pdf")]
+        public async Task DownloadEFormPdf(int id, string fileType)
+        {
+            var result =  await _workflowPnSettingsService.DownloadEFormPdf(id, fileType);
+            const int bufferSize = 4086;
+            byte[] buffer = new byte[bufferSize];
+            Response.OnStarting(async () =>
+            {
+                if (!result.Success)
+                {
+                    Response.ContentLength = result.Message.Length;
+                    Response.ContentType = "text/plain";
+                    Response.StatusCode = 400;
+                    byte[] bytes = Encoding.UTF8.GetBytes(result.Message);
+                    await Response.Body.WriteAsync(bytes, 0, result.Message.Length);
+                    await Response.Body.FlushAsync();
+                }
+                else
+                {
+                    await using var wordStream = result.Model;
+                    int bytesRead;
+                    Response.ContentLength = wordStream.Length;
+                    Response.ContentType = fileType == "docx"
+                        ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        : "application/pdf";
+
+                    while ((bytesRead = await wordStream.ReadAsync(buffer, 0, buffer.Length)) > 0 &&
+                           !HttpContext.RequestAborted.IsCancellationRequested)
+                    {
+                        await Response.Body.WriteAsync(buffer, 0, bytesRead);
+                        await Response.Body.FlushAsync();
+                    }
+                }
+            });
         }
     }
 }

@@ -18,17 +18,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.IO;
+using System.Reflection;
+using eFormCore;
+using ImageMagick;
+using Microting.eForm.Dto;
+using Microting.eForm.Helpers;
+using Microting.eForm.Infrastructure.Models;
+using Microting.eFormWorkflowBase.Helpers;
+using Microting.eFormWorkflowBase.Infrastructure.Data.Entities;
+using Microting.eFormWorkflowBase.Messages;
+using Workflow.Pn.Helpers;
+
 namespace Workflow.Pn.Services.WorkflowCasesService
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using Infrastructure.Models;
     using Infrastructure.Models.Cases;
     using Infrastructure.Models.Settings;
-    using Messages;
     using Microsoft.EntityFrameworkCore;
     using Microting.eForm.Infrastructure.Constants;
     using Microting.eForm.Infrastructure.Data.Entities;
@@ -42,7 +52,6 @@ namespace Workflow.Pn.Services.WorkflowCasesService
     using Rebus.Bus;
     using RebusService;
     using WorkflowLocalizationService;
-    using CheckListValue = Microting.eForm.Infrastructure.Models.CheckListValue;
 
     public class WorkflowCasesService : IWorkflowCasesService
     {
@@ -128,27 +137,149 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                         IncidentType = x.IncidentType,
                         PhotosExist = x.PhotosExist,
                         StatusName = x.Status,
+                        NumberOfPhotos = x.NumberOfPhotos ?? 0,
                         //it comment because it posible System.InvalidOperationException: The LINQ expression 'y' could not be translated.
                         //Status = WorkflowCaseStatuses.Statuses.FirstOrDefault(y => y.Key == x.Status).Value,
                         //ToBeSolvedById = idsSites.FirstOrDefault(y => y.Name == x.SolvedBy).Id,
-                        ToBeSolvedBy = x.SolvedBy,
+                        SolvedBy = x.SolvedBy,
                         UpdatedAt = (DateTime)x.UpdatedAt,
+                        CreatedBySiteName = x.CreatedBySiteName
                     })
                     .ToListAsync();
 
                 foreach (var workflowCasesModel in workflowCases)
                 {
-                    workflowCasesModel.Status =
-                        WorkflowCaseStatuses.Statuses.First(y => y.Key == workflowCasesModel.StatusName).Value;
-                    if (!string.IsNullOrEmpty(workflowCasesModel.ToBeSolvedBy))
+                    if (workflowCasesModel.StatusName != null)
                     {
-                        workflowCasesModel.ToBeSolvedById =
-                            idsSites.First(y => y.Name == workflowCasesModel.ToBeSolvedBy).Id;
+                        workflowCasesModel.Status =
+                            WorkflowCaseStatuses.Statuses.First(y => y.Key == workflowCasesModel.StatusName).Value;
+                        if (!string.IsNullOrEmpty(workflowCasesModel.SolvedBy))
+                        {
+                            workflowCasesModel.ToBeSolvedById =
+                                idsSites.First(y => y.Name == workflowCasesModel.SolvedBy).Id;
+                        }
                     }
                 }
             }
             return new OperationDataResult<Paged<WorkflowCasesModel>>(true, new Paged<WorkflowCasesModel> { Entities = workflowCases, Total = total });
+        }
 
+        public async Task<OperationDataResult<WorkflowCasesUpdateModel>> Read(int id)
+        {
+            var core = await _coreHelper.GetCore();
+            var sdkDbContext = core.DbContextHelper.GetDbContext();
+
+            // get query
+            var workflowDbCase = await _workflowPnDbContext.WorkflowCases
+                .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            if (workflowDbCase == null)
+            {
+                return new OperationDataResult<WorkflowCasesUpdateModel>(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
+            }
+
+            var incidentPlaceListId =
+                await _workflowPnDbContext.PluginConfigurationValues.SingleOrDefaultAsync(x => x.Name == $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.IncidentPlaceListId)}");
+
+            var incidentTypeListId = await _workflowPnDbContext.PluginConfigurationValues.SingleOrDefaultAsync(x =>
+                x.Name == $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.IncidentTypeListId)}");
+
+            WorkflowCasesUpdateModel workflowCase = new WorkflowCasesUpdateModel
+            {
+                ActionPlan = workflowDbCase.ActionPlan,
+                DateOfIncident = workflowDbCase.DateOfIncident.ToString("yyyy-MM-dd"), // 2021-08-29,
+                Deadline = workflowDbCase.Deadline?.ToString("yyyy-MM-dd"),
+                Description = workflowDbCase.Description,
+                IncidentPlace = workflowDbCase.IncidentPlace,
+                IncidentPlaceId = workflowDbCase.IncidentPlaceId,
+                IncidentPlaceListId = incidentPlaceListId.Value,
+                IncidentType = workflowDbCase.IncidentType,
+                IncidentTypeId = workflowDbCase.IncidentTypeId,
+                IncidentTypeListId = incidentTypeListId.Value,
+                Id = workflowDbCase.Id,
+                CreatedBySiteName = workflowDbCase.CreatedBySiteName,
+
+            };
+
+            var picturesOfTasks = await _workflowPnDbContext.PicturesOfTasks
+                .Where(x => x.WorkflowCaseId == workflowDbCase.Id
+                            && x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
+
+            int i = picturesOfTasks.Count;
+            foreach (PicturesOfTask picturesOfTask in picturesOfTasks)
+            {
+                var result = await sdkDbContext.UploadedDatas.SingleOrDefaultAsync(x =>
+                    x.Id == picturesOfTask.UploadedDataId && x.WorkflowState != Constants.WorkflowStates.Removed);
+
+                if (result != null)
+                {
+                    Infrastructure.Models.FieldValue fieldValue = new Infrastructure.Models.FieldValue()
+                    {
+                        Id = picturesOfTask.Id,
+                        Longitude = picturesOfTask.Longitude,
+                        Latitude = picturesOfTask.Latitude,
+                        UploadedDataObj = new UploadedDataObj()
+                        {
+                            Id = result.Id,
+                            FileName = picturesOfTask.FileName
+                        }
+                    };
+                    workflowCase.PicturesOfTask.Add(fieldValue);
+                }
+                else
+                {
+                    await picturesOfTask.Delete(_workflowPnDbContext);
+                }
+            }
+
+            if (i == 0)
+            {
+                workflowDbCase.PhotosExist = false;
+                await workflowDbCase.Update(_workflowPnDbContext);
+            }
+
+            var picturesOfTaskDones = await _workflowPnDbContext.PicturesOfTaskDone
+                .Where(x => x.WorkflowCaseId == workflowDbCase.Id
+                            && x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
+
+            foreach (PicturesOfTaskDone picturesOfTask in picturesOfTaskDones)
+            {
+                var result = await sdkDbContext.UploadedDatas.SingleOrDefaultAsync(x =>
+                    x.Id == picturesOfTask.UploadedDataId && x.WorkflowState != Constants.WorkflowStates.Removed);
+
+                if (result != null)
+                {
+                    Infrastructure.Models.FieldValue fieldValue = new Infrastructure.Models.FieldValue()
+                    {
+                        Id = picturesOfTask.Id,
+                        Longitude = picturesOfTask.Longitude,
+                        Latitude = picturesOfTask.Latitude,
+                        UploadedDataObj = new UploadedDataObj()
+                        {
+                            Id = result.Id,
+                            FileName = picturesOfTask.FileName
+                        }
+                    };
+                    workflowCase.PicturesOfTaskDone.Add(fieldValue);
+                }
+                else
+                {
+                    await picturesOfTask.Delete(_workflowPnDbContext);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(workflowDbCase.Status))
+            {
+                workflowCase.Status = WorkflowCaseStatuses.Statuses.First(y => y.Key == workflowDbCase.Status).Value;
+            }
+
+            if (!string.IsNullOrEmpty(workflowDbCase.SolvedBy))
+            {
+                workflowCase.ToBeSolvedById = sdkDbContext.Sites.First(y => y.Name == workflowDbCase.SolvedBy).Id;
+            }
+
+            return new OperationDataResult<WorkflowCasesUpdateModel>(true, workflowCase);
         }
 
         public async Task<OperationResult> UpdateWorkflowCase(WorkflowCasesUpdateModel model)
@@ -159,6 +290,9 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 var solvedByNotSelected = !model.ToBeSolvedById.HasValue;
                 var statusClosed = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Closed").Value;
                 var statusOngoing = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Ongoing").Value;
+                var notInitiated = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Not initiated").Value;
+                var canceled = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "Canceled").Value;
+                var noStatus = model.Status == WorkflowCaseStatuses.Statuses.First(x => x.Key == "No status").Value;
 
                 var workflowCase = await _workflowPnDbContext.WorkflowCases.Where(x => x.Id == model.Id).FirstOrDefaultAsync();
                 if (workflowCase == null)
@@ -184,17 +318,21 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                     workflowCase.Status = WorkflowCaseStatuses.Statuses.First(x => x.Value == model.Status).Key;
                 }
                 workflowCase.UpdatedByUserId = _userService.UserId;
-                workflowCase.Deadline = model.Deadline;
-                if(model.IncidentPlace.HasValue)
-                {
-                    workflowCase.IncidentPlace = await sdkDbContext.FieldOptionTranslations
-                        .Where(x => x.Id == model.IncidentPlace)
-                        .Select(x => x.Text)
-                        .FirstAsync();
-                }
+                workflowCase.Deadline = string.IsNullOrEmpty(model.Deadline)  ? null : DateTime.Parse(model.Deadline);
+                workflowCase.IncidentPlace = model.IncidentPlace;
+                if (model.IncidentPlaceId != null) workflowCase.IncidentPlaceId = (int) model.IncidentPlaceId;
+                workflowCase.IncidentType = model.IncidentType;
+                if (model.IncidentTypeId != null) workflowCase.IncidentTypeId = (int) model.IncidentTypeId;
+                //if(model.IncidentPlace.HasValue)
+                // {
+                //     workflowCase.IncidentPlace = await sdkDbContext.FieldOptionTranslations
+                //         .Where(x => x.Id == model.IncidentPlace)
+                //         .Select(x => x.Text)
+                //         .FirstAsync();
+                // }
                 workflowCase.ActionPlan = model.ActionPlan;
                 workflowCase.Description = model.Description;
-                workflowCase.DateOfIncident = model.DateOfIncident;
+                workflowCase.DateOfIncident = DateTime.Parse(model.DateOfIncident);
 
                 await workflowCase.Update(_workflowPnDbContext);
 
@@ -204,52 +342,194 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                         // send email with pdf report to device user
                         await _bus.SendLocal(new QueueEformEmail
                         {
-                            CaseId = model.Id,
-                            UserName = await _userService.GetCurrentUserFullName(),
-                            CurrentUserLanguage = await _userService.GetCurrentUserLanguage(),
-                            SolvedUser = new List<KeyValuePair<string, Language>>()
+                            CaseId = workflowCase.Id,
+                            // UserName = await _userService.GetCurrentUserFullName(),
+                            // CurrentUserLanguageId = _userService.GetCurrentUserLanguage().GetAwaiter().GetResult().Id,
+                            // SolvedUser = new List<KeyValuePair<string, int>>()
                         });
+
+                        if (workflowCase.DeployedMicrotingUid != null)
+                        {
+                            await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
+                        }
+
+                        workflowCase.DeployedMicrotingUid = null;
+                        await workflowCase.Update(_workflowPnDbContext);
+                        break;
+                    case false when canceled:
+                    case false when notInitiated:
+                    case false when noStatus:
+                        if (workflowCase.DeployedMicrotingUid != null)
+                        {
+                            await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
+                        }
+
+                        workflowCase.DeployedMicrotingUid = null;
+                        await workflowCase.Update(_workflowPnDbContext);
                         break;
                     case false when statusClosed:
                         {
-                            var language = await sdkDbContext.Languages.FirstAsync(x => x.Id == solvedUser.LanguageId);
-                            var solvedUsers = new List<KeyValuePair<string, Language>>
-                            {
-                                new(solvedUser.Name, language),
-                            };
+                            // var language = await sdkDbContext.Languages.FirstAsync(x => x.Id == solvedUser.LanguageId);
+                            // var solvedUsers = new List<KeyValuePair<string, int>>
+                            // {
+                            //     new(solvedUser.Name, language.Id),
+                            // };
 
                             // send email with pdf report to device user and solved user
                             await _bus.SendLocal(new QueueEformEmail
                             {
-                                CaseId = model.Id,
-                                UserName = await _userService.GetCurrentUserFullName(),
-                                CurrentUserLanguage = await _userService.GetCurrentUserLanguage(),
-                                SolvedUser = solvedUsers
+                                CaseId = workflowCase.Id,
+                                // UserName = await _userService.GetCurrentUserFullName(),
+                                // CurrentUserLanguageId = _userService.GetCurrentUserLanguage().GetAwaiter().GetResult().Id,
+                                // SolvedUser = solvedUsers
                             });
+
+                            if (workflowCase.DeployedMicrotingUid != null)
+                            {
+                                await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
+                            }
+
+                            workflowCase.DeployedMicrotingUid = null;
+                            await workflowCase.Update(_workflowPnDbContext);
                             break;
                         }
                     case false when statusOngoing:
                         {
+
+                            if (workflowCase.Deadline == null)
+                            {
+                                return new OperationResult(false, _workflowLocalizationService.GetString("DeadlineIsMissing"));
+                            }
+
+                            // Docx and PDF files
+                            string timeStamp = DateTime.UtcNow.ToString("yyyyMMdd") + "_" + DateTime.UtcNow.ToString("hhmmss");
+                            string downloadPath = Path.Combine(Path.GetTempPath(), "pdf");
+                            string docxFileName = $"{timeStamp}{model.ToBeSolvedById}_temp.docx";
+                            string tempPDFFileName = $"{timeStamp}{model.ToBeSolvedById}_temp.pdf";
+                            string tempPDFFilePath = Path.Combine(downloadPath, tempPDFFileName);
+
+                            var resourceString = "Workflow.Pn.Resources.Templates.page.html";
+                            var assembly = Assembly.GetExecutingAssembly();
+                            string html;
+                            await using (var resourceStream = assembly.GetManifestResourceStream(resourceString))
+                            {
+                                using var reader = new StreamReader(resourceStream ?? throw new InvalidOperationException($"{nameof(resourceStream)} is null"));
+                                html = await reader.ReadToEndAsync();
+                            }
+
+                            // Read docx stream
+                            resourceString = "Workflow.Pn.Resources.Templates.file.docx";
+                            var docxFileResourceStream = assembly.GetManifestResourceStream(resourceString);
+                            if (docxFileResourceStream == null)
+                            {
+                                throw new InvalidOperationException($"{nameof(docxFileResourceStream)} is null");
+                            }
+
+                            var docxFileStream = new MemoryStream();
+                            await docxFileResourceStream.CopyToAsync(docxFileStream);
+                            await docxFileResourceStream.DisposeAsync();
+                            string basePicturePath = Path.Combine(Path.GetTempPath(), "pictures");
+                            var word = new WordProcessor(docxFileStream);
+                            string imagesHtml = "";
+                            var picturesOfTasks = new List<string>();
+
+                            var pictures =
+                                await _workflowPnDbContext.PicturesOfTasks.Where(x =>
+                                    x.WorkflowCaseId == workflowCase.Id).ToListAsync();
+
+                            foreach (PicturesOfTask picturesOfTask in pictures)
+                            {
+                                picturesOfTasks.Add(picturesOfTask.FileName);
+                            }
+
+                            foreach (var imagesName in picturesOfTasks)
+                            {
+                                Console.WriteLine($"Trying to insert image into document : {imagesName}");
+                                imagesHtml = await InsertImage(core, imagesName, imagesHtml, 700, 650, basePicturePath);
+                            }
+
+                            html = html.Replace("{%Content%}", imagesHtml);
+
+                            word.AddHtml(html);
+                            word.Dispose();
+                            docxFileStream.Position = 0;
+
+                            // Build docx
+                            await using (var docxFile = new FileStream(docxFileName, FileMode.Create, FileAccess.Write))
+                            {
+                                docxFileStream.WriteTo(docxFile);
+                            }
+
+                            // Convert to PDF
+                            ReportHelper.ConvertToPdf(docxFileName, downloadPath);
+                            File.Delete(docxFileName);
+
+                            // Upload PDF
+                            // string pdfFileName = null;
+                            string hash = await core.PdfUpload(tempPDFFilePath);
+                            if (hash != null)
+                            {
+                                //rename local file
+                                FileInfo fileInfo = new FileInfo(tempPDFFilePath);
+                                fileInfo.CopyTo(downloadPath + hash + ".pdf", true);
+                                fileInfo.Delete();
+                                await core.PutFileToStorageSystem(Path.Combine(downloadPath, $"{hash}.pdf"), $"{hash}.pdf");
+
+                                // TODO Remove from file storage?
+                            }
+
                             // eform is deployed to solver device user
+                            Folder folder =
+                                await sdkDbContext.Folders.SingleOrDefaultAsync(x =>
+                                    x.Id == _options.Value.FolderTasksId);
                             var mainElement = await core.ReadeForm(_options.Value.SecondEformId, await _userService.GetCurrentUserLanguage());
                             mainElement.Repeated = 1;
                             mainElement.EndDate = DateTime.Now.AddYears(10).ToUniversalTime();
                             mainElement.StartDate = DateTime.Now.ToUniversalTime();
+                            mainElement.CheckListFolderName = folder.MicrotingUid.ToString();
+                            mainElement.PushMessageTitle = workflowCase.IncidentType;
 
-                            var checkListValue = mainElement.ElementList[0] as CheckListValue;
-                            var info = checkListValue!.DataItemList[0];
+                            var dataElement = mainElement.ElementList[0] as DataElement;
+                            mainElement.Label = workflowCase.IncidentType;
+                            dataElement.Label = workflowCase.IncidentType;
+                            DateTime startDate = new DateTime(2020, 1, 1);
+                            mainElement.DisplayOrder = (workflowCase.Deadline - startDate).Value.Days;
+                            dataElement.Description = new CDataValue()
+                            {
+                                InderValue = $"{workflowCase.IncidentPlace}<br><strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}" // Deadline
+                            };
+                            var info = dataElement!.DataItemList[0];
+                            mainElement.PushMessageBody = $"{workflowCase.IncidentPlace}\nDeadline: {workflowCase.Deadline?.ToString("dd.MM.yyyy")}"; // Deadline
 
-                            info.Label = $@"INFO<br><strong>Event created by: {workflowCase.SolvedBy}</strong><br>";
-                            info.Label += $@"<strong>Event date: {workflowCase.DateOfIncident}</strong><br>";
-                            info.Label += $@"<strong>Event: {workflowCase.IncidentType}</strong><br>";
-                            info.Label += $@"<strong>Event location: {workflowCase.IncidentPlace}</strong><br>";
-                            info.Label += $@"<strong>Deadline: {workflowCase.Deadline}</strong><br>";
-                            info.Label += $@"<strong>Status: {workflowCase.Status}</strong><br>";
+                            info.Label = $@"<strong>Oprettet af:</strong> {workflowCase.CreatedBySiteName}<br>"; // Event created by
+                            info.Label += $@"<strong>Dato:</strong> {workflowCase.DateOfIncident:dd.MM.yyyy}<br>"; // Event date
+                            info.Label += $@"<strong>Type:</strong> {workflowCase.IncidentType}<br>"; // Event
+                            info.Label += $@"<strong>Sted:</strong> {workflowCase.IncidentPlace}<br>"; // Event location
+                            info.Label += $@"<strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}<br>"; // Deadline
+                            info.Label += $@"<strong>Status:</strong> {GetStatusTranslated(workflowCase.Status)}<br>"; // Status
 
-                            checkListValue!.DataItemList[0] = info;
-                            mainElement.ElementList[0] = checkListValue;
+                            dataElement!.DataItemList[0] = info;
+                            mainElement.ElementList[0] = dataElement;
 
-                            await core.CaseCreate(mainElement, "", (int)model.ToBeSolvedById, 0);
+                            if (hash != null)
+                            {
+                                ((ShowPdf)dataElement.DataItemList[1]).Value = hash;
+                            }
+
+                            ((Comment) dataElement.DataItemList[2]).Value = workflowCase.Description;
+
+                            ((Comment) dataElement.DataItemList[3]).Value = workflowCase.ActionPlan;
+
+                            if (workflowCase.DeployedMicrotingUid != null)
+                            {
+                                await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
+                            }
+
+                            Site site = await sdkDbContext.Sites.SingleOrDefaultAsync(x =>
+                                x.Id == model.ToBeSolvedById);
+
+                            workflowCase.DeployedMicrotingUid = (int)await core.CaseCreate(mainElement, "", (int)site.MicrotingUid, folder.Id);
+                            await workflowCase.Update(_workflowPnDbContext);
                             break;
                         }
                 }
@@ -262,76 +542,6 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 Log.LogException(ex.StackTrace);
                 return new OperationResult(false, $"{_workflowLocalizationService.GetString("CaseCouldNotBeUpdated")} Exception: {ex.Message}");
             }
-        }
-
-        public async Task<OperationDataResult<WorkflowCasesUpdateModel>> Read(int id)
-        {
-            var core = await _coreHelper.GetCore();
-            var sdkDbContext = core.DbContextHelper.GetDbContext();
-
-            // get query
-            var query = _workflowPnDbContext.WorkflowCases
-                .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
-                .Where(x => x.Id == id);
-
-            //get from db
-            var workflowCase = await query
-                .Select(x => new WorkflowCasesUpdateModel
-                {
-                    ActionPlan = x.ActionPlan,
-                    DateOfIncident = x.DateOfIncident,
-                    Deadline = x.Deadline,
-                    Description = x.Description,
-                    Id = x.Id,
-                    //it comment because it posible System.InvalidOperationException: The LINQ expression 'y' could not be translated.
-                    //Status = WorkflowCaseStatuses.Statuses.FirstOrDefault(y => y.Key == x.Status).Value,
-                    //ToBeSolvedById = idsSites.FirstOrDefault(y => y.Name == x.SolvedBy).Id,
-                })
-                .FirstOrDefaultAsync();
-
-
-            if (workflowCase == null)
-            {
-                return new OperationDataResult<WorkflowCasesUpdateModel>(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
-            }
-
-            var statusName = await query.Select(x => x.Status).FirstAsync();
-            var toBeSolvedBy = await query.Select(x => x.SolvedBy).FirstAsync();
-            var incidentPlace = await query.Select(x => x.IncidentPlace).FirstAsync();
-            if (!string.IsNullOrEmpty(statusName))
-            {
-                workflowCase.Status = WorkflowCaseStatuses.Statuses.First(y => y.Key == statusName).Value;
-            }
-
-            if (!string.IsNullOrEmpty(toBeSolvedBy))
-            {
-                workflowCase.ToBeSolvedById = sdkDbContext.Sites.First(y => y.Name == toBeSolvedBy).Id;
-            }
-
-            if (_options.Value.FirstEformId != 0/*if the form is installed*/ && !string.IsNullOrEmpty(incidentPlace))
-            {
-                var fieldWithPlaces = await sdkDbContext.Fields
-                    //.Where(x => x.CheckListId == _options.Value.FirstEformId)
-                    //.Where(x => x.FieldTypeId == 8) // fieldType.id == 8; fieldType.type -> SingleSelect
-                    .Where(x => x.OriginalId == 374097.ToString())
-                    .Select(x => x.Id)
-                    //.Skip(1)
-                    .FirstOrDefaultAsync();
-
-                var languageId = await _userService.GetCurrentUserLanguage();
-
-                workflowCase.IncidentPlace = await sdkDbContext.FieldOptions
-                    .Where(x => x.FieldId == fieldWithPlaces)
-                    .Include(x => x.FieldOptionTranslations)
-                    .SelectMany(x => x.FieldOptionTranslations)
-                    .Where(x => x.LanguageId == languageId.Id)
-                    .Where(x => x.Text == incidentPlace)
-                    .Select(x => x.Id )
-                    .FirstAsync();
-            }
-
-
-            return new OperationDataResult<WorkflowCasesUpdateModel>(true, workflowCase);
         }
 
         public async Task<OperationDataResult<List<WorkflowPlacesModel>>> GetPlaces()
@@ -370,6 +580,128 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 Log.LogException(ex.Message);
                 Log.LogException(ex.StackTrace);
                 return new OperationDataResult<List<WorkflowPlacesModel>>(false, $"{_workflowLocalizationService.GetString("ErrorWhileGetPlaces")} Exception: {ex.Message}");
+            }
+        }
+
+        public async Task<OperationResult> Delete(int id)
+        {
+
+            var core = await _coreHelper.GetCore();
+            var workflowDbCase = await _workflowPnDbContext.WorkflowCases
+                .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            if (workflowDbCase == null)
+            {
+                return new OperationDataResult<WorkflowCasesUpdateModel>(false, _workflowLocalizationService.GetString("WorkflowCaseNotFound"));
+            }
+
+            if (workflowDbCase.DeployedMicrotingUid != null)
+            {
+                await core.CaseDelete((int)workflowDbCase.DeployedMicrotingUid);
+            }
+
+            workflowDbCase.DeployedMicrotingUid = null;
+
+            await workflowDbCase.Update(_workflowPnDbContext);
+            await workflowDbCase.Delete(_workflowPnDbContext);
+
+            return new OperationDataResult<WorkflowCasesUpdateModel>(true);
+
+        }
+
+        public async Task<OperationDataResult<Stream>> DownloadEFormPdf(int caseId, string fileType)
+        {
+            var workflowDbCase = await _workflowPnDbContext.WorkflowCases
+                .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
+                .Where(x => x.Id == caseId).FirstOrDefaultAsync();
+
+            if (workflowDbCase == null)
+            {
+                return new OperationDataResult<Stream>(
+                    false,
+                    "ErrorWhileGeneratingReportFile");
+            }
+            var core = await _coreHelper.GetCore();
+            var sdkDbContext = core.DbContextHelper.GetDbContext();
+            var reportHelper = new WorkflowReportHelper(core, _workflowPnDbContext);
+
+            var filePath = await reportHelper.GenerateReportAnd(0, workflowDbCase, fileType);
+
+            FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+
+            return new OperationDataResult<Stream>(true, fileStream);
+        }
+
+        private async Task<string> InsertImage(Core core, string imageName, string itemsHtml, int imageSize, int imageWidth, string basePicturePath)
+        {
+
+            bool s3Enabled = core.GetSdkSetting(Settings.s3Enabled).Result.ToLower() == "true";
+            bool swiftEnabled = core.GetSdkSetting(Settings.swiftEnabled).Result.ToLower() == "true";
+            var filePath = Path.Combine(basePicturePath, imageName);
+            Stream stream;
+            if (s3Enabled)
+            {
+                var storageResult = await core.GetFileFromS3Storage(imageName);
+                stream = storageResult.ResponseStream;
+            }
+            else if (!File.Exists(filePath))
+            {
+                return null;
+                // return new OperationDataResult<Stream>(
+                //     false,
+                //     _localizationService.GetString($"{imagesName} not found"));
+            }
+            else
+            {
+                stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            }
+
+            using (var image = new MagickImage(stream))
+            {
+                var profile = image.GetExifProfile();
+                // Write all values to the console
+                foreach (var value in profile.Values)
+                {
+                    Console.WriteLine("{0}({1}): {2}", value.Tag, value.DataType, value.ToString());
+                }
+                //image.AutoOrient();
+                // decimal currentRation = image.Height / (decimal)image.Width;
+                // int newWidth = imageSize;
+                // int newHeight = (int)Math.Round((currentRation * newWidth));
+                //
+                // image.Resize(newWidth, newHeight);
+                // image.Crop(newWidth, newHeight);
+                // if (newWidth > newHeight)
+                // {
+                     image.Rotate(90);
+                // }
+                var base64String = image.ToBase64();
+                itemsHtml +=
+                    $@"<p><img src=""data:image/png;base64,{base64String}"" width=""{imageWidth}px"" alt="""" /></p>";
+            }
+
+            await stream.DisposeAsync();
+
+            return itemsHtml;
+        }
+
+        private string GetStatusTranslated(string constant)
+        {
+            switch (constant)
+            {
+                case "Not initiated":
+                    return "Ikke igangsat";
+                case "Ongoing":
+                    return "Igangværende";
+                case "No status":
+                    return "Vælg status";
+                case "Closed":
+                    return "Afsluttet";
+                case "Canceled":
+                    return "Annulleret";
+                default:
+                    return "Ikke igangsat";
             }
         }
     }

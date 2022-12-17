@@ -36,10 +36,13 @@
             {{ workflowCase.id }}
           </td>
           <td id="workflowCaseDateOfIncident">
-            {{ workflowCase.dateOfIncident | date: 'dd.MM.y HH:mm:ss' }}
+            {{ workflowCase.dateOfIncident | date: 'dd.MM.yyyy' }}
           </td>
-          <td id="workflowCaseUpdatedAt">
-            {{ workflowCase.updatedAt | date: 'dd.MM.y HH:mm:ss' }}
+<!--          <td id="workflowCaseUpdatedAt">-->
+<!--            {{ workflowCase.updatedAt | date: 'dd.MM.yyyy HH:mm:ss' }}-->
+<!--          </td>-->
+          <td id="workflowCaseCreatedBy">
+            {{ workflowCase.createdBySiteName }}
           </td>
           <td id="workflowCaseIncidentType">
             {{ workflowCase.incidentType }}
@@ -48,22 +51,22 @@
             {{ workflowCase.incidentPlace }}
           </td>
           <td id="workflowCasePhotosExists">
-            {{ workflowCase.photosExist.toString() }}
+            ({{ workflowCase.numberOfPhotos }})
           </td>
           <td id="workflowCaseDescription">
             {{ workflowCase.description }}
           </td>
           <td id="workflowCaseDeadline">
-            {{ workflowCase.deadline | date: 'dd.MM.y HH:mm:ss' }}
+            {{ workflowCase.deadline | date: 'dd.MM.y' }}
           </td>
           <td id="workflowCaseActionPlan">
             {{ workflowCase.actionPlan }}
           </td>
           <td id="workflowCaseToBeSolvedBy">
-            {{ workflowCase.toBeSolvedBy }}
+            {{ workflowCase.solvedBy }}
           </td>
           <td id="workflowCaseStatus">
-            {{ workflowCase.statusName }}
+            {{ getStatusText(workflowCase.status) }}
           </td>
           <td>
             <div class="d-flex flex-row justify-content-center">
@@ -79,6 +82,31 @@
                 ]"
               >
                 <fa-icon icon="pen" [fixedWidth]="true" size="lg"></fa-icon>
+              </button>
+
+              <button
+                mdbBtn
+                class="btn-success btn-icon mb-2"
+                (click)="downloadFile(workflowCase.id, 'pdf')"
+                mdbTooltip="{{ 'Download PDF' | translate }}"
+              >
+                <fa-icon
+                  icon="file-pdf"
+                  size="lg"
+                  [fixedWidth]="true"
+                ></fa-icon>
+              </button>
+              <button
+                mdbBtn
+                class="btn-info btn-icon mb-2"
+                (click)="downloadFile(workflowCase.id, 'docx')"
+                mdbTooltip="{{ 'Download Docx' | translate }}"
+              >
+                <fa-icon
+                  icon="file-word"
+                  size="lg"
+                  [fixedWidth]="true"
+                ></fa-icon>
               </button>
               <button
                 id="deleteBtn"
@@ -110,7 +138,7 @@
     </div>
     <eform-pagination
       [pagination]="workflowCasesStateService.getPagination() | async"
-      (onPageChanged)="changePage($event)"
+      (paginationChanged)="changePage($event)"
     ></eform-pagination>
   </div>
 </div>

@@ -7,33 +7,33 @@ import { generateRandmString } from '../../Helpers/helper-functions';
 import { format } from 'date-fns';
 
 describe('Workflow cases - Edit', function () {
-  before(function () {
-    loginPage.open('/auth');
-    loginPage.login();
-    workflowCasesPage.goToWorkflowCasesPage();
+  before(async () => {
+    await loginPage.open('/auth');
+    await loginPage.login();
+    await workflowCasesPage.goToWorkflowCasesPage();
   });
-  it('should not edit workflow case', function () {
-    const firstWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
+  it('should not edit workflow case', async () => {
+    const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     const modelForUpdate = new WorkflowCaseForEdit();
-    modelForUpdate.status = 'Ongoing';
+    modelForUpdate.status = 'Igangværende';
     modelForUpdate.actionPlan = generateRandmString();
     modelForUpdate.description = generateRandmString();
     modelForUpdate.deadline = new Date();
     modelForUpdate.dateOfIncident = new Date();
-    firstWorkflowCase.update(modelForUpdate, true);
-    const findWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
-    expect(findWorkflowCase.id).equal(1);
+    await firstWorkflowCase.update(modelForUpdate, true);
+    const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
+    // expect(findWorkflowCase.id).equal(1);
     expect(findWorkflowCase.status, 'status has been updated').equal(
-      firstWorkflowCase.status
+      'Vælg status'
     );
     expect(
-      format(findWorkflowCase.dateOfIncident, 'M/d/yyyy'),
+      findWorkflowCase.dateOfIncident,
       'dateOfIncident has been updated'
-    ).equal(format(firstWorkflowCase.dateOfIncident, 'M/d/yyyy'));
+    ).equal(firstWorkflowCase.dateOfIncident);
     expect(
-      format(findWorkflowCase.deadline, 'M/d/yyyy'),
+      findWorkflowCase.deadline,
       'deadline has been updated'
-    ).equal(format(firstWorkflowCase.deadline, 'M/d/yyyy'));
+    ).equal(firstWorkflowCase.deadline);
     expect(findWorkflowCase.description, 'description has been updated').equal(
       firstWorkflowCase.description
     );
@@ -41,28 +41,28 @@ describe('Workflow cases - Edit', function () {
       firstWorkflowCase.actionPlan
     );
   });
-  it('should edit workflow case', function () {
-    const firstWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
+  it('should edit workflow case', async () => {
+    const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     const modelForUpdate = new WorkflowCaseForEdit();
-    modelForUpdate.status = 'Ongoing';
+    modelForUpdate.status = 'Igangværende';
     modelForUpdate.actionPlan = generateRandmString();
     modelForUpdate.description = generateRandmString();
     modelForUpdate.deadline = new Date();
     modelForUpdate.dateOfIncident = new Date();
-    firstWorkflowCase.update(modelForUpdate);
-    const findWorkflowCase = workflowCasesPage.getFirstWorkflowCase();
+    await firstWorkflowCase.update(modelForUpdate);
+    const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     expect(findWorkflowCase.id).equal(1);
     expect(findWorkflowCase.status, 'status not updated').equal(
       modelForUpdate.status
     );
     expect(
-      format(findWorkflowCase.dateOfIncident, 'M/d/yyyy'),
+      findWorkflowCase.dateOfIncident,
       'dateOfIncident not updated'
-    ).equal(format(modelForUpdate.dateOfIncident, 'M/d/yyyy'));
+    ).equal(format(modelForUpdate.dateOfIncident, 'dd.MM.yyyy'));
     expect(
-      format(findWorkflowCase.deadline, 'M/d/yyyy'),
+      findWorkflowCase.deadline,
       'deadline not updated'
-    ).equal(format(modelForUpdate.deadline, 'M/d/yyyy'));
+    ).equal(format(modelForUpdate.deadline, 'dd.MM.yyyy'));
     expect(findWorkflowCase.description, 'description not updated').equal(
       modelForUpdate.description
     );

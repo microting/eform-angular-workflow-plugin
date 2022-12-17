@@ -5,6 +5,8 @@ import { debounceTime } from 'rxjs/operators';
 import { Paged, TableHeaderElementModel } from 'src/app/common/models';
 import { WorkflowCaseModel } from '../../../models';
 import { WorkflowCasesStateService } from '../store';
+import {saveAs} from 'file-saver';
+import {WorkflowPnCasesService} from 'src/app/plugins/modules/workflow-pn/services';
 
 @AutoUnsubscribe()
 @Component({
@@ -30,10 +32,10 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       visibleName: 'Date of incident',
     },
     {
-      name: 'UpdatedAt',
-      elementId: 'updatedAtHeader',
-      sortable: false,
-      visibleName: 'Updated at',
+      name: 'CreatedBySiteName',
+      elementId: 'createdByHeader',
+      sortable: true,
+      visibleName: 'Created by',
     },
     {
       name: 'IncidentType',
@@ -48,7 +50,7 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       visibleName: 'Incident place',
     },
     {
-      name: 'PhotosExist',
+      name: 'NumberOfPhotos',
       elementId: 'photosExistsHeader',
       sortable: true,
       visibleName: 'Photo',
@@ -70,20 +72,29 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       visibleName: 'Action plan',
     },
     {
-      name: 'ToBeSolvedBy',
+      name: 'SolvedBy',
       elementId: 'toBeSolvedByHeader',
-      sortable: false,
+      sortable: true,
       visibleName: 'To be solved by',
     },
     {
       name: 'Status',
       elementId: 'statusHeader',
-      sortable: false,
+      sortable: true,
     },
     { name: 'Actions', elementId: '', sortable: false },
   ];
 
-  constructor(public workflowCasesStateService: WorkflowCasesStateService) {
+  statuses = [
+    { id: 2, text: 'Vælg status' }, // No status
+    { id: 0, text: 'Igangværende' }, // Ongoing
+    { id: 3, text: 'Ikke igangsat' }, // Not initiated
+    { id: 1, text: 'Afsluttet' }, // Closed
+    { id: 4, text: 'Annulleret' }, // Canceled
+  ];
+
+  constructor(public workflowCasesStateService: WorkflowCasesStateService,
+  private service: WorkflowPnCasesService) {
     this.searchSubject.pipe(debounceTime(500)).subscribe((val) => {
       this.workflowCasesStateService.updateNameFilter(val.toString());
       this.getWorkflowCases();
@@ -95,6 +106,18 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {}
+
+
+  getStatusText(id: number) {
+    if (id === null) {
+      return '';
+    }
+    if (this.statuses.length > 0) {
+      return this.statuses.find(x => x.id === id).text;
+    } else {
+      return '';
+    }
+  }
 
   getWorkflowCases() {
     this.getAllSub$ = this.workflowCasesStateService
@@ -133,4 +156,15 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     this.workflowCasesStateService.onDelete();
     this.getWorkflowCases();
   }
+
+
+  downloadFile(caseId: number, fileType: string) {
+    this.service
+      .downloadEformPDF(caseId, fileType)
+      .subscribe((data) => {
+        const blob = new Blob([data]);
+        saveAs(blob, `sag_nr_${caseId}.${fileType}`);
+      });
+  }
+
 }

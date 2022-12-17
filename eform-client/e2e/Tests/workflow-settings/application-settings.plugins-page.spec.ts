@@ -5,29 +5,30 @@ import pluginPage from '../../Page objects/Plugin.page';
 import { expect } from 'chai';
 
 describe('Application settings page - site header section', function () {
-  before(function () {
-    loginPage.open('/auth');
+  before(async () => {
+    await loginPage.open('/auth');
   });
-  it('should go to plugin settings page', function () {
-    loginPage.login();
-    myEformsPage.Navbar.goToPluginsPage();
-    $('#plugin-name').waitForDisplayed({ timeout: 50000 });
+  it('should go to plugin settings page', async () => {
+    await loginPage.login();
+    await myEformsPage.Navbar.goToPluginsPage();
+    //await (await $('#plugin-name')).waitForDisplayed({ timeout: 50000 });
 
-    const plugin = pluginPage.getFirstPluginRowObj();
+    const plugin = await pluginPage.getFirstPluginRowObj();
     expect(plugin.id).equal(1);
     expect(plugin.name).equal('Microting Workflow Plugin');
     expect(plugin.version).equal('1.0.0.0');
-    expect(plugin.status, 'status is not equal').eq(false);
+    expect(plugin.status, 'status is not equal').eq('toggle_off');
   });
 
-  it('should activate the plugin', function () {
-    let plugin = pluginPage.getFirstPluginRowObj();
-    plugin.enableOrDisablePlugin();
+  it('should activate the plugin', async () => {
+    let plugin = await pluginPage.getFirstPluginRowObj();
+    await plugin.enableOrDisablePlugin();
 
-    plugin = pluginPage.getFirstPluginRowObj();
+    // $('Microting Items Planning Plugin').waitForDisplayed({timeout: 10000});
+    plugin = await pluginPage.getFirstPluginRowObj();
     expect(plugin.id).equal(1);
     expect(plugin.name).equal('Microting Workflow Plugin');
     expect(plugin.version).equal('1.0.0.0');
-    expect(plugin.status, 'status is not equal').eq(true);
+    expect(plugin.status, 'status is not equal').eq('toggle_on');
   });
 });

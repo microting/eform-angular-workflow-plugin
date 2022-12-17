@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -12,16 +13,25 @@
     <OutputPath>../../../eFormAPI.Web/Plugins/Workflow</OutputPath>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="Resources\localization.json" />
+    <None Remove="Resources\Templates\page.html" />
+    <EmbeddedResource Include="Resources\Templates\page.html" />
+    <None Remove="Resources\Templates\file.docx" />
+    <EmbeddedResource Include="Resources\Templates\file.docx" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Magick.NET-Q16-x64" Version="8.0.1" />
-    <PackageReference Include="Microting.eForm" Version="5.2.17" />
-    <PackageReference Include="Microting.eFormApi.BasePn" Version="3.0.30" />
+    <PackageReference Include="Magick.NET-Q16-x64" Version="12.2.1" />
+    <PackageReference Include="Microting.eForm" Version="7.0.2" />
+    <PackageReference Include="Microting.eFormApi.BasePn" Version="7.0.2" />
     <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
-    <PackageReference Include="Microting.eFormWorkflowBase" Version="1.0.7" />
+    <PackageReference Include="Microting.eFormWorkflowBase" Version="7.0.2" />
+    <PackageReference Include="Microting.HtmlToOpenXml.dll" Version="2.2.0" />
   </ItemGroup>
 
 </Project>

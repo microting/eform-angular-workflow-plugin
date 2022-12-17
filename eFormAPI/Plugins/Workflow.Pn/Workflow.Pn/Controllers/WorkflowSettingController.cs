@@ -43,23 +43,31 @@ namespace Workflow.Pn.Controllers
         [Route("api/workflow-pn/settings")]
         public async Task<OperationDataResult<WorkflowSettingsModel>> GetSettings()
         {
-            return await _workflowPnSettingsService.GetSettings();
+            return await _workflowPnSettingsService.GetAllSettingsAsync();
         }
 
-        [HttpPost]
-        [Authorize(Roles = EformRole.Admin)]
-        [Route("api/workflow-pn/settings")]
-        public async Task<OperationResult> UpdateSetting([FromBody] WorkflowSettingsModel workflowSettingsModel)
+        [HttpPost("api/workflow-pn/settings/sites")]
+        public async Task<OperationResult> PostSiteToSettings([FromBody]int siteId)
         {
-            return await _workflowPnSettingsService.UpdateSetting(workflowSettingsModel);
+            return await _workflowPnSettingsService.AddSiteToSettingsAsync(siteId);
         }
 
-        [HttpGet]
-        //[Authorize(Roles = EformRole.Admin)]
-        [Route("api/workflow-pn/settings/template")]
-        public async Task<OperationDataResult<Template_Dto>> UpdateFolderId()
+        [HttpPost("api/workflow-pn/settings/folder")]
+        public async Task<OperationResult> UpdateFolder([FromBody] int folderId)
         {
-            return await _workflowPnSettingsService.GetTemplate();
+            return await _workflowPnSettingsService.UpdateFolder(folderId);
+        }
+
+        [HttpPost("api/workflow-pn/settings/tasksfolder")]
+        public async Task<OperationResult> UpdateTaskFolder([FromBody] int folderId)
+        {
+            return await _workflowPnSettingsService.UpdateTaskFolder(folderId);
+        }
+
+        [HttpDelete("api/workflow-pn/settings/sites/{siteId}")]
+        public async Task<OperationResult> DeleteSiteFromSettingsAsync(int siteId)
+        {
+            return await _workflowPnSettingsService.RemoveSiteFromSettingsAsync(siteId);
         }
     }
 }

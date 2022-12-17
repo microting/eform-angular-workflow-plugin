@@ -31,10 +31,10 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
 
     public interface IWorkflowPnSettingsService
     {
-        Task<OperationDataResult<WorkflowSettingsModel>> GetSettings();
-        
-        Task<OperationResult> UpdateSetting(WorkflowSettingsModel workflowSettingsModel);
-
-        Task<OperationDataResult<Template_Dto>> GetTemplate();
+        Task<OperationDataResult<WorkflowSettingsModel>> GetAllSettingsAsync();
+        Task<OperationResult> AddSiteToSettingsAsync(int siteId);
+        Task<OperationResult> RemoveSiteFromSettingsAsync(int siteId);
+        Task<OperationResult> UpdateFolder(int folderId);
+        Task<OperationResult> UpdateTaskFolder(int folderId);
     }
 }

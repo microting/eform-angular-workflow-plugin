@@ -19,6 +19,11 @@ SOFTWARE.
 */
 
 
+using eFormCore;
+using Microting.eFormApi.BasePn.Abstractions;
+using Microting.eFormApi.BasePn.Infrastructure.Helpers.PluginDbOptions;
+using Workflow.Pn.Helpers;
+
 namespace Workflow.Pn
 {
     using Infrastructure.Data.Seed;
@@ -86,6 +91,7 @@ namespace Workflow.Pn
             services.AddTransient<IWorkflowCasesService, WorkflowCasesService>();
             services.AddSingleton<IRebusService, RebusService>();
             services.AddControllers();
+            SeedWorkOrderForms(services);
         }
 
         public void ConfigureOptionsServices(IServiceCollection services, IConfiguration configuration)
@@ -155,19 +161,19 @@ namespace Workflow.Pn
                             new PluginMenuTranslationModel
                             {
                                  LocaleName = LocaleNames.English,
-                                 Name = "Workflow",
+                                 Name = "Incidents",
                                  Language = LanguageNames.English,
                             },
-                            //new PluginMenuTranslationModel
-                            //{
-                            //     LocaleName = LocaleNames.German,
-                            //     Name = "Inventar",
-                            //     Language = LanguageNames.German,
-                            //},
+                            new PluginMenuTranslationModel
+                            {
+                                 LocaleName = LocaleNames.German,
+                                 Name = "Vorfälle",
+                                 Language = LanguageNames.German,
+                            },
                             new PluginMenuTranslationModel
                             {
                                  LocaleName = LocaleNames.Danish,
-                                 Name = "Arbejdsproces",
+                                 Name = "Hændelser",
                                  Language = LanguageNames.Danish,
                             },
                         },
@@ -194,16 +200,16 @@ namespace Workflow.Pn
                                             Name = "Cases",
                                             Language = LanguageNames.English,
                                         },
-                                        //new PluginMenuTranslationModel
-                                        //{
-                                        //    LocaleName = LocaleNames.German,
-                                        //    Name = "Gegenst",
-                                        //    Language = LanguageNames.German,
-                                        //},
+                                        new PluginMenuTranslationModel
+                                        {
+                                            LocaleName = LocaleNames.German,
+                                            Name = "Fälle",
+                                            Language = LanguageNames.German,
+                                        },
                                         new PluginMenuTranslationModel
                                         {
                                             LocaleName = LocaleNames.Danish,
-                                            Name = "Tilfælde",
+                                            Name = "Hændelser",
                                             Language = LanguageNames.Danish,
                                         },
                                     }
@@ -216,16 +222,16 @@ namespace Workflow.Pn
                                         Name = "Cases",
                                         Language = LanguageNames.English,
                                     },
-                                    //new PluginMenuTranslationModel
-                                    //{
-                                    //    LocaleName = LocaleNames.German,
-                                    //    Name = "Gegenst",
-                                    //    Language = LanguageNames.German,
-                                    //},
+                                    new PluginMenuTranslationModel
+                                    {
+                                        LocaleName = LocaleNames.German,
+                                        Name = "Fälle",
+                                        Language = LanguageNames.German,
+                                    },
                                     new PluginMenuTranslationModel
                                     {
                                         LocaleName = LocaleNames.Danish,
-                                        Name = "Tilfælde",
+                                        Name = "Hændelser",
                                         Language = LanguageNames.Danish,
                                     },
                                 }
@@ -263,6 +269,46 @@ namespace Workflow.Pn
             var context = contextFactory.CreateDbContext(new[] { connectionString });
 
             return new PluginPermissionsManager(context);
+        }
+
+        private async void SeedWorkOrderForms(IServiceCollection serviceCollection)
+        {
+            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+            IPluginDbOptions<WorkflowBaseSettings> pluginDbOptions =
+                serviceProvider.GetRequiredService<IPluginDbOptions<WorkflowBaseSettings>>();
+
+            Core core = await serviceProvider.GetRequiredService<IEFormCoreService>().GetCore();
+            WorkflowPnDbContext context = serviceProvider.GetRequiredService<WorkflowPnDbContext>();
+
+            if (pluginDbOptions.Value.IncidentPlaceListId == 0)
+            {
+                int incidentPlaceListId = await SeedHelper.CreateAccidentLocationList(core);
+                await pluginDbOptions.UpdateDb(settings => settings.IncidentPlaceListId = incidentPlaceListId, context, 1);
+            }
+
+            if (pluginDbOptions.Value.IncidentTypeListId == 0)
+            {
+                int incidentPlaceListId = await SeedHelper.CreateAccidentTypesList(core);
+                await pluginDbOptions.UpdateDb(settings => settings.IncidentTypeListId = incidentPlaceListId, context, 1);
+            }
+
+            if (pluginDbOptions.Value.FirstEformId == 0)
+            {
+                int newTaskId = await SeedHelper.CreateNewTaskEform(core);
+                await pluginDbOptions.UpdateDb(settings => settings.FirstEformId = newTaskId, context, 1);
+            }
+
+            if (pluginDbOptions.Value.SecondEformId == 0)
+            {
+                int taskListId = await SeedHelper.CreateTaskListEform(core);
+                await pluginDbOptions.UpdateDb(settings => settings.SecondEformId = taskListId, context, 1);
+            }
+
+            if (pluginDbOptions.Value.InstructionseFormId == 0)
+            {
+                int formId = await SeedHelper.CreateInstructioneForm(core);
+                await pluginDbOptions.UpdateDb(settings => settings.InstructionseFormId = formId, context, 1);
+            }
         }
 
     }

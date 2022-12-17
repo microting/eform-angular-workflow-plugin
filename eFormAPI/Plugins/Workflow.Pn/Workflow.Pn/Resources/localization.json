@@ -2,7 +2,7 @@
   {
     "Key": "Workflow",
     "LocalizedValue": {
-      "da": "Arbejdsproces",
+      "da": "Hændelser",
       "en-US": "Workflow",
       "de-DE": "Workflow"
     }
@@ -10,7 +10,7 @@
   {
     "Key": "Cases",
     "LocalizedValue": {
-      "da": "Tilfælde",
+      "da": "Hændelser",
       "en-US": "Cases",
       "de-DE": "Fallen"
     }
@@ -61,6 +61,14 @@
       "da": "Workorkflow sag ikke fundet",
       "en-US": "Workflow case not found",
       "de-DE": "Workflow Fall nicht gefunden"
+    }
+  },
+  {
+    "Key": "DeadlineIsMissing",
+    "LocalizedValue": {
+      "da": "Sæt deadline",
+      "en-US": "Set deadline",
+      "de-DE": "Frist setzen"
     }
   }
 ]

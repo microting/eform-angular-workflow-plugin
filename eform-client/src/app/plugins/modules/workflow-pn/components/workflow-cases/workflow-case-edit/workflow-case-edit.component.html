@@ -4,16 +4,205 @@
   <div class="row">
     <div class="col-md-9">
       <mdb-card class="sticky-top mb-4 mt-4" style="z-index: 1">
-        <mdb-card-header
-          ><p class="h4">{{ 'Edit workflow case' | translate }}</p>
+        <mdb-card-header>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>ID : </strong>{{ workflowCaseModel.id }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Date of incident' | translate}} : </strong>{{ workflowCaseModel.dateOfIncident | date: 'dd.MM.yyyy' }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Created by' | translate}} : </strong>{{ workflowCaseModel.createdBySiteName }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Incident type' | translate}} : </strong>{{ workflowCaseModel.incidentType }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Incident place' | translate}} : </strong>{{ workflowCaseModel.incidentPlace }}
+            </div>
+          </div>
+          <div class="row"><br></div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'Deadline' | translate}} : </strong>{{ workflowCaseModel.deadline | date: 'dd.MM.yyyy' }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <strong>{{'To be solved by' | translate}} : </strong>{{ getSolverName(workflowCaseModel.toBeSolvedById) }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6" *ngIf="workflowCaseModel.status">
+              <strong>{{'Status' | translate}} : </strong>{{ getStatusText(workflowCaseModel.status) }}
+            </div>
+          </div>
         </mdb-card-header>
         <mdb-card-body>
           <div class="container-fluid">
             <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%;">
+                <mdb-card-header style="background-color: rgb(232, 234, 246);">{{
+                  'Date of incident' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body>
+                  <div class="md-form md-form-case-elem" [owlDateTimeTrigger]="dateOfIncidentPicker">
+                    <div class="md-form" [owlDateTimeTrigger]="dateOfIncidentPicker">
+                      <i class="material-icons prefix">calendar_today</i>
+                      <input mdbInput
+                             [owlDateTime]="dateOfIncidentPicker"
+                             [ngModel]="workflowCaseModel.dateOfIncident"
+                             (dateTimeChange)="onDateSelectedIncidentDate($event)"
+                             type="text"
+                             id="dateOfIncident"
+                             name="dateOfIncident"
+                             class="form-control">
+                      <label for="dateOfIncident">{{'Start date*' | translate}}</label>
+                      <owl-date-time
+                        [pickerType]="'calendar'" #dateOfIncidentPicker></owl-date-time>
+                    </div>
+                  </div>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+            <div class="row">
               <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{
+                <mdb-card-header style="background-color: rgb(232, 234, 246);">{{ 'Incident type' | translate }}</mdb-card-header>
+                <mdb-card-body>
+                  <ng-select
+                    [bindLabel]="'text'"
+                    [bindValue]="'id'"
+                    [clearable]="false"
+                    [placeholder]="workflowCaseModel.incidentType"
+                    (change)="onSelectedChangedType($event)"
+                    [items]="incidentTypes"></ng-select>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(232, 234, 246);">{{ 'Location of incident' | translate }}</mdb-card-header>
+                <mdb-card-body>
+                  <ng-select
+                    id="placeEdit"
+                    [bindLabel]="'text'"
+                    [bindValue]="'id'"
+                    [clearable]="false"
+                    [placeholder]="workflowCaseModel.incidentPlace"
+                    (change)="onSelectedChangedPlace($event)"
+                    [items]="places"
+                  ></ng-select>
+                  <!--[(ngModel)]="workflowCaseModel.incidentPlace"-->
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(232, 234, 246);">{{
+                  'Pictures' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body *ngIf="workflowCaseModel.picturesOfTask">
+                  <div *ngIf="workflowCaseModel.picturesOfTask.uploadedDataObj">{{workflowCaseModel.picturesOfTask.uploadedDataObj.fileName}}</div>
+                  <element-picture [fieldValues]="workflowCaseModel.picturesOfTask"></element-picture>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(232, 234, 246);">{{
+                  'Description' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body>
+                  <div class="md-form">
+                    <textarea
+                      mdbInput
+                      type="text"
+                      class="md-textarea form-control"
+                      id="descriptionEdit"
+                      rows="5"
+                      [(ngModel)]="workflowCaseModel.description"
+                    ></textarea>
+<!--                    <pell-editor-->
+<!--                      id="descriptionEdit"-->
+<!--                      [(value)]="workflowCaseModel.description"-->
+<!--                    ></pell-editor>-->
+                  </div>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{
+                  'ALL FIELDS IN RED TO BE FILLED BY MANAGEMENT' | translate
+                  }}</mdb-card-header>
+              </mdb-card>
+            </div>
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{
+                  'Select deadline' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body>
+
+                  <div class="md-form md-form-case-elem" [owlDateTimeTrigger]="deadlinePicker">
+                    <div class="md-form" [owlDateTimeTrigger]="deadlinePicker">
+                      <i class="material-icons prefix">calendar_today</i>
+                      <input mdbInput
+                             [owlDateTime]="deadlinePicker"
+                             [ngModel]="workflowCaseModel.deadline"
+                             (dateTimeChange)="onDateSelectedDeadline($event)"
+                             type="text"
+                             id="deadline"
+                             name="deadline"
+                             class="form-control">
+                      <label for="deadline">{{'Start date*' | translate}}</label>
+                      <owl-date-time
+                        [pickerType]="'calendar'" #deadlinePicker></owl-date-time>
+                    </div>
+                  </div>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{
+                  'Action plan' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body>
+                  <div class="md-form">
+                    <textarea
+                      mdbInput
+                      type="text"
+                      class="md-textarea form-control"
+                      rows="5"
+                      id="actionPlanEdit"
+                      [(ngModel)]="workflowCaseModel.actionPlan"
+                    ></textarea>
+<!--                    <pell-editor-->
+<!--                      id="actionPlanEdit"-->
+<!--                      [(value)]="workflowCaseModel.actionPlan"-->
+<!--                    ></pell-editor>-->
+                  </div>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{
                   'To be solved by' | translate
-                }}</mdb-card-header>
+                  }}</mdb-card-header>
                 <mdb-card-body>
                   <ng-select
                     id="toBeSolvedByEdit"
@@ -26,9 +215,21 @@
                 </mdb-card-body>
               </mdb-card>
             </div>
+
+
             <div class="row">
               <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{ 'Status' | translate }}</mdb-card-header>
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{
+                  'Pictures of task done' | translate
+                  }}</mdb-card-header>
+                <mdb-card-body *ngIf="workflowCaseModel.picturesOfTaskDone">
+                  <element-picture [fieldValues]="workflowCaseModel.picturesOfTaskDone"></element-picture>
+                </mdb-card-body>
+              </mdb-card>
+            </div>
+            <div class="row">
+              <mdb-card class="mb-4 mt-4" style="width: 100%">
+                <mdb-card-header style="background-color: rgb(255, 228, 228);">{{ 'Status' | translate }}</mdb-card-header>
                 <mdb-card-body>
                   <ng-select
                     id="statusEdit"
@@ -37,119 +238,6 @@
                     [clearable]="false"
                     [(ngModel)]="workflowCaseModel.status"
                     [items]="statuses"
-                  ></ng-select>
-                </mdb-card-body>
-              </mdb-card>
-            </div>
-            <div class="row">
-              <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{
-                  'Select deadline' | translate
-                }}</mdb-card-header>
-                <mdb-card-body>
-                  <form [formGroup]="dataForm">
-                    <div class="w-100">
-                      <div
-                        class="md-form"
-                        [owlDateTimeTrigger]="deadlinePicker"
-                      >
-                        <i class="material-icons prefix"> calendar_today </i>
-                        <input
-                          mdbInput
-                          formControlName="deadline"
-                          name="deadline"
-                          required
-                          [(ngModel)]="workflowCaseModel.deadline"
-                          type="text"
-                          [owlDateTime]="deadlinePicker"
-                          [selectMode]="'single'"
-                          class="form-control input-sm"
-                          id="deadlineFormInput"
-                        />
-                      </div>
-                    </div>
-                  </form>
-                </mdb-card-body>
-              </mdb-card>
-            </div>
-            <div class="row">
-              <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{
-                  'Select date incident' | translate
-                }}</mdb-card-header>
-                <mdb-card-body>
-                  <form [formGroup]="dataForm">
-                    <div class="w-100">
-                      <div
-                        class="md-form"
-                        [owlDateTimeTrigger]="dateOfIncidentPicker"
-                      >
-                        <i class="material-icons prefix"> calendar_today </i>
-                        <input
-                          mdbInput
-                          formControlName="dateOfIncident"
-                          name="dateOfIncident"
-                          required
-                          [(ngModel)]="workflowCaseModel.dateOfIncident"
-                          type="text"
-                          [owlDateTime]="dateOfIncidentPicker"
-                          [selectMode]="'single'"
-                          class="form-control input-sm"
-                          id="dateOfIncidentFormInput"
-                        />
-                      </div>
-                    </div>
-                  </form>
-                </mdb-card-body>
-              </mdb-card>
-            </div>
-            <div class="row">
-              <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{
-                  'Description' | translate
-                }}</mdb-card-header>
-                <mdb-card-body>
-                  <div class="md-form">
-                    <input
-                      mdbInput
-                      type="text"
-                      class="form-control"
-                      id="descriptionEdit"
-                      [(ngModel)]="workflowCaseModel.description"
-                    />
-                  </div>
-                </mdb-card-body>
-              </mdb-card>
-            </div>
-            <div class="row">
-              <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{
-                  'Action plan' | translate
-                }}</mdb-card-header>
-                <mdb-card-body>
-                  <div class="md-form">
-                    <input
-                      mdbInput
-                      type="text"
-                      class="form-control"
-                      id="actionPlanEdit"
-                      [(ngModel)]="workflowCaseModel.actionPlan"
-                    />
-                  </div>
-                </mdb-card-body>
-              </mdb-card>
-            </div>
-            <div class="row">
-              <mdb-card class="mb-4 mt-4" style="width: 100%">
-                <mdb-card-header>{{ 'Places' | translate }}</mdb-card-header>
-                <mdb-card-body>
-                  <ng-select
-                    id="placeEdit"
-                    [bindLabel]="'name'"
-                    [bindValue]="'id'"
-                    [clearable]="false"
-                    [(ngModel)]="workflowCaseModel.incidentPlace"
-                    [items]="places"
                   ></ng-select>
                 </mdb-card-body>
               </mdb-card>

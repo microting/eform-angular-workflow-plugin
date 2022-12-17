@@ -18,26 +18,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using System.Collections.Generic;
+
 namespace Workflow.Pn.Infrastructure.Models.Cases
 {
     using System;
 
     public class WorkflowCasesUpdateModel
     {
+        public WorkflowCasesUpdateModel()
+        {
+            PicturesOfTask = new List<FieldValue>();
+            PicturesOfTaskDone = new List<FieldValue>();
+        }
+
         public int Id { get; set; }
-        
-        public DateTime DateOfIncident { get; set; }
-        
-        public int? IncidentPlace { get; set; }
-        
+
+        public string DateOfIncident { get; set; }
+
+        public string CreatedBySiteName { get; set; }
+
+        public string IncidentPlace { get; set; }
+
+        public int? IncidentPlaceId { get; set; }
+
+        public string IncidentPlaceListId { get; set; }
+
+        public string IncidentType { get; set; }
+
+        public int? IncidentTypeId { get; set; }
+
+        public string IncidentTypeListId { get; set; }
+
         public string Description { get; set; }
 
-        public DateTime Deadline { get; set; }
+        public string Deadline { get; set; }
 
         public string ActionPlan { get; set; }
-        
+
         public int? ToBeSolvedById { get; set; }
-        
+
         public int? Status { get; set; }
+
+        public List<FieldValue> PicturesOfTask { get; set; } = new List<FieldValue>();
+
+        public List<FieldValue> PicturesOfTaskDone { get; set; } = new List<FieldValue>();
     }
 }
