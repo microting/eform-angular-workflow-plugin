@@ -6,7 +6,6 @@ import {
   OperationDataResult,
   Paged,
   PaginationModel,
-  SortModel,
 } from 'src/app/common/models';
 import { WorkflowCaseModel } from '../../../models';
 import { WorkflowPnCasesService } from '../../../services';
@@ -24,8 +23,16 @@ export class WorkflowCasesStateService {
     return this.query.selectPageSize$;
   }
 
-  getSort(): Observable<SortModel> {
+  /*  getSort(): Observable<SortModel> {
     return this.query.selectSort$;
+  }*/
+
+  getActiveSort(): Observable<string> {
+    return this.query.selectActiveSort$;
+  }
+
+  getActiveSortDirection(): Observable<'asc' | 'desc'> {
+    return this.query.selectActiveSortDirection$;
   }
 
   getWorkflowCases(): Observable<
@@ -120,6 +127,17 @@ export class WorkflowCasesStateService {
 
   getPagination(): Observable<PaginationModel> {
     return this.query.selectPagination$;
+  }
+
+  updatePagination(pagination: PaginationModel) {
+    this.store.update((state) => ({
+      pagination: {
+        ...state.pagination,
+        pageSize: pagination.pageSize,
+        offset: pagination.offset,
+      },
+    }));
+    // this.checkOffset();
   }
 
   getNameFilter(): Observable<string> {

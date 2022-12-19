@@ -1,147 +1,91 @@
-<eform-subheader></eform-subheader>
+<eform-new-subheader></eform-new-subheader>
 
-<div class="container-fluid">
-  <div class="row pl-1">
-    <div class="col-md-2">
-      <div class="md-form">
+<ng-template #toolbarTpl>
+  <div class="d-flex flex-row justify-content-start flex-nowrap">
+    <div class="d-flex flex-column mr-2 ml-2">
+      <mat-form-field>
+        <mat-label>{{ 'Search' | translate }}</mat-label>
         <input
-          mdbInput
+          matInput
           type="text"
-          [ngModel]="workflowCasesStateService.getNameFilter() | async"
           (ngModelChange)="onSearchInputChanged($event)"
-          class="form-control input-sm"
+          [ngModel]="workflowCasesStateService.getNameFilter() | async"
           id="searchInput"
         />
-        <label for="searchInput">{{ 'Search' | translate }}</label>
-      </div>
+      </mat-form-field>
     </div>
   </div>
-  <div class="row p-1 table-responsive no-gutters">
-    <table
-      mdbTable
-      striped="true"
-      hover="true"
-      small="true"
-      class="z-depth-1 text-center"
-    >
-      <thead
-        table-headers
-        [tableHeaders]="tableHeaders"
-        [sort]="workflowCasesStateService.getSort() | async"
-        (sortChanged)="sortTable($event)"
-      ></thead>
-      <tbody id="tableBody">
-        <tr *ngFor="let workflowCase of workflowCasesModel?.entities">
-          <td id="workflowCaseId">
-            {{ workflowCase.id }}
-          </td>
-          <td id="workflowCaseDateOfIncident">
-            {{ workflowCase.dateOfIncident | date: 'dd.MM.yyyy' }}
-          </td>
-<!--          <td id="workflowCaseUpdatedAt">-->
-<!--            {{ workflowCase.updatedAt | date: 'dd.MM.yyyy HH:mm:ss' }}-->
-<!--          </td>-->
-          <td id="workflowCaseCreatedBy">
-            {{ workflowCase.createdBySiteName }}
-          </td>
-          <td id="workflowCaseIncidentType">
-            {{ workflowCase.incidentType }}
-          </td>
-          <td id="workflowCaseIncidentPlace">
-            {{ workflowCase.incidentPlace }}
-          </td>
-          <td id="workflowCasePhotosExists">
-            ({{ workflowCase.numberOfPhotos }})
-          </td>
-          <td id="workflowCaseDescription">
-            {{ workflowCase.description }}
-          </td>
-          <td id="workflowCaseDeadline">
-            {{ workflowCase.deadline | date: 'dd.MM.y' }}
-          </td>
-          <td id="workflowCaseActionPlan">
-            {{ workflowCase.actionPlan }}
-          </td>
-          <td id="workflowCaseToBeSolvedBy">
-            {{ workflowCase.solvedBy }}
-          </td>
-          <td id="workflowCaseStatus">
-            {{ getStatusText(workflowCase.status) }}
-          </td>
-          <td>
-            <div class="d-flex flex-row justify-content-center">
-              <button
-                mdbBtn
-                class="btn-accent text-black-50 btn-icon mb-2"
-                mdbTooltip="{{ 'Edit Workflow Case' | translate }}"
-                mdbWavesEffect
-                id="editWorkflowCaseBtn"
-                [routerLink]="[
-                  '/plugins/workflow-pn/edit-workflow-case/',
-                  workflowCase.id
-                ]"
-              >
-                <fa-icon icon="pen" [fixedWidth]="true" size="lg"></fa-icon>
-              </button>
+</ng-template>
 
-              <button
-                mdbBtn
-                class="btn-success btn-icon mb-2"
-                (click)="downloadFile(workflowCase.id, 'pdf')"
-                mdbTooltip="{{ 'Download PDF' | translate }}"
-              >
-                <fa-icon
-                  icon="file-pdf"
-                  size="lg"
-                  [fixedWidth]="true"
-                ></fa-icon>
-              </button>
-              <button
-                mdbBtn
-                class="btn-info btn-icon mb-2"
-                (click)="downloadFile(workflowCase.id, 'docx')"
-                mdbTooltip="{{ 'Download Docx' | translate }}"
-              >
-                <fa-icon
-                  icon="file-word"
-                  size="lg"
-                  [fixedWidth]="true"
-                ></fa-icon>
-              </button>
-              <button
-                id="deleteBtn"
-                class="btn btn-danger btn-icon mb-2"
-                mdbTooltip="{{ 'Delete' | translate }}"
-                (click)="showDeleteWorkflowCaseModal(workflowCase)"
-              >
-                <fa-icon
-                  icon="trash-alt"
-                  size="lg"
-                  [fixedWidth]="true"
-                ></fa-icon>
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+<mtx-grid
+  [data]="workflowCasesModel.entities"
+  [columns]="tableHeaders"
+  [cellTemplate]="{actions: actionsTpl}"
+  [showPaginator]="true"
+  [paginationTemplate]="paginatorTpl"
+  [pageOnFront]="false"
+  [rowStriped]="true"
+  [showToolbar]="true"
+  [showColumnMenuButton]="false"
+  [toolbarTemplate]="toolbarTpl"
+  [sortActive]="workflowCasesStateService.getActiveSort() | async"
+  [sortDirection]="workflowCasesStateService.getActiveSortDirection() | async"
+  (sortChange)="sortTable($event)"
+  [noResultText]="'No workflow cases found' | translate">
+</mtx-grid>
+
+<ng-template #actionsTpl let-row>
+  <div class="d-flex">
+    <button
+      mat-icon-button
+      id="editWorkflowCaseBtn"
+      matTooltip="{{ 'Edit Workflow Case' | translate }}"
+      [routerLink]="['/plugins/workflow-pn/edit-workflow-case/', row.id]"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      matTooltip="{{ 'Download PDF' | translate }}"
+      (click)="downloadFile(row.id, 'pdf')"
+      color="accent"
+    >
+      <fa-icon
+      icon="file-pdf"
+      size="lg"
+      [fixedWidth]="true"
+    ></fa-icon>
+    </button>
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="downloadFile(workflowCase.id, 'docx')"
+      matTooltip="{{ 'Download Docx' | translate }}"
+    >
+      <fa-icon
+      icon="file-word"
+      size="lg"
+      [fixedWidth]="true"
+    ></fa-icon>
+    </button>
+    <button
+      mat-icon-button
+      color="warn"
+      id="deleteBtn"
+      (click)="showDeleteWorkflowCaseModal(row)"
+      matTooltip="{{ 'Delete' | translate }}"
+    >
+      <mat-icon>delete</mat-icon>
+    </button>
   </div>
-  <div class="row p-1 my-4 mx-2" *ngIf="workflowCasesModel.total === 0">
-    <span>{{ 'No workflow cases found' | translate }}</span>
-  </div>
-  <div class="row justify-content-between mr-2 ml-2">
-    <div class="col-md-1">
-      <eform-page-size
-        [pageSize]="workflowCasesStateService.getPageSize() | async"
-        (onPageSizeChanged)="onPageSizeChanged($event)"
-      ></eform-page-size>
-    </div>
-    <eform-pagination
-      [pagination]="workflowCasesStateService.getPagination() | async"
-      (paginationChanged)="changePage($event)"
-    ></eform-pagination>
-  </div>
-</div>
+</ng-template>
+
+<ng-template #paginatorTpl>
+  <eform-pagination
+    [pagination]="workflowCasesStateService.getPagination() | async"
+    (paginationChanged)="onPaginationChanged($event)"
+  ></eform-pagination>
+</ng-template>
 
 <app-workflow-case-delete
   #deleteWorkflowCaseModal

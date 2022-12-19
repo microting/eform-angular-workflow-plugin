@@ -1,12 +1,15 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-import { Subject, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { Paged, TableHeaderElementModel } from 'src/app/common/models';
-import { WorkflowCaseModel } from '../../../models';
-import { WorkflowCasesStateService } from '../store';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AutoUnsubscribe} from 'ngx-auto-unsubscribe';
+import {Subject, Subscription} from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
+import {Paged, PaginationModel,} from 'src/app/common/models';
+import {WorkflowCaseModel} from '../../../models';
+import {WorkflowCasesStateService} from '../store';
 import {saveAs} from 'file-saver';
-import {WorkflowPnCasesService} from 'src/app/plugins/modules/workflow-pn/services';
+import {WorkflowPnCasesService} from '../../../services';
+import {Sort} from '@angular/material/sort';
+import {MtxGridColumn} from '@ng-matero/extensions/grid';
+import {TranslateService} from '@ngx-translate/core';
 
 @AutoUnsubscribe()
 @Component({
@@ -15,86 +18,66 @@ import {WorkflowPnCasesService} from 'src/app/plugins/modules/workflow-pn/servic
   styleUrls: ['./workflow-cases-page.component.scss'],
 })
 export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
-  @ViewChild('deleteWorkflowCaseModal', { static: false })
-  deleteWorkflowCaseModal;
-  @ViewChild('editWorkflowCaseModal', { static: false }) editWorkflowCaseModal;
+  @ViewChild('deleteWorkflowCaseModal', {static: false}) deleteWorkflowCaseModal;
   workflowCasesModel: Paged<WorkflowCaseModel> = new Paged<WorkflowCaseModel>();
 
   searchSubject = new Subject();
   getAllSub$: Subscription;
 
-  tableHeaders: TableHeaderElementModel[] = [
-    { name: 'Id', elementId: 'idTableHeader', sortable: true },
+  tableHeaders: MtxGridColumn[] = [
+    {header: this.translateService.stream('Id'), field: 'id', sortProp: {id: 'Id'}, sortable: true},
     {
-      name: 'DateOfIncident',
-      elementId: 'dateOfIncidentHeader',
+      header: this.translateService.stream('Date of incident'),
+      field: 'dateOfIncident',
+      sortProp: {id: 'DateOfIncident'},
       sortable: true,
-      visibleName: 'Date of incident',
+      type: 'date',
+      typeParameter: {format: 'dd.MM.yyyy'}
     },
+    {header: this.translateService.stream('Created by'), field: 'createdBySiteName', sortProp: {id: 'CreatedBySiteName'}, sortable: true},
+    {header: this.translateService.stream('Incident type'), field: 'incidentType', sortProp: {id: 'IncidentType'}, sortable: true},
+    {header: this.translateService.stream('Incident place'), field: 'incidentPlace', sortProp: {id: 'IncidentPlace'}, sortable: true},
     {
-      name: 'CreatedBySiteName',
-      elementId: 'createdByHeader',
+      header: this.translateService.stream('Photo'),
+      field: 'numberOfPhotos',
+      sortProp: {id: 'NumberOfPhotos'},
       sortable: true,
-      visibleName: 'Created by',
+      formatter: (rowData: WorkflowCaseModel) => `(${rowData.numberOfPhotos})`
     },
+    {header: this.translateService.stream('Description'), field: 'description', sortProp: {id: 'Description'}, sortable: true},
     {
-      name: 'IncidentType',
-      elementId: 'incidentTypeHeader',
+      header: this.translateService.stream('Deadline'),
+      field: 'deadline',
+      sortProp: {id: 'Deadline'},
       sortable: true,
-      visibleName: 'Incident type',
+      type: 'date',
+      typeParameter: {format: 'dd.MM.y'}
     },
+    {header: this.translateService.stream('Action plan'), field: 'actionPlan', sortProp: {id: 'ActionPlan'}, sortable: true},
+    {header: this.translateService.stream('To be solved by'), field: 'solvedBy', sortProp: {id: 'SolvedBy'}, sortable: true},
     {
-      name: 'IncidentPlace',
-      elementId: 'incidentPlaceHeader',
+      header: this.translateService.stream('Status'),
+      field: 'status',
+      sortProp: {id: 'Status'},
       sortable: true,
-      visibleName: 'Incident place',
+      formatter: (rowData: WorkflowCaseModel) => this.getStatusText(rowData.status)
     },
-    {
-      name: 'NumberOfPhotos',
-      elementId: 'photosExistsHeader',
-      sortable: true,
-      visibleName: 'Photo',
-    },
-    {
-      name: 'Description',
-      elementId: 'descriptionHeader',
-      sortable: true,
-    },
-    {
-      name: 'Deadline',
-      elementId: 'deadlineHeader',
-      sortable: true,
-    },
-    {
-      name: 'ActionPlan',
-      elementId: 'actionPlanHeader',
-      sortable: true,
-      visibleName: 'Action plan',
-    },
-    {
-      name: 'SolvedBy',
-      elementId: 'toBeSolvedByHeader',
-      sortable: true,
-      visibleName: 'To be solved by',
-    },
-    {
-      name: 'Status',
-      elementId: 'statusHeader',
-      sortable: true,
-    },
-    { name: 'Actions', elementId: '', sortable: false },
+    {header: this.translateService.stream('Actions'), field: 'actions'},
   ];
 
   statuses = [
-    { id: 2, text: 'Vælg status' }, // No status
-    { id: 0, text: 'Igangværende' }, // Ongoing
-    { id: 3, text: 'Ikke igangsat' }, // Not initiated
-    { id: 1, text: 'Afsluttet' }, // Closed
-    { id: 4, text: 'Annulleret' }, // Canceled
+    {id: 2, text: 'Vælg status'}, // No status
+    {id: 0, text: 'Igangværende'}, // Ongoing
+    {id: 3, text: 'Ikke igangsat'}, // Not initiated
+    {id: 1, text: 'Afsluttet'}, // Closed
+    {id: 4, text: 'Annulleret'}, // Canceled
   ];
 
-  constructor(public workflowCasesStateService: WorkflowCasesStateService,
-  private service: WorkflowPnCasesService) {
+  constructor(
+    public workflowCasesStateService: WorkflowCasesStateService,
+    private service: WorkflowPnCasesService,
+    private translateService: TranslateService,
+  ) {
     this.searchSubject.pipe(debounceTime(500)).subscribe((val) => {
       this.workflowCasesStateService.updateNameFilter(val.toString());
       this.getWorkflowCases();
@@ -105,7 +88,8 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     this.getWorkflowCases();
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+  }
 
 
   getStatusText(id: number) {
@@ -129,8 +113,8 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       });
   }
 
-  sortTable(sort: string) {
-    this.workflowCasesStateService.onSortTable(sort);
+  sortTable(sort: Sort) {
+    this.workflowCasesStateService.onSortTable(sort.active);
     this.getWorkflowCases();
   }
 
@@ -141,11 +125,6 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
 
   onSearchInputChanged(e: string) {
     this.searchSubject.next(e);
-  }
-
-  onPageSizeChanged(newPageSize: number) {
-    this.workflowCasesStateService.updatePageSize(newPageSize);
-    this.getWorkflowCases();
   }
 
   showDeleteWorkflowCaseModal(model: WorkflowCaseModel) {
@@ -167,4 +146,8 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       });
   }
 
+  onPaginationChanged(paginationModel: PaginationModel) {
+    this.workflowCasesStateService.updatePagination(paginationModel);
+    this.getWorkflowCases();
+  }
 }

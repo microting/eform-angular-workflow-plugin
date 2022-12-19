@@ -22,24 +22,36 @@ import { WorkflowPnRouting } from './workflow-pn.routing';
 import { OwlDateTimeModule } from '@danielmoncada/angular-datetime-picker';
 import {EformImportedModule} from 'src/app/common/modules/eform-imported/eform-imported.module';
 import {EformCasesModule} from 'src/app/common/modules/eform-cases/eform-cases.module';
+import {MtxGridModule} from '@ng-matero/extensions/grid';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        TranslateModule,
-        FormsModule,
-        NgSelectModule,
-        EformSharedModule,
-        FontAwesomeModule,
-        RouterModule,
-        WorkflowPnRouting,
-        ReactiveFormsModule,
-        EformSharedTagsModule,
-        MDBBootstrapModule,
-        OwlDateTimeModule,
-        EformImportedModule,
-        EformCasesModule,
-    ],
+  imports: [
+    CommonModule,
+    TranslateModule,
+    FormsModule,
+    NgSelectModule,
+    EformSharedModule,
+    FontAwesomeModule,
+    RouterModule,
+    WorkflowPnRouting,
+    ReactiveFormsModule,
+    EformSharedTagsModule,
+    MDBBootstrapModule,
+    OwlDateTimeModule,
+    EformImportedModule,
+    EformCasesModule,
+    MtxGridModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
   declarations: [
     WorkflowPnLayoutComponent,
     WorkflowSettingsComponent,
