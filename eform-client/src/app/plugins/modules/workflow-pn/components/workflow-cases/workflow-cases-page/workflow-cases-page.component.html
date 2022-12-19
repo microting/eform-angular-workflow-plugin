@@ -59,7 +59,7 @@
     <button
       mat-icon-button
       color="primary"
-      (click)="downloadFile(workflowCase.id, 'docx')"
+      (click)="downloadFile(row.id, 'docx')"
       matTooltip="{{ 'Download Docx' | translate }}"
     >
       <fa-icon
@@ -86,8 +86,3 @@
     (paginationChanged)="onPaginationChanged($event)"
   ></eform-pagination>
 </ng-template>
-
-<app-workflow-case-delete
-  #deleteWorkflowCaseModal
-  (workflowCaseDeleted)="workflowCaseDeleted()"
-></app-workflow-case-delete>

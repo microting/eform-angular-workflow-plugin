@@ -1,8 +1,8 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AutoUnsubscribe} from 'ngx-auto-unsubscribe';
-import {Subject, Subscription} from 'rxjs';
+import {Subject, Subscription, zip} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
-import {Paged, PaginationModel,} from 'src/app/common/models';
+import {DeleteModalSettingModel, Paged, PaginationModel,} from 'src/app/common/models';
 import {WorkflowCaseModel} from '../../../models';
 import {WorkflowCasesStateService} from '../store';
 import {saveAs} from 'file-saver';
@@ -10,6 +10,11 @@ import {WorkflowPnCasesService} from '../../../services';
 import {Sort} from '@angular/material/sort';
 import {MtxGridColumn} from '@ng-matero/extensions/grid';
 import {TranslateService} from '@ngx-translate/core';
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {Overlay} from '@angular/cdk/overlay';
+import {dialogConfigHelper} from 'src/app/common/helpers';
+import {WorkflowCaseDeleteComponent} from '../';
+import {DeleteModalComponent} from 'src/app/common/modules/eform-shared/components';
 
 @AutoUnsubscribe()
 @Component({
@@ -18,12 +23,15 @@ import {TranslateService} from '@ngx-translate/core';
   styleUrls: ['./workflow-cases-page.component.scss'],
 })
 export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
-  @ViewChild('deleteWorkflowCaseModal', {static: false}) deleteWorkflowCaseModal;
   workflowCasesModel: Paged<WorkflowCaseModel> = new Paged<WorkflowCaseModel>();
-
   searchSubject = new Subject();
-  getAllSub$: Subscription;
-
+  statuses = [
+    {id: 2, text: 'Vælg status'}, // No status
+    {id: 0, text: 'Igangværende'}, // Ongoing
+    {id: 3, text: 'Ikke igangsat'}, // Not initiated
+    {id: 1, text: 'Afsluttet'}, // Closed
+    {id: 4, text: 'Annulleret'}, // Canceled
+  ];
   tableHeaders: MtxGridColumn[] = [
     {header: this.translateService.stream('Id'), field: 'id', sortProp: {id: 'Id'}, sortable: true},
     {
@@ -64,19 +72,17 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     },
     {header: this.translateService.stream('Actions'), field: 'actions'},
   ];
-
-  statuses = [
-    {id: 2, text: 'Vælg status'}, // No status
-    {id: 0, text: 'Igangværende'}, // Ongoing
-    {id: 3, text: 'Ikke igangsat'}, // Not initiated
-    {id: 1, text: 'Afsluttet'}, // Closed
-    {id: 4, text: 'Annulleret'}, // Canceled
-  ];
+  workflowCaseDeletedSub$: Subscription;
+  deleteWorkflowCase$: Subscription;
+  getAllSub$: Subscription;
+  translatesSub$: Subscription;
 
   constructor(
     public workflowCasesStateService: WorkflowCasesStateService,
     private service: WorkflowPnCasesService,
     private translateService: TranslateService,
+    private dialog: MatDialog,
+    private overlay: Overlay,
   ) {
     this.searchSubject.pipe(debounceTime(500)).subscribe((val) => {
       this.workflowCasesStateService.updateNameFilter(val.toString());
@@ -90,7 +96,6 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
   }
-
 
   getStatusText(id: number) {
     if (id === null) {
@@ -128,12 +133,50 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   }
 
   showDeleteWorkflowCaseModal(model: WorkflowCaseModel) {
-    this.deleteWorkflowCaseModal.show(model);
+    // const workflowCaseDeleteModal =
+    //   this.dialog.open(WorkflowCaseDeleteComponent, {...dialogConfigHelper(this.overlay, model), minWidth: 500});
+    // this.workflowCaseDeletedSub$ = workflowCaseDeleteModal.componentInstance.workflowCaseDeleted
+    //   .subscribe(() => this.workflowCaseDeleted());
+    this.translatesSub$ = zip(
+      this.translateService.stream('Are you sure you want to delete'),
+      this.translateService.stream('Date of incident'),
+      this.translateService.stream('Created by'),
+      this.translateService.stream('Incident type'),
+      this.translateService.stream('Incident place'),
+      this.translateService.stream('Description'),
+    ).subscribe(([headerText, dateOfIncident, createdBySiteName, incidentType, incidentPlace, description]) => {
+      const settings: DeleteModalSettingModel = {
+        model: model,
+        settings: {
+          headerText: `${headerText}?`,
+          fields: [
+            {header: 'ID', field: 'id'},
+            {header: dateOfIncident, field: 'dateOfIncident', type: 'date', format: 'dd.MM.yyyy'},
+            {header: createdBySiteName, field: 'createdBySiteName'},
+            {header: incidentType, field: 'incidentType'},
+            {header: incidentPlace, field: 'incidentPlace'},
+            {header: description, field: 'description'},
+          ]
+        }
+      }
+      const workflowCaseDeleteModal =
+        this.dialog.open(DeleteModalComponent, {...dialogConfigHelper(this.overlay, settings), minWidth: 500});
+      this.workflowCaseDeletedSub$ = workflowCaseDeleteModal.componentInstance.delete
+        .subscribe((workflowCaseModel: WorkflowCaseModel) => this.workflowCaseDelete(workflowCaseModel, workflowCaseDeleteModal));
+    });
   }
 
-  workflowCaseDeleted() {
-    this.workflowCasesStateService.onDelete();
-    this.getWorkflowCases();
+  workflowCaseDelete(workflowCaseModel: WorkflowCaseModel, workflowCaseDeleteModal: MatDialogRef<DeleteModalComponent>) {
+    this.deleteWorkflowCase$ = this.service
+      .deleteWorkflowCase(workflowCaseModel.id)
+      .subscribe((data) => {
+        if (data && data.success) {
+          this.workflowCasesStateService.onDelete();
+          this.getWorkflowCases();
+          workflowCaseDeleteModal.close();
+        }
+      });
+
   }
 
 
