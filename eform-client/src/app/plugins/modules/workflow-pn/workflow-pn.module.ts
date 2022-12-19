@@ -29,6 +29,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatCardModule} from '@angular/material/card';
+import {MtxSelectModule} from '@ng-matero/extensions/select';
 
 @NgModule({
   imports: [
@@ -53,6 +55,8 @@ import {MatDialogModule} from '@angular/material/dialog';
     MatIconModule,
     MatTooltipModule,
     MatDialogModule,
+    MatCardModule,
+    MtxSelectModule,
   ],
   declarations: [
     WorkflowPnLayoutComponent,

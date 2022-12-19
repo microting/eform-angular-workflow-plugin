@@ -92,7 +92,7 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
 
   getStatusText(id: number) {
     if (this.statuses.length > 0) {
-      if (id === null) {
+      if (!id) {
         return '';
       }
       return this.statuses.find(x => x.id === id).text;
