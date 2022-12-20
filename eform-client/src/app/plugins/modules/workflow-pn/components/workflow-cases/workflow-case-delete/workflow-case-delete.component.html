@@ -1,82 +1,44 @@
-<div mdbModal class="modal fade" #frame="mdbModal">
-  <div class="modal-dialog modal-md">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>{{ 'Are you sure you want to delete' | translate }}?</h3>
-      </div>
-      <div class="modal-body">
-        <div class="container-fluid">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-md-6">
-                <h6>ID</h6>
-              </div>
-              <div class="col-md-6" id="selectedPlanningId">
-                <strong>{{ workflowCaseModel.id }}</strong>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h6>{{'Date of incident' | translate}}</h6>
-              </div>
-              <div class="col-md-6">
-                <strong>{{ workflowCaseModel.dateOfIncident | date: 'dd.MM.yyyy' }}</strong>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h6>{{'Created by' | translate}}</h6>
-              </div>
-              <div class="col-md-6">
-                <strong>{{ workflowCaseModel.createdBySiteName }}</strong>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h6>{{'Incident type' | translate}}</h6>
-              </div>
-              <div class="col-md-6">
-                <strong>{{ workflowCaseModel.incidentType }}</strong>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <h6>{{'Incident place' | translate}}</h6>
-              </div>
-              <div class="col-md-6">
-                <strong>{{ workflowCaseModel.incidentPlace }}</strong>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6">
-                <h6>{{ 'Description' | translate }}</h6>
-              </div>
-              <div class="col-md-6" id="selectedPlanningName">
-                <strong>{{ workflowCaseModel.description }}</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button
-          mdbBtn
-          id="workflowCaseDeleteDeleteBtn"
-          class="btn-danger btn-small-height"
-          (click)="deleteWorkflowCase()"
-        >
-          {{ 'Delete' | translate }}
-        </button>
-        <button
-          mdbBtn
-          id="workflowCaseDeleteCancelBtn"
-          class="btn-accent text-black-50 btn-small-height"
-          (click)="frame.hide()"
-        >
-          {{ 'Cancel' | translate }}
-        </button>
-      </div>
-    </div>
+<h3 mat-dialog-title>{{'Are you sure you want to delete' | translate}}?</h3>
+<div mat-dialog-content>
+  <div class="d-flex flex-row justify-content-between">
+    <p>ID</p>
+    <strong>{{workflowCaseModel.id}}</strong>
   </div>
+  <div class="d-flex flex-row justify-content-between">
+    <p>{{'Date of incident' | translate}}</p>
+    <strong>{{workflowCaseModel.dateOfIncident | date: 'dd.MM.yyyy' ?? '--'}}</strong>
+  </div>
+  <div class="d-flex flex-row justify-content-between">
+    <p>{{'Created by' | translate}}</p>
+    <strong>{{workflowCaseModel.createdBySiteName ?? '--'}}</strong>
+  </div>
+  <div class="d-flex flex-row justify-content-between">
+    <p>{{'Incident type' | translate}}</p>
+    <strong>{{workflowCaseModel.incidentType ?? '--'}}</strong>
+  </div>
+  <div class="d-flex flex-row justify-content-between">
+    <p>{{'Incident place' | translate}}</p>
+    <strong>{{workflowCaseModel.incidentPlace ?? '--'}}</strong>
+  </div>
+  <div class="d-flex flex-row justify-content-between">
+    <p>{{'Description' | translate}}</p>
+    <strong>{{workflowCaseModel.description ?? '--'}}</strong>
+  </div>
+</div>
+<div mat-dialog-actions class="d-flex flex-row justify-content-end">
+  <button
+    mat-raised-button
+    color="warn"
+    id="workflowCaseDeleteDeleteBtn"
+    (click)="deleteWorkflowCase()"
+  >
+    {{'Delete' | translate}}
+  </button>
+  <button
+    mat-raised-button
+    id="workflowCaseDeleteCancelBtn"
+    (click)="hide()"
+  >
+    {{'Cancel' | translate}}
+  </button>
 </div>

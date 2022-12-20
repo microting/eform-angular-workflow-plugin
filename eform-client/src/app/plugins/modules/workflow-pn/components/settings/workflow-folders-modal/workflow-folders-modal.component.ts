@@ -1,17 +1,14 @@
 import {
   Component,
-  EventEmitter, Input,
+  EventEmitter,
+  Inject,
   OnDestroy,
   OnInit,
-  Output,
-  ViewChild,
 } from '@angular/core';
-import { SiteNameDto } from 'src/app/common/models';
-import { AuthService } from 'src/app/common/services';
+import { AuthService, FoldersService} from 'src/app/common/services';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-import { Subscription } from 'rxjs';
-import { FolderDto } from 'src/app/common/models/dto/folder.dto';
-import { FoldersService } from 'src/app/common/services/advanced/folders.service';
+import { FolderDto } from 'src/app/common/models';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @AutoUnsubscribe()
 @Component({
@@ -20,33 +17,30 @@ import { FoldersService } from 'src/app/common/services/advanced/folders.service
   styleUrls: ['./workflow-folders-modal.component.scss']
 })
 export class WorkflowFoldersModalComponent implements OnInit, OnDestroy {
-  @ViewChild('frame', {static: true}) frame;
-  @Output() folderSelected: EventEmitter<FolderDto> = new EventEmitter<FolderDto>();
-  sitesDto: Array<SiteNameDto> = [];
-  @Input() folders: FolderDto[] = [];
-  getAllFolders$: Subscription;
+  folderSelected: EventEmitter<FolderDto> = new EventEmitter<FolderDto>();
+  folders: FolderDto[] = [];
   selectedFolderId: number;
 
   get userClaims() {
     return this.authService.userClaims;
   }
 
-  constructor(private folderService: FoldersService,
-              private authService: AuthService) {
+  constructor(
+    private folderService: FoldersService,
+    private authService: AuthService,
+    @Inject(MAT_DIALOG_DATA) model: {folders: FolderDto[], selectedFolderId?: number},
+    public dialogRef: MatDialogRef<WorkflowFoldersModalComponent>,
+    ) {
+    this.folders = model.folders;
+    this.selectedFolderId = model.selectedFolderId;
   }
 
   ngOnInit() {
-
-  }
-
-  show(selectedFolderId?: number) {
-    this.selectedFolderId = selectedFolderId;
-    this.frame.show();
   }
 
   select(folder: FolderDto) {
     this.folderSelected.emit(folder);
-    this.frame.hide();
+    this.dialogRef.close();
   }
 
 

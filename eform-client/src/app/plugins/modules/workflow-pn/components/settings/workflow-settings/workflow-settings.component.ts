@@ -1,24 +1,26 @@
 import {
-  // ChangeDetectorRef,
   Component,
   EventEmitter,
   OnDestroy,
   OnInit, ViewChild,
 } from '@angular/core';
-import { Router } from '@angular/router';
-import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-import { Subscription } from 'rxjs';
-// import { debounceTime, switchMap } from 'rxjs/operators';
-import {CommonDictionaryModel, FolderDto, SiteNameDto} from 'src/app/common/models';
-import {EFormService, FoldersService, SitesService} from 'src/app/common/services';
-import { WorkflowPnSettingsService } from '../../../services';
-import { WorkflowSettingsModel } from '../../../models';
-import {composeFolderName} from 'src/app/common/helpers';
+import {Router} from '@angular/router';
+import {AutoUnsubscribe} from 'ngx-auto-unsubscribe';
+import {Subscription, take, zip} from 'rxjs';
+import {CommonDictionaryModel, DeleteModalSettingModel, FolderDto, SiteNameDto} from 'src/app/common/models';
+import {FoldersService, SitesService} from 'src/app/common/services';
+import {WorkflowPnSettingsService} from '../../../services';
+import {WorkflowSettingsModel} from '../../../models';
+import {composeFolderName, dialogConfigHelper} from 'src/app/common/helpers';
 import {
   SettingsAddSiteModalComponent,
-  SettingsRemoveSiteModalComponent,
   WorkflowFoldersModalComponent
-} from 'src/app/plugins/modules/workflow-pn/components';
+} from '../../../components';
+import {MatDialog} from '@angular/material/dialog';
+import {Overlay} from '@angular/cdk/overlay';
+import {MtxGridColumn} from '@ng-matero/extensions/grid';
+import {TranslateService} from '@ngx-translate/core';
+import {DeleteModalComponent} from 'src/app/common/modules/eform-shared/components';
 
 @AutoUnsubscribe()
 @Component({
@@ -27,32 +29,54 @@ import {
   styleUrls: ['./workflow-settings.component.scss'],
 })
 export class WorkflowSettingsComponent implements OnInit, OnDestroy {
-  @ViewChild('removeSiteModal') removeSiteModal: SettingsRemoveSiteModalComponent;
   @ViewChild('addSiteModal') addSiteModal: SettingsAddSiteModalComponent;
-  @ViewChild('foldersModal', {static: false}) foldersModal: WorkflowFoldersModalComponent;
   typeahead = new EventEmitter<string>();
   settingsModel: WorkflowSettingsModel = new WorkflowSettingsModel();
   templatesModel: CommonDictionaryModel[] = new Array<CommonDictionaryModel>();
-  templatesModelForFirst: CommonDictionaryModel[] = new Array<CommonDictionaryModel>();
-  templatesModelForSecond: CommonDictionaryModel[] = new Array<CommonDictionaryModel>();
 
   getSettings$: Subscription;
   sites: SiteNameDto[] = [];
   foldersTreeDto: FolderDto[] = [];
   foldersDto: FolderDto[] = [];
-  settingsSub$: Subscription;
   sitesSub$: Subscription;
   foldersSubTree$: Subscription;
   foldersSub$: Subscription;
   folderUpdateSub$: Subscription;
-  tasksFolder: boolean;
-
+  folderSelectedSub$: Subscription;
+  folderTaskSelectedSub$: Subscription;
+  siteDeletedSub$: Subscription;
+  removeSub$: Subscription;
+  translatesSub$: Subscription;
+  tableHeaders: MtxGridColumn[] = [
+    {header: 'ID', field: 'siteUId'},
+    {header: this.translateService.stream('Site name'), field: 'siteName'},
+    {
+      header: this.translateService.stream('Actions'),
+      field: 'actions',
+      type: 'button',
+      buttons: [
+        {
+          tooltip: this.translateService.stream('Remove site'),
+          click: (siteDto: SiteNameDto) => this.showRemoveSiteModal(siteDto),
+          icon: 'delete',
+          color: 'warn',
+          type: 'icon',
+          class: 'removeSiteBtn',
+        }
+      ],
+    },
+  ];
+  siteSelectedSub$: Subscription;
   constructor(
     private workflowPnSettingsService: WorkflowPnSettingsService,
     private router: Router,
     private foldersService: FoldersService,
-    private sitesService: SitesService
-  ) {}
+    private sitesService: SitesService,
+    public dialog: MatDialog,
+    private overlay: Overlay,
+    private translateService: TranslateService,
+  ) {
+  }
 
   ngOnInit() {
     this.getSettings();
@@ -69,7 +93,8 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+  }
 
   getSites() {
     this.sitesSub$ = this.sitesService.getAllSites().subscribe((data) => {
@@ -106,24 +131,72 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
   }
 
   showAddNewSiteModal() {
-    this.addSiteModal.show(this.sites, this.settingsModel.assignedSites);
+    const siteAddModal = this.dialog.open(SettingsAddSiteModalComponent,
+      {
+        ...dialogConfigHelper(this.overlay, {sites: this.sites, assignedSites: this.settingsModel.assignedSites}),
+        // minWidth: 500,
+      });
+    this.siteSelectedSub$ = siteAddModal.componentInstance.siteAdded.subscribe(x => this.getSettings());
   }
 
   showRemoveSiteModal(selectedSite: SiteNameDto) {
-    this.removeSiteModal.show(selectedSite);
+    this.translatesSub$ = zip(
+      this.translateService.stream('Are you sure you want to remove this site'),
+      this.translateService.stream('Company name'),
+      this.translateService.stream('Site Uid'),
+      this.translateService.stream('Remove'),
+    ).subscribe(([headerText, siteName, siteUId, remove]) => {
+      const settings: DeleteModalSettingModel = {
+        model: selectedSite,
+        settings: {
+          headerText: `${headerText}?`,
+          fields: [
+            {header: siteName, field: 'siteName'},
+            {header: siteUId, field: 'siteUId'},
+          ],
+          deleteButtonId: 'removeSiteSaveBtn',
+          cancelButtonId: 'removeSiteSaveCancelBtn',
+          deleteButtonText: remove,
+        }
+      }
+      const removeSiteModal =
+        this.dialog.open(DeleteModalComponent, {...dialogConfigHelper(this.overlay, settings), minWidth: 500});
+      this.siteDeletedSub$ = removeSiteModal.componentInstance.delete
+        .subscribe((selectedSite: SiteNameDto) => {
+          this.removeSub$ = this.workflowPnSettingsService
+            .removeSiteFromSettings(selectedSite.siteUId)
+            .subscribe((data) => {
+              if(data && data.success) {
+                this.getSettings();
+                removeSiteModal.close();
+              }
+            });
+        });
+    });
   }
 
   openFoldersModal() {
-    this.tasksFolder = false;
-    this.foldersModal.show(this.settingsModel.folderId);
-  }
-  openTasksFoldersModal() {
-    this.tasksFolder = true;
-    this.foldersModal.show(this.settingsModel.folderTasksId);
+    const foldersModal = this.dialog.open(WorkflowFoldersModalComponent,
+      {
+        ...dialogConfigHelper(this.overlay, {folders: this.foldersTreeDto, selectedFolderId: this.settingsModel.folderId}),
+        hasBackdrop: true,
+      });
+    foldersModal.backdropClick().pipe(take(1)).subscribe(_ => foldersModal.close());
+    this.folderSelectedSub$ = foldersModal.componentInstance.folderSelected.subscribe(x => this.onFolderSelected(x, false));
   }
 
-  onFolderSelected(folderDto: FolderDto) {
-    if (this.tasksFolder) {
+  openTasksFoldersModal() {
+    const foldersModal = this.dialog.open(WorkflowFoldersModalComponent,
+      {
+        ...dialogConfigHelper(this.overlay, {folders: this.foldersTreeDto, selectedFolderId: this.settingsModel.folderTasksId}),
+        hasBackdrop: true,
+      });
+    foldersModal.backdropClick().pipe(take(1)).subscribe(_ => foldersModal.close());
+    this.folderTaskSelectedSub$ = foldersModal.componentInstance.folderSelected.subscribe(x => this.onFolderSelected(x, true));
+  }
+
+  onFolderSelected(folderDto: FolderDto, tasksFolder: boolean) {
+    if (tasksFolder) {
       this.folderUpdateSub$ = this.workflowPnSettingsService.updateSettingsTasksFolder(folderDto.id).subscribe((operation) => {
         if (operation && operation.success) {
           this.getSettings();

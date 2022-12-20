@@ -1,15 +1,15 @@
 import {
   Component,
   EventEmitter,
+  Inject,
   OnDestroy,
   OnInit,
-  Output,
-  ViewChild,
 } from '@angular/core';
-import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-import { Subscription } from 'rxjs';
-import { WorkflowCaseModel } from '../../../models/workflow-case.model';
-import { WorkflowPnCasesService } from '../../../services';
+import {AutoUnsubscribe} from 'ngx-auto-unsubscribe';
+import {Subscription} from 'rxjs';
+import {WorkflowCaseModel} from '../../../models';
+import {WorkflowPnCasesService} from '../../../services';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @AutoUnsubscribe()
 @Component({
@@ -18,19 +18,17 @@ import { WorkflowPnCasesService } from '../../../services';
   styleUrls: ['./workflow-case-delete.component.scss'],
 })
 export class WorkflowCaseDeleteComponent implements OnInit, OnDestroy {
-  @ViewChild('frame', { static: false }) frame;
-  @Output() workflowCaseDeleted: EventEmitter<void> = new EventEmitter<void>();
-  workflowCaseModel: WorkflowCaseModel = new WorkflowCaseModel();
-
+  workflowCaseDeleted: EventEmitter<void> = new EventEmitter<void>();
   deleteWorkflowCase$: Subscription;
 
-  constructor(private workflowCaseService: WorkflowPnCasesService) {}
+  constructor(
+    private workflowCaseService: WorkflowPnCasesService,
+    public dialogRef: MatDialogRef<WorkflowCaseDeleteComponent>,
+    @Inject(MAT_DIALOG_DATA) public workflowCaseModel: WorkflowCaseModel = new WorkflowCaseModel(),
+  ) {
+  }
 
-  ngOnInit() {}
-
-  show(model: WorkflowCaseModel) {
-    this.workflowCaseModel = model;
-    this.frame.show();
+  ngOnInit() {
   }
 
   deleteWorkflowCase() {
@@ -39,10 +37,15 @@ export class WorkflowCaseDeleteComponent implements OnInit, OnDestroy {
       .subscribe((data) => {
         if (data && data.success) {
           this.workflowCaseDeleted.emit();
-          this.frame.hide();
+          this.hide();
         }
       });
   }
 
-  ngOnDestroy(): void {}
+  hide() {
+    this.dialogRef.close();
+  }
+
+  ngOnDestroy(): void {
+  }
 }

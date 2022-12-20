@@ -1,15 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
-import { MDBBootstrapModule } from 'angular-bootstrap-md';
-import { EformSharedTagsModule } from 'src/app/common/modules/eform-shared-tags/eform-shared-tags.module';
 import { EformSharedModule } from 'src/app/common/modules/eform-shared/eform-shared.module';
 import {
-  SettingsAddSiteModalComponent, SettingsRemoveSiteModalComponent,
+  SettingsAddSiteModalComponent,
+  /*SettingsRemoveSiteModalComponent,*/
   WorkflowCaseDeleteComponent,
   WorkflowCaseEditComponent,
   WorkflowCasesPageComponent,
@@ -22,24 +20,38 @@ import { WorkflowPnRouting } from './workflow-pn.routing';
 import { OwlDateTimeModule } from '@danielmoncada/angular-datetime-picker';
 import {EformImportedModule} from 'src/app/common/modules/eform-imported/eform-imported.module';
 import {EformCasesModule} from 'src/app/common/modules/eform-cases/eform-cases.module';
+import {MtxGridModule} from '@ng-matero/extensions/grid';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatCardModule} from '@angular/material/card';
+import {MtxSelectModule} from '@ng-matero/extensions/select';
 
 @NgModule({
-    imports: [
-        CommonModule,
-        TranslateModule,
-        FormsModule,
-        NgSelectModule,
-        EformSharedModule,
-        FontAwesomeModule,
-        RouterModule,
-        WorkflowPnRouting,
-        ReactiveFormsModule,
-        EformSharedTagsModule,
-        MDBBootstrapModule,
-        OwlDateTimeModule,
-        EformImportedModule,
-        EformCasesModule,
-    ],
+  imports: [
+    CommonModule,
+    TranslateModule,
+    FormsModule,
+    EformSharedModule,
+    FontAwesomeModule,
+    RouterModule,
+    WorkflowPnRouting,
+    OwlDateTimeModule,
+    EformImportedModule,
+    EformCasesModule,
+    MtxGridModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatDialogModule,
+    MatCardModule,
+    MtxSelectModule,
+  ],
   declarations: [
     WorkflowPnLayoutComponent,
     WorkflowSettingsComponent,
@@ -47,7 +59,7 @@ import {EformCasesModule} from 'src/app/common/modules/eform-cases/eform-cases.m
     WorkflowCaseDeleteComponent,
     WorkflowCaseEditComponent,
     SettingsAddSiteModalComponent,
-    SettingsRemoveSiteModalComponent,
+    // SettingsRemoveSiteModalComponent,
     WorkflowFoldersModalComponent,
   ],
   providers: [
