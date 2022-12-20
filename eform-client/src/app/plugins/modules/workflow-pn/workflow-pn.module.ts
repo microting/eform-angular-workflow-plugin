@@ -1,15 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
-import { MDBBootstrapModule } from 'angular-bootstrap-md';
-import { EformSharedTagsModule } from 'src/app/common/modules/eform-shared-tags/eform-shared-tags.module';
 import { EformSharedModule } from 'src/app/common/modules/eform-shared/eform-shared.module';
 import {
-  SettingsAddSiteModalComponent, SettingsRemoveSiteModalComponent,
+  SettingsAddSiteModalComponent,
+  /*SettingsRemoveSiteModalComponent,*/
   WorkflowCaseDeleteComponent,
   WorkflowCaseEditComponent,
   WorkflowCasesPageComponent,
@@ -37,14 +35,10 @@ import {MtxSelectModule} from '@ng-matero/extensions/select';
     CommonModule,
     TranslateModule,
     FormsModule,
-    NgSelectModule,
     EformSharedModule,
     FontAwesomeModule,
     RouterModule,
     WorkflowPnRouting,
-    ReactiveFormsModule,
-    EformSharedTagsModule,
-    MDBBootstrapModule,
     OwlDateTimeModule,
     EformImportedModule,
     EformCasesModule,
@@ -65,7 +59,7 @@ import {MtxSelectModule} from '@ng-matero/extensions/select';
     WorkflowCaseDeleteComponent,
     WorkflowCaseEditComponent,
     SettingsAddSiteModalComponent,
-    SettingsRemoveSiteModalComponent,
+    // SettingsRemoveSiteModalComponent,
     WorkflowFoldersModalComponent,
   ],
   providers: [
