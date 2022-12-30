@@ -55,7 +55,7 @@ namespace Workflow.Pn.Helpers
 
         public static async Task<int> CreateNewTaskEform(Core core)
         {
-
+            var sdkDbContext = core.DbContextHelper.GetDbContext();
             const string timeZone = "Europe/Copenhagen";
             TimeZoneInfo timeZoneInfo;
 
@@ -69,7 +69,7 @@ namespace Workflow.Pn.Helpers
             }
             int accidentTypesList = await CreateAccidentTypesList(core);
             int accidentLocationList = await CreateAccidentLocationList(core);
-            Language language = await core.DbContextHelper.GetDbContext().Languages.FirstAsync();
+            Language language = await sdkDbContext.Languages.FirstAsync();
 
             List<Template_Dto> templatesDto = await core.TemplateItemReadAll(false,
                 "",
@@ -83,7 +83,13 @@ namespace Workflow.Pn.Helpers
 
             if (templatesDto.Count > 0)
             {
-                return templatesDto.First().Id;
+                var id = templatesDto.First().Id;
+                var checkList = await sdkDbContext.CheckLists.FirstAsync(x => x.Id == id);
+                checkList.IsLocked = true;
+                checkList.IsEditable = false;
+                checkList.IsHidden = true;
+                await checkList.Update(sdkDbContext);
+                return id;
             }
 
             MainElement newTaskForm = new MainElement
@@ -193,11 +199,19 @@ namespace Workflow.Pn.Helpers
             newTaskForm.ElementList.Add(dataElement);
 
             newTaskForm = await core.TemplateUploadData(newTaskForm);
-            return await core.TemplateCreate(newTaskForm);
+
+            var tId = await core.TemplateCreate(newTaskForm);
+            var cl = await sdkDbContext.CheckLists.FirstAsync(x => x.Id == tId);
+            cl.IsLocked = true;
+            cl.IsEditable = false;
+            cl.IsHidden = true;
+            await cl.Update(sdkDbContext);
+            return tId;
         }
 
         public static async Task<int> CreateTaskListEform(Core core)
         {
+            var sdkDbContext = core.DbContextHelper.GetDbContext();
             string timeZone = "Europe/Copenhagen";
             TimeZoneInfo timeZoneInfo;
 
@@ -210,7 +224,7 @@ namespace Workflow.Pn.Helpers
                 timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time");
             }
 
-            Language language = await core.DbContextHelper.GetDbContext().Languages.FirstAsync();
+            Language language = await sdkDbContext.Languages.FirstAsync();
             List<Template_Dto> templatesDto = await core.TemplateItemReadAll(false,
                     "",
                     "eform-angular-workflow-plugin-tasklist",
@@ -223,7 +237,13 @@ namespace Workflow.Pn.Helpers
 
             if (templatesDto.Count > 0)
             {
-                return templatesDto.First().Id;
+                var id = templatesDto.First().Id;
+                var checkList = await sdkDbContext.CheckLists.FirstAsync(x => x.Id == id);
+                checkList.IsLocked = true;
+                checkList.IsEditable = false;
+                checkList.IsHidden = true;
+                await checkList.Update(sdkDbContext);
+                return id;
             }
 
             MainElement taskListForm = new MainElement
@@ -332,11 +352,18 @@ namespace Workflow.Pn.Helpers
             taskListForm.ElementList.Add(dataElement);
 
             taskListForm = await core.TemplateUploadData(taskListForm);
-            return await core.TemplateCreate(taskListForm);
+            var tId = await core.TemplateCreate(taskListForm);
+            var cl = await sdkDbContext.CheckLists.FirstAsync(x => x.Id == tId);
+            cl.IsLocked = true;
+            cl.IsEditable = false;
+            cl.IsHidden = true;
+            await cl.Update(sdkDbContext);
+            return tId;
         }
 
         public static async Task<int> CreateInstructioneForm(Core core)
         {
+            var sdkDbContext = core.DbContextHelper.GetDbContext();
             string timeZone = "Europe/Copenhagen";
             TimeZoneInfo timeZoneInfo;
 
@@ -349,7 +376,7 @@ namespace Workflow.Pn.Helpers
                 timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time");
             }
 
-            Language language = await core.DbContextHelper.GetDbContext().Languages.FirstAsync();
+            Language language = await sdkDbContext.Languages.FirstAsync();
             List<Template_Dto> templatesDto = await core.TemplateItemReadAll(false,
                 "",
                 "eform-angular-workflow-plugin-instructions",
@@ -362,7 +389,13 @@ namespace Workflow.Pn.Helpers
 
             if (templatesDto.Count > 0)
             {
-                return templatesDto.First().Id;
+                var id = templatesDto.First().Id;
+                var checkList = await sdkDbContext.CheckLists.FirstAsync(x => x.Id == id);
+                checkList.IsLocked = true;
+                checkList.IsEditable = false;
+                checkList.IsHidden = true;
+                await checkList.Update(sdkDbContext);
+                return id;
             }
 
             MainElement taskListForm = new MainElement
@@ -422,8 +455,13 @@ namespace Workflow.Pn.Helpers
 
             taskListForm.ElementList.Add(dataElement);
 
-            return await core.TemplateCreate(taskListForm);
-
+            var tId = await core.TemplateCreate(taskListForm);
+            var cl = await sdkDbContext.CheckLists.FirstAsync(x => x.Id == tId);
+            cl.IsLocked = true;
+            cl.IsEditable = false;
+            cl.IsHidden = true;
+            await cl.Update(sdkDbContext);
+            return tId;
         }
     }
 }

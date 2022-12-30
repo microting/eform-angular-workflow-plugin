@@ -279,6 +279,7 @@ namespace Workflow.Pn
 
             Core core = await serviceProvider.GetRequiredService<IEFormCoreService>().GetCore();
             WorkflowPnDbContext context = serviceProvider.GetRequiredService<WorkflowPnDbContext>();
+            var sdkDbContext = core.DbContextHelper.GetDbContext();
 
             if (pluginDbOptions.Value.IncidentPlaceListId == 0)
             {
@@ -297,17 +298,41 @@ namespace Workflow.Pn
                 int newTaskId = await SeedHelper.CreateNewTaskEform(core);
                 await pluginDbOptions.UpdateDb(settings => settings.FirstEformId = newTaskId, context, 1);
             }
+            else
+            {
+                var checkList = await sdkDbContext.CheckLists.FirstAsync(x => x.Id == pluginDbOptions.Value.FirstEformId);
+                checkList.IsLocked = true;
+                checkList.IsEditable = false;
+                checkList.IsHidden = true;
+                await checkList.Update(sdkDbContext);
+            }
 
             if (pluginDbOptions.Value.SecondEformId == 0)
             {
                 int taskListId = await SeedHelper.CreateTaskListEform(core);
                 await pluginDbOptions.UpdateDb(settings => settings.SecondEformId = taskListId, context, 1);
             }
+            else
+            {
+                var checkList = await sdkDbContext.CheckLists.FirstAsync(x => x.Id == pluginDbOptions.Value.SecondEformId);
+                checkList.IsLocked = true;
+                checkList.IsEditable = false;
+                checkList.IsHidden = true;
+                await checkList.Update(sdkDbContext);
+            }
 
             if (pluginDbOptions.Value.InstructionseFormId == 0)
             {
                 int formId = await SeedHelper.CreateInstructioneForm(core);
                 await pluginDbOptions.UpdateDb(settings => settings.InstructionseFormId = formId, context, 1);
+            }
+            else
+            {
+                var checkList = await sdkDbContext.CheckLists.FirstAsync(x => x.Id == pluginDbOptions.Value.InstructionseFormId);
+                checkList.IsLocked = true;
+                checkList.IsEditable = false;
+                checkList.IsHidden = true;
+                await checkList.Update(sdkDbContext);
             }
         }
 

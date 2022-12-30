@@ -12,28 +12,28 @@ export class WorkflowCasesPage extends Page {
   }
 
   public async idTableHeader(): Promise<WebdriverIO.Element> {
-    const ele = await $('#idTableHeader');
+    const ele = await $('thead > tr > th.mat-column-id');
     await ele.waitForDisplayed({ timeout: 40000 });
     await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
   public async dateOfIncidentHeader(): Promise<WebdriverIO.Element> {
-    const ele = await $('#dateOfIncidentHeader');
+    const ele = await $('thead > tr > th.mat-column-dateOfIncident');
     await ele.waitForDisplayed({ timeout: 40000 });
     await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
   public async incidentTypeHeader(): Promise<WebdriverIO.Element> {
-    const ele = await $('#incidentTypeHeader');
+    const ele = await $('thead > tr > th.mat-column-incidentType');
     await ele.waitForDisplayed({ timeout: 40000 });
     await ele.waitForClickable({ timeout: 40000 });
     return ele;
   }
 
   public async incidentPlaceHeader(): Promise<WebdriverIO.Element> {
-    const ele = await $('#incidentPlaceHeader');
+    const ele = await $('thead > tr > th.mat-column-incidentPlace');
     await ele.waitForDisplayed({ timeout: 40000 });
     await ele.waitForClickable({ timeout: 40000 });
     return ele;
@@ -47,7 +47,7 @@ export class WorkflowCasesPage extends Page {
   }
 
   public async descriptionHeader(): Promise<WebdriverIO.Element> {
-    const ele = await $('#descriptionHeader');
+    const ele = await $('thead > tr > th.mat-column-description');
     await ele.waitForDisplayed({ timeout: 40000 });
     await ele.waitForClickable({ timeout: 40000 });
     return ele;
@@ -61,7 +61,7 @@ export class WorkflowCasesPage extends Page {
   }
 
   public async actionPlanHeader(): Promise<WebdriverIO.Element> {
-    const ele = await $('#actionPlanHeader');
+    const ele = await $('thead > tr > th.mat-column-actionPlan');
     await ele.waitForDisplayed({ timeout: 40000 });
     await ele.waitForClickable({ timeout: 40000 });
     return ele;
@@ -228,24 +228,25 @@ export class WorkflowCaseRowObject {
     await browser.pause(500);
   }
   async getRow(rowNum: number): Promise<WorkflowCaseRowObject> {
-    const row = (await $$('#tableBody tr'))[rowNum - 1];
+    const row = (await $$('table tr.mat-row'))[rowNum - 1];
+    rowNum = rowNum - 1;
     if (row) {
-      this.id = +await (await row.$('#workflowCaseId')).getText();
-      let date = await (await row.$('#workflowCaseDateOfIncident')).getText();
+      this.id = +await (await $$('tbody > tr > td.mat-column-id'))[rowNum].getText();
+      let date = await (await $$('tbody > tr > td.mat-column-dateOfIncident'))[rowNum].getText();
       this.dateOfIncident = date; // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
       // date = row.$('#workflowCaseUpdatedAt').getText();
       // this.updateAt = parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
-      this.incidentType = await (await row.$('#workflowCaseIncidentType')).getText();
-      this.incidentPlace = await (await row.$('#workflowCaseIncidentPlace')).getText();
+      this.incidentType = await (await $$('tbody > tr > td.mat-column-incidentType'))[rowNum].getText();
+      this.incidentPlace = await (await $$('tbody > tr > td.mat-column-incidentPlace'))[rowNum].getText();
       // this.photo = row.$('#workflowCasePhotosExists').getText() === 'true';
-      this.description = await (await row.$('#workflowCaseDescription')).getText();
-      date = await (await row.$('#workflowCaseDeadline')).getText();
-      this.deadline = date; // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
-      this.actionPlan = await (await row.$('#workflowCaseActionPlan')).getText();
-      this.toBeSolvedBy = await (await row.$('#workflowCaseToBeSolvedBy')).getText();
-      this.status = await (await row.$('#workflowCaseStatus')).getText();
-      this.updateBtn = await row.$('#editWorkflowCaseBtn');
-      this.deleteBtn = await row.$('#deleteBtn');
+      this.description = await (await $$('tbody > tr > td.mat-column-description'))[rowNum].getText();
+      //date =
+      this.deadline = await (await $$('tbody > tr > td.mat-column-deadline'))[rowNum].getText(); // parse(date, 'dd.MM.yyyy HH:mm:ss', new Date());
+      this.actionPlan = await (await $$('tbody > tr > td.mat-column-actionPlan'))[rowNum].getText();
+      this.toBeSolvedBy = await (await $$('tbody > tr > td.mat-column-solvedBy'))[rowNum].getText();
+      this.status = await (await $$('tbody > tr > td.mat-column-status'))[rowNum].getText();
+      this.updateBtn = (await $$('#editWorkflowCaseBtn'))[rowNum];
+      this.deleteBtn = await $$('#deleteBtn')[rowNum];
     }
     return this;
   }

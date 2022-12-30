@@ -8,98 +8,153 @@ on:
     - '.github/**'
 
 jobs:
-  build:
+  workflow-build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
-        path: main
-    - name: Upgrade Chrome browser
-      run: |
-        sudo apt-get update
-        sudo apt-get --only-upgrade install google-chrome-stable
-        google-chrome --version
-    - uses: getong/mariadb-action@v1.1
-      with:
-        host port: 3306 # Optional, default value is 3306. The port of host
-        container port: 3306 # Optional, default value is 3306. The port of container
-        character set server: 'utf8' # Optional, default value is 'utf8mb4'. The '--character-set-server' option for mysqld
-        collation server: 'utf8_general_ci' # Optional, default value is 'utf8mb4_general_ci'. The '--collation-server' option for mysqld
-        mariadb version: 'latest' # Optional, default value is "latest". The version of the MariaDB
-        mysql database: 'some_test' # Optional, default value is "test". The specified database which will be create
-        mysql root password: 'secretpassword' # Required if "mysql user" is empty, default is empty. The root superuser password
-        mysql user: 'developer' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-        mysql password: 'passwordtoo' # Required if "mysql user" exists. The password for the "mysql user"
-    - name: Sleep 15 seconds
-      run: sleep 15
-    - uses: getong/rabbitmq-action@v1.2
-      with:
-        rabbitmq version: 'latest'
-        host port: 5672
-        rabbitmq user: 'admin'
-        rabbitmq password: 'password'
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 7.0.x
-    - name: Use Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: '14.18.1'
+        path: eform-angular-workflow-plugin
     - name: Extract branch name
       id: extract_branch
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
     - name: 'Preparing Frontend checkout'
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        repository: microting/eform-angular-frontend
+        ref: ${{ steps.extract_branch.outputs.branch }}
+        path: eform-angular-frontend
+    - name: Copy dependencies
+      run: |
+        cp -av eform-angular-workflow-plugin/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
+        cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-settings eform-angular-frontend/eform-client/e2e/Tests/workflow-settings
+        cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-general eform-angular-frontend/eform-client/e2e/Tests/workflow-general
+        cp -av eform-angular-workflow-plugin/eform-client/e2e/Page\ objects/Workflow eform-angular-frontend/eform-client/e2e/Page\ objects/Workflow
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-headless-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.js
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-plugin-step2.conf.js
+        mkdir -p eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins
+        cd eform-angular-frontend/eform-client && ../../eform-angular-workflow-plugin/testinginstallpn.sh
+    - name: Get the version release
+      id: get_release_version
+      run: echo ::set-output name=VERSION::$(cd eform-angular-workflow-plugin && git describe --abbrev=0 --tags | cut -d "v" -f 2)
+    - name: Get the version
+      id: get_version
+      run: echo ::set-output name=VERSION::$(cd eform-angular-workflow-plugin && git describe --abbrev=0 --tags | cut -d "v" -f 2)
+    - name: Get the work order version
+      id: get_frontend_version
+      run: echo ::set-output name=FRONTENDVERSION::$(cd eform-angular-frontend && git describe --abbrev=0 --tags | cut -d "v" -f 2)
+    - name: Copy Dockerfile
+      run: cp eform-angular-workflow-plugin/Dockerfile .
+    - name: Build the tagged Docker image
+      run: docker build . -t microtingas/workflow-container:latest -t microtingas/workflow-container:1.0.0 --build-arg GITVERSION=1.00 --build-arg PLUGINVERSION=1.0.0
+    - run: docker save microtingas/workflow-container:latest -o workflow-container.tar
+    - uses: actions/upload-artifact@v2
+      with:
+        name: workflow-container
+        path: workflow-container.tar
+  workflow-test:
+    needs: workflow-build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        path: eform-angular-workflow-plugin
+    - name: Extract branch name
+      id: extract_branch
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+    - name: Create docker network 🖧
+      run: docker network create --driver bridge data
+    - name: Start MariaDB
+      run: |
+        docker pull mariadb:10.8
+        docker run --name mariadbtest --network data -e MYSQL_ROOT_PASSWORD=secretpassword -p 3306:3306 -d mariadb:10.8
+    - uses: actions/download-artifact@v3
+      with:
+        name: workflow-container
+    - run: docker load -i workflow-container.tar
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.12.1'
+    - name: 'Preparing Frontend checkout'
       uses: actions/checkout@v2
       with:
         repository: microting/eform-angular-frontend
-        ref: ${{ github.event.pull_request.base.ref }}
+        ref: ${{ steps.extract_branch.outputs.branch }}
         path: eform-angular-frontend
-    - name: Install dependencies
-      run: dotnet restore main/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.sln
-    - name: Get the version
-      id: get_version
-      run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3 | cut -d "v" -f 2)
-    - name: Build
-      run: dotnet build main/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.sln
-    - name: Unit Tests
-      run: dotnet test --no-restore -c Release -v n main/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.Test/Workflow.Pn.Test.csproj
+    - name: Cache node_modules
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: eform-angular-frontend/eform-client/node_modules
+        key: ${{ runner.os }}-build-${{ hashFiles('eform-angular-frontend/eform-client/package.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
     - name: Sleep 15 seconds
       run: sleep 15
     - name: Load DB dump
       run: |
         mysql -u root -h 127.0.0.1 --password=secretpassword -e 'create database `420_eform-angular-workflow-plugin`'
-        mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < main/420_eform-angular-workflow-plugin.sql
+        mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < eform-angular-workflow-plugin/420_eform-angular-workflow-plugin.sql
     - name: Copy dependencies
       run: |
-        cp -av main/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
-        cp -av main/eform-client/e2e/Tests/workflow-settings eform-angular-frontend/eform-client/e2e/Tests/workflow-settings
-        cp -av main/eform-client/e2e/Tests/workflow-general eform-angular-frontend/eform-client/e2e/Tests/workflow-general
-        cp -av main/eform-client/e2e/Page\ objects/Workflow eform-angular-frontend/eform-client/e2e/Page\ objects/Workflow
-        cp -av main/eform-client/wdio-headless-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.js
-        cp -av main/eform-client/wdio-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-plugin-step2.conf.js
+        cp -av eform-angular-workflow-plugin/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
+        cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-settings eform-angular-frontend/eform-client/e2e/Tests/workflow-settings
+        cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-general eform-angular-frontend/eform-client/e2e/Tests/workflow-general
+        cp -av eform-angular-workflow-plugin/eform-client/e2e/Page\ objects/Workflow eform-angular-frontend/eform-client/e2e/Page\ objects/Workflow
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-headless-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.js
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-plugin-step2.conf.js
         mkdir -p eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins
-        cp -av main/eFormAPI/eFormAPI.Web/Plugins/Workflow eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins/Workflow
-        cd eform-angular-frontend/eform-client && ../../main/testinginstallpn.sh
-    - name: Build frontend
-      run: dotnet build eform-angular-frontend/eFormAPI/eFormAPI.sln
+        cd eform-angular-frontend/eform-client && ../../eform-angular-workflow-plugin/testinginstallpn.sh
+    - name: Start the newly build Docker container
+      id: docker-run
+      run: docker run --name my-container -p 4200:5000 --network data microtingas/workflow-container:latest "/ConnectionString=host=mariadbtest;Database=420_Angular;user=root;password=secretpassword;port=3306;Convert Zero Datetime = true;SslMode=none;" > docker_run_log 2>&1 &
+    - name: Sleep 15 seconds
+      run: sleep 15
+    - name: Get standard output
+      run: cat docker_run_log
+    - name: Pretest changes to work with Docker container
+      run: sed -i 's/localhost/mariadbtest/g' eform-angular-frontend/eform-client/e2e/Constants/DatabaseConfigurationConstants.ts
     - name: NPM install
       run: cd eform-angular-frontend/eform-client && npm install
-    - name: NPM start
-      run: cd eform-angular-frontend/eform-client && npm start > npm_log 2>&1 &
-    - name: Sleep 75 seconds
-      run: sleep 75
-    - name: Dotnet run
-      run: dotnet run --project eform-angular-frontend/eFormAPI/eFormAPI.Web/eFormAPI.Web.csproj > dotnet_log 2>&1 &
-    - name: Sleep 75 seconds
-      run: sleep 75
+      if: steps.cache.outputs.cache-hit != 'true'
     - name: Configuration testing
       run: cd eform-angular-frontend/eform-client && npm run testheadless
+    - name: Change rabbitmq hostname
+      run: docker exec -i mariadbtest mysql -u root --password=secretpassword -e 'update 420_SDK.Settings set Value = "my-rabbit" where Name = "rabbitMqHost"'
     - name: Plugin testing
       run: cd eform-angular-frontend/eform-client && npm run testheadlessplugin
+    - name: Stop the newly build Docker container
+      run: docker stop my-container
+    - name: Get standard output
+      run: |
+        cat docker_run_log
+        result=`cat docker_run_log | grep "Now listening on: http://0.0.0.0:5000" -m 1 | wc -l`
+        if [ $result -ne 1 ];then exit 1; fi
     - name: The job has failed
       if: ${{ failure() }}
       run: |
-        cat dotnet_log
-        cat eform-angular-frontend/eform-client/npm_log
-        mysql -u root --password=secretpassword -e "show databases" -h localhost
+        cat docker_run_log
+  workflow-dotnet-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        path: eform-angular-workflow-plugin
+    - name: Create docker network 🖧
+      run: docker network create --driver bridge data
+    - name: Start MariaDB
+      run: |
+        docker pull mariadb:10.8
+        docker run --name mariadbtest --network data -e MYSQL_ROOT_PASSWORD=secretpassword -p 3306:3306 -d mariadb:10.8
+    - name: Sleep 15 seconds
+      run: sleep 15
+    - name: Load DB dump
+      run: |
+        mysql -u root -h 127.0.0.1 --password=secretpassword -e 'create database `420_eform-angular-workflow-plugin`'
+        mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < eform-angular-workflow-plugin/420_eform-angular-workflow-plugin.sql
+    - name: Build
+      run: dotnet build eform-angular-workflow-plugin/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.sln
+    - name: Unit Tests
+      run: dotnet test --no-restore -c Release -v n eform-angular-workflow-plugin/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.Test/Workflow.Pn.Test.csproj

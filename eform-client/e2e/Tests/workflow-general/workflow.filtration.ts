@@ -39,7 +39,7 @@ describe('Workflow cases - Filtration', function () {
     expect(findWorkflowCase.actionPlan).equal(
       '591f85e9-bd96-4ed2-9041-ce6d335e79fb'
     );
-    expect(findWorkflowCase.toBeSolvedBy).equal('');
+    expect(findWorkflowCase.toBeSolvedBy).equal('--');
     expect(findWorkflowCase.status).equal('Igangværende');
   });
 });

@@ -16,7 +16,6 @@ describe('Application settings page - site header section', function () {
     const plugin = await pluginPage.getFirstPluginRowObj();
     expect(plugin.id).equal(1);
     expect(plugin.name).equal('Microting Workflow Plugin');
-    expect(plugin.version).equal('1.0.0.0');
     expect(plugin.status, 'status is not equal').eq('toggle_off');
   });
 
@@ -28,7 +27,6 @@ describe('Application settings page - site header section', function () {
     plugin = await pluginPage.getFirstPluginRowObj();
     expect(plugin.id).equal(1);
     expect(plugin.name).equal('Microting Workflow Plugin');
-    expect(plugin.version).equal('1.0.0.0');
     expect(plugin.status, 'status is not equal').eq('toggle_on');
   });
 });
