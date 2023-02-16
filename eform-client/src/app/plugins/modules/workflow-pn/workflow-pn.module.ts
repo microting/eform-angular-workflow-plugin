@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { EformSharedModule } from 'src/app/common/modules/eform-shared/eform-shared.module';
 import {
@@ -36,7 +35,6 @@ import {MtxSelectModule} from '@ng-matero/extensions/select';
     TranslateModule,
     FormsModule,
     EformSharedModule,
-    FontAwesomeModule,
     RouterModule,
     WorkflowPnRouting,
     OwlDateTimeModule,
