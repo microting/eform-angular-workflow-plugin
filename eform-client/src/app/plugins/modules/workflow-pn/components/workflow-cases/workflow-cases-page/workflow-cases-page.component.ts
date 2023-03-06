@@ -15,6 +15,9 @@ import {Overlay} from '@angular/cdk/overlay';
 import {dialogConfigHelper} from 'src/app/common/helpers';
 import {WorkflowCaseDeleteComponent} from '../';
 import {DeleteModalComponent} from 'src/app/common/modules/eform-shared/components';
+import {ExcelIcon, PdfIcon, WordIcon} from 'src/app/common/const';
+import {MatIconRegistry} from "@angular/material/icon";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @AutoUnsubscribe()
 @Component({
@@ -83,11 +86,15 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     private translateService: TranslateService,
     private dialog: MatDialog,
     private overlay: Overlay,
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer,
   ) {
     this.searchSubject.pipe(debounceTime(500)).subscribe((val) => {
       this.workflowCasesStateService.updateNameFilter(val.toString());
       this.getWorkflowCases();
     });
+    iconRegistry.addSvgIconLiteral('file-word', sanitizer.bypassSecurityTrustHtml(WordIcon));
+    iconRegistry.addSvgIconLiteral('file-pdf', sanitizer.bypassSecurityTrustHtml(PdfIcon));
   }
 
   ngOnInit() {

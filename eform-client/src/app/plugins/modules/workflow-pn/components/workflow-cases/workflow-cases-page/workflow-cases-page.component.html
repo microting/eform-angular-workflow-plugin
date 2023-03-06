@@ -50,11 +50,7 @@
       (click)="downloadFile(row.id, 'pdf')"
       color="accent"
     >
-      <fa-icon
-      icon="file-pdf"
-      size="lg"
-      [fixedWidth]="true"
-    ></fa-icon>
+      <mat-icon svgIcon="file-pdf"></mat-icon>
     </button>
     <button
       mat-icon-button
@@ -62,11 +58,7 @@
       (click)="downloadFile(row.id, 'docx')"
       matTooltip="{{ 'Download Docx' | translate }}"
     >
-      <fa-icon
-      icon="file-word"
-      size="lg"
-      [fixedWidth]="true"
-    ></fa-icon>
+      <mat-icon svgIcon="file-word"></mat-icon>
     </button>
     <button
       mat-icon-button
