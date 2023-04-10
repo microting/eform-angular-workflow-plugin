@@ -2,7 +2,7 @@ name: .NET Pull requests
 
 on:
   pull_request:
-    branches: [ master, stable, angular13 ]
+    branches: [ master, stable, angular14 ]
     paths-ignore:
     - '**.md'
     - '.github/**'
@@ -30,8 +30,8 @@ jobs:
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-settings eform-angular-frontend/eform-client/e2e/Tests/workflow-settings
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-general eform-angular-frontend/eform-client/e2e/Tests/workflow-general
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Page\ objects/Workflow eform-angular-frontend/eform-client/e2e/Page\ objects/Workflow
-        cp -av eform-angular-workflow-plugin/eform-client/wdio-headless-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.js
-        cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-plugin-step2.conf.js
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-headless-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.ts 
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-plugin-step2.conf.ts 
         mkdir -p eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins
         cd eform-angular-frontend/eform-client && ../../eform-angular-workflow-plugin/testinginstallpn.sh
     - name: Get the version release
@@ -82,15 +82,6 @@ jobs:
         repository: microting/eform-angular-frontend
         ref: ${{ steps.extract_branch.outputs.branch }}
         path: eform-angular-frontend
-    - name: Cache node_modules
-      id: cache
-      uses: actions/cache@v3
-      with:
-        path: eform-angular-frontend/eform-client/node_modules
-        key: ${{ runner.os }}-build-${{ hashFiles('eform-angular-frontend/eform-client/package.json') }}
-        restore-keys: |
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
     - name: Sleep 15 seconds
       run: sleep 15
     - name: Load DB dump
@@ -103,8 +94,8 @@ jobs:
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-settings eform-angular-frontend/eform-client/e2e/Tests/workflow-settings
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-general eform-angular-frontend/eform-client/e2e/Tests/workflow-general
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Page\ objects/Workflow eform-angular-frontend/eform-client/e2e/Page\ objects/Workflow
-        cp -av eform-angular-workflow-plugin/eform-client/wdio-headless-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.js
-        cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.js eform-angular-frontend/eform-client/wdio-plugin-step2.conf.js
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-headless-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.ts 
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-plugin-step2.conf.ts 
         mkdir -p eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins
         cd eform-angular-frontend/eform-client && ../../eform-angular-workflow-plugin/testinginstallpn.sh
     - name: Start the newly build Docker container
@@ -116,11 +107,19 @@ jobs:
       run: cat docker_run_log
     - name: Pretest changes to work with Docker container
       run: sed -i 's/localhost/mariadbtest/g' eform-angular-frontend/eform-client/e2e/Constants/DatabaseConfigurationConstants.ts
-    - name: NPM install
-      run: cd eform-angular-frontend/eform-client && npm install
-      if: steps.cache.outputs.cache-hit != 'true'
-    - name: Configuration testing
-      run: cd eform-angular-frontend/eform-client && npm run testheadless
+    - name: yarn install
+      run: cd eform-angular-frontend/eform-client && yarn install
+    - name: DB Configuration
+      uses: cypress-io/github-action@v4
+      with:
+        start: echo 'hi'
+        wait-on: "http://localhost:4200"
+        wait-on-timeout: 120
+        browser: chrome
+        record: false
+        spec: cypress/e2e/db/*
+        config-file: cypress.config.ts
+        working-directory: eform-angular-frontend/eform-client
     - name: Change rabbitmq hostname
       run: docker exec -i mariadbtest mysql -u root --password=secretpassword -e 'update 420_SDK.Settings set Value = "my-rabbit" where Name = "rabbitMqHost"'
     - name: Plugin testing
