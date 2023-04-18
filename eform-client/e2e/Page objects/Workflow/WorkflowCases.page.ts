@@ -274,7 +274,10 @@ export class WorkflowCaseRowObject {
         // spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
         // ngOption.waitForDisplayed({ timeout: 20000 });
         await browser.pause(1000);
-        const ele = await $(`//*[@id="statusEdit"]//*[text()="${updateModel.status}"]`);
+        const ele = await (
+          await $('ng-dropdown-panel')
+        ).$(`.ng-option=${updateModel.status}`);
+        //const ele = await $(`//*[@id="statusEdit"]//*[text()="${updateModel.status}"]`);
         await ele.waitForDisplayed({timeout: 20000});
         await ele.click();
 
