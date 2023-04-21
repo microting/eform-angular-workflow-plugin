@@ -70,5 +70,85 @@
       "en-US": "Set deadline",
       "de-DE": "Frist setzen"
     }
+  },
+  {
+    "Key": "IncidentType",
+    "LocalizedValue": {
+      "da": "Hændelsestype",
+      "en-US": "Incident type",
+      "de-DE": "Vorfalltyp"
+    }
+  },
+  {
+    "Key": "ActionPlan",
+    "LocalizedValue": {
+      "da": "Handlingsplan",
+      "en-US": "Action plan",
+      "de-DE": "Aktionsplan"
+    }
+  },
+  {
+    "Key": "Description",
+    "LocalizedValue": {
+      "da": "Beskrivelse",
+      "en-US": "Description",
+      "de-DE": "Beschreibung"
+    }
+  },
+  {
+    "Key": "IncidentPlace",
+    "LocalizedValue": {
+      "da": "Hændelsessted",
+      "en-US": "Incident place",
+      "de-DE": "Vorfallort"
+    }
+  },
+  {
+    "Key": "SolvedBy",
+    "LocalizedValue": {
+      "da": "Ansvarlig",
+      "en-US": "Solved by",
+      "de-DE": "Gelöst von"
+    }
+  },
+  {
+    "Key": "Status",
+    "LocalizedValue": {
+      "da": "Status",
+      "en-US": "Status",
+      "de-DE": "Status"
+    }
+  },
+  {
+    "Key": "Deadline",
+    "LocalizedValue": {
+      "da": "Deadline",
+      "en-US": "Deadline",
+      "de-DE": "Frist"
+    }
+  },
+  {
+    "Key": "DateOfIncident",
+    "LocalizedValue": {
+      "da": "Hændelsesdato",
+      "en-US": "Date of incident",
+      "de-DE": "Datum des Vorfalls"
+    }
+  },
+  {
+    "Key": "CreatedBy",
+    "LocalizedValue": {
+      "da": "Oprettet af",
+      "en-US": "Created by",
+      "de-DE": "Erstellt von"
+    }
+  },
+  {
+    "Key": "Incidents",
+    "LocalizedValue": {
+      "da": "Hændelser",
+      "en-US": "Incidents",
+      "de-DE": "Vorfälle"
+    }
   }
 ]

@@ -12,6 +12,7 @@ export let WorkflowPnCasesMethods = {
   Cases: 'api/workflow-pn/cases',
   Places: 'api/workflow-pn/cases/places',
   DownloadPDF: 'api/workflow-pn/cases/download-case-pdf',
+  DownloadExcel: 'api/workflow-pn/cases/download-cases-as-xlsx',
 };
 
 @Injectable({
@@ -54,6 +55,12 @@ export class WorkflowPnCasesService {
       caseId +
       '&fileType=' +
       fileType
+    );
+  }
+
+  downloadExcelFile(): Observable<any> {
+    return this.apiBaseService.getBlobData(
+      WorkflowPnCasesMethods.DownloadExcel
     );
   }
 }

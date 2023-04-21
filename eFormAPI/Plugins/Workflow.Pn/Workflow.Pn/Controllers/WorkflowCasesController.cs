@@ -19,6 +19,7 @@ SOFTWARE.
 */
 
 using System.Text;
+using Workflow.Pn.Services.WorkflowLocalizationService;
 
 namespace Workflow.Pn.Controllers
 {
@@ -37,10 +38,12 @@ namespace Workflow.Pn.Controllers
     {
 
         private readonly IWorkflowCasesService _workflowPnSettingsService;
+        private readonly IWorkflowLocalizationService _workflowLocalizationService;
 
-        public WorkflowCasesController(IWorkflowCasesService workflowPnSettingsService)
+        public WorkflowCasesController(IWorkflowCasesService workflowPnSettingsService, IWorkflowLocalizationService workflowLocalizationService)
         {
             _workflowPnSettingsService = workflowPnSettingsService;
+            _workflowLocalizationService = workflowLocalizationService;
         }
 
         [HttpPut]
@@ -116,6 +119,15 @@ namespace Workflow.Pn.Controllers
                     }
                 }
             });
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("download-cases-as-xlsx")]
+        public async Task<IActionResult> DownloadCasesAsXlsx()
+        {
+            var result =  await _workflowPnSettingsService.DownloadCasesAsXlsx();
+            return File(result, "application/pdf", _workflowLocalizationService.GetString("Incidents") + ".xlsx");
         }
     }
 }

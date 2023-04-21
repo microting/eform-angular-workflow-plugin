@@ -196,6 +196,15 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       });
   }
 
+  downloadExcelFile() {
+    this.service
+      .downloadExcelFile()
+      .subscribe((data) => {
+        const blob = new Blob([data]);
+        saveAs(blob, `sager.xlsx`);
+      });
+  }
+
   onPaginationChanged(paginationModel: PaginationModel) {
     this.workflowCasesStateService.updatePagination(paginationModel);
     this.getWorkflowCases();

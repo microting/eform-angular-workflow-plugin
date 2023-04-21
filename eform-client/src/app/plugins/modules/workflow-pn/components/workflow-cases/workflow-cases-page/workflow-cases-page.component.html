@@ -1,4 +1,14 @@
-<eform-new-subheader></eform-new-subheader>
+<eform-new-subheader>
+  <button
+    mat-icon-button
+    id="downloadExcelBtn"
+    matTooltip="{{ 'Download excel' | translate }}"
+    (click)="downloadExcelFile()"
+  >
+    <mat-icon>download</mat-icon>
+  </button>
+
+</eform-new-subheader>
 
 <ng-template #toolbarTpl>
   <div class="d-flex flex-row justify-content-start flex-nowrap">

@@ -43,5 +43,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
         Task<OperationResult> Delete(int id);
 
         Task<OperationDataResult<Stream>> DownloadEFormPdf(int caseId, string fileType);
+
+        Task<FileStream> DownloadCasesAsXlsx();
     }
 }

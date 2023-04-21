@@ -20,6 +20,7 @@ SOFTWARE.
 
 using System.IO;
 using System.Reflection;
+using ClosedXML.Excel;
 using eFormCore;
 using ImageMagick;
 using Microting.eForm.Dto;
@@ -94,7 +95,6 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                             "Description",
                             "IncidentPlace",
                             "SolvedBy",
-                            "IncidentType",
                             "Status"
                         }, request.NameFilter);
             }
@@ -494,7 +494,7 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                             dataElement.Label = workflowCase.IncidentType;
                             DateTime startDate = new DateTime(2020, 1, 1);
                             mainElement.DisplayOrder = (workflowCase.Deadline - startDate).Value.Days;
-                            dataElement.Description = new CDataValue()
+                            dataElement.Description = new CDataValue
                             {
                                 InderValue = $"{workflowCase.IncidentPlace}<br><strong>Deadline:</strong> {workflowCase.Deadline?.ToString("dd.MM.yyyy")}" // Deadline
                             };
@@ -631,6 +631,70 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
             return new OperationDataResult<Stream>(true, fileStream);
+        }
+
+        public Task<FileStream> DownloadCasesAsXlsx()
+        {
+            // use closedXML to generate excel file
+            Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "results"));
+
+            // create a file with a temporary name
+            var fileName = Path.Combine(Path.GetTempPath(), "results", $"{Guid.NewGuid()}.xlsx");
+
+            // create a new workbook
+            var workbook = new XLWorkbook();
+
+            // call the Index method and get the result
+            var result = Index(new WorkflowCasesResponse
+            {
+                PageSize = 1000000,
+                Sort = "Id",
+                IsSortDsc = false
+            }).Result;
+
+            // create a worksheet
+            var worksheet = workbook.Worksheets.Add("Workflow cases");
+
+            /* create a header row and use the first row as the header
+             * and use locallization for translations
+             * */
+            worksheet.Cell(1, 1).Value = _workflowLocalizationService.GetString("Id");
+            worksheet.Cell(1, 2).Value = _workflowLocalizationService.GetString("DateOfIncident");
+            worksheet.Cell(1, 3).Value = _workflowLocalizationService.GetString("CreatedBy");
+            worksheet.Cell(1, 4).Value = _workflowLocalizationService.GetString("IncidentType");
+            worksheet.Cell(1, 5).Value = _workflowLocalizationService.GetString("IncidentPlace");
+            worksheet.Cell(1, 6).Value = _workflowLocalizationService.GetString("Description");
+            worksheet.Cell(1, 7).Value = _workflowLocalizationService.GetString("Deadline");
+            worksheet.Cell(1, 8).Value = _workflowLocalizationService.GetString("ActionPlan");
+            worksheet.Cell(1, 9).Value = _workflowLocalizationService.GetString("SolvedBy");
+            worksheet.Cell(1, 10).Value = _workflowLocalizationService.GetString("Status");
+            // set all headers to bold
+            worksheet.Row(1).Style.Font.Bold = true;
+            // adjust column widths to their content
+            //worksheet.Columns().AdjustToContents();
+
+            // add data to the rows
+            for (var i = 0; i < result.Model.Entities.Count; i++)
+            {
+                var item = result.Model.Entities[i];
+                var status = WorkflowCaseStatuses.Statuses.First(x => x.Value == item.Status).Key;
+                worksheet.Cell(i + 2, 1).Value = item.Id;
+                worksheet.Cell(i + 2, 2).Value = item.DateOfIncident;
+                worksheet.Cell(i + 2, 3).Value = item.CreatedBySiteName;
+                worksheet.Cell(i + 2, 4).Value = item.IncidentType;
+                worksheet.Cell(i + 2, 5).Value = item.IncidentPlace;
+                worksheet.Cell(i + 2, 6).Value = item.Description;
+                worksheet.Cell(i + 2, 7).Value = item.Deadline;
+                worksheet.Cell(i + 2, 8).Value = item.ActionPlan;
+                worksheet.Cell(i + 2, 9).Value = item.SolvedBy;
+                worksheet.Cell(i + 2, 10).Value = GetStatusTranslated(status);
+            }
+
+            // save the file
+            workbook.SaveAs(fileName);
+
+            // return the filestream
+            return Task.FromResult(new FileStream(fileName, FileMode.Open, FileAccess.Read));
         }
 
         private async Task<string> InsertImage(Core core, string imageName, string itemsHtml, int imageSize, int imageWidth, string basePicturePath)
