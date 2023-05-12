@@ -14,15 +14,12 @@ jobs:
     - uses: actions/checkout@v3
       with:
         path: eform-angular-workflow-plugin
-    - name: Extract branch name
-      id: extract_branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
     - name: 'Preparing Frontend checkout'
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
         repository: microting/eform-angular-frontend
-        ref: ${{ steps.extract_branch.outputs.branch }}
+        ref: stable
         path: eform-angular-frontend
     - name: Copy dependencies
       run: |
@@ -59,9 +56,6 @@ jobs:
     - uses: actions/checkout@v3
       with:
         path: eform-angular-workflow-plugin
-    - name: Extract branch name
-      id: extract_branch
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
     - name: Create docker network 🖧
       run: docker network create --driver bridge data
     - name: Start MariaDB
@@ -80,7 +74,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: microting/eform-angular-frontend
-        ref: ${{ steps.extract_branch.outputs.branch }}
+        ref: stable
         path: eform-angular-frontend
     - name: Sleep 15 seconds
       run: sleep 15
