@@ -19,7 +19,7 @@
           matInput
           type="text"
           (ngModelChange)="onSearchInputChanged($event)"
-          [ngModel]="workflowCasesStateService.getNameFilter() | async"
+          [ngModel]="selectWorkflowCasesFiltersName$ | async"
           id="searchInput"
         />
       </mat-form-field>
@@ -38,8 +38,8 @@
   [showToolbar]="true"
   [showColumnMenuButton]="false"
   [toolbarTemplate]="toolbarTpl"
-  [sortActive]="workflowCasesStateService.getActiveSort() | async"
-  [sortDirection]="workflowCasesStateService.getActiveSortDirection() | async"
+  [sortActive]="selectWorkflowCasesPaginationSort$ | async"
+  [sortDirection]="selectWorkflowCasesPaginationIsSortDsc$ | async"
   (sortChange)="sortTable($event)"
   [noResultText]="'No workflow cases found' | translate">
 </mtx-grid>
@@ -84,7 +84,7 @@
 
 <ng-template #paginatorTpl>
   <eform-pagination
-    [pagination]="workflowCasesStateService.getPagination() | async"
+    [pagination]="selectWorkflowCasesPagination$ | async"
     (paginationChanged)="onPaginationChanged($event)"
   ></eform-pagination>
 </ng-template>

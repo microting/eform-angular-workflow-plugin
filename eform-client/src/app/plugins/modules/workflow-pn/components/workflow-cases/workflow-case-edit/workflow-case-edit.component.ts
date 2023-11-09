@@ -20,8 +20,8 @@ import { AuthStateService } from 'src/app/common/store';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Location } from '@angular/common';
 import { format } from 'date-fns';
-import {selectCurrentUserLocale} from "src/app/state/auth/auth.selector";
-import {Store} from "@ngrx/store";
+import {selectCurrentUserLocale} from 'src/app/state/auth/auth.selector';
+import {Store} from '@ngrx/store';
 
 @AutoUnsubscribe()
 @Component({
@@ -77,7 +77,9 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     private sitesService: SitesService,
     private entitySelectService: EntitySelectService
   ) {
-    dateTimeAdapter.setLocale(authStateService.currentUserLocale);
+    this.selectCurrentUserLocale$.subscribe((locale) => {
+      dateTimeAdapter.setLocale(locale);
+    });
     this.activatedRouteSub$ = this.activateRoute.params.subscribe((params) => {
       this.id = +params['id'];
     });
