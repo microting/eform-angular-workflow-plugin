@@ -1,27 +1,22 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
-  CaseEditRequest, CommonDictionaryTextModel,
+  CommonDictionaryTextModel,
   SiteNameDto,
-  TemplateDto,
 } from 'src/app/common/models';
-import { WorkflowCaseModel } from '../../../models';
-import { Subscription } from 'rxjs';
-import { UserClaimsEnum } from 'src/app/common/const';
-import { ActivatedRoute, Router } from '@angular/router';
+import {WorkflowCaseModel} from '../../../models';
+import {Subscription} from 'rxjs';
+import {UserClaimsEnum} from 'src/app/common/const';
+import {ActivatedRoute, Router} from '@angular/router';
 import {
-  AuthService, EntitySelectService,
-  SecurityGroupEformsPermissionsService,
+  EntitySelectService,
   SitesService,
 } from 'src/app/common/services';
-import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
-import { WorkflowPnCasesService } from '../../../services';
-import { DateTimeAdapter } from '@danielmoncada/angular-datetime-picker';
-import { AuthStateService } from 'src/app/common/store';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Location } from '@angular/common';
-import { format } from 'date-fns';
-import {selectCurrentUserLocale} from 'src/app/state/auth/auth.selector';
+import {AutoUnsubscribe} from 'ngx-auto-unsubscribe';
+import {WorkflowPnCasesService} from '../../../services';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {format} from 'date-fns';
 import {Store} from '@ngrx/store';
+import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 
 @AutoUnsubscribe()
 @Component({
@@ -33,20 +28,11 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   deviceUsersList: SiteNameDto[] = [];
   places: Array<CommonDictionaryTextModel> = [];
   incidentTypes: Array<CommonDictionaryTextModel> = [];
-  @ViewChild('frame', { static: true }) frame;
   workflowCaseModel: WorkflowCaseModel = new WorkflowCaseModel();
-  entityGroupUidForPlaces: string;
-  entityGroupUidForIncidentTypes: string;
 
-  @ViewChild('caseConfirmation', { static: true }) caseConfirmation;
   id: number;
   templateId: number;
-  currentTemplate: TemplateDto = new TemplateDto();
-
-  requestModels: Array<CaseEditRequest> = [];
-  isSaveClicked = false;
   reverseRoute: string;
-  isNoSaveExitAllowed = false;
 
   activatedRouteSub$: Subscription;
   updateSub$: Subscription;
@@ -55,31 +41,22 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   dataForm: FormGroup;
 
   statuses = [
-    { id: 2, text: 'Vælg status' }, // No status
-    { id: 0, text: 'Igangværende' }, // Ongoing
-    { id: 3, text: 'Ikke igangsat' }, // Not initiated
-    { id: 1, text: 'Afsluttet' }, // Closed
-    { id: 4, text: 'Annulleret' }, // Canceled
+    {id: 2, text: 'Vælg status'}, // No status
+    {id: 0, text: 'Igangværende'}, // Ongoing
+    {id: 3, text: 'Ikke igangsat'}, // Not initiated
+    {id: 1, text: 'Afsluttet'}, // Closed
+    {id: 4, text: 'Annulleret'}, // Canceled
   ];
-  private selectCurrentUserLocale$ = this.authStore.select(selectCurrentUserLocale);
 
   constructor(
     private activateRoute: ActivatedRoute,
     private router: Router,
     private authStore: Store,
-    private authService: AuthService,
-    private securityGroupEformsService: SecurityGroupEformsPermissionsService,
-    dateTimeAdapter: DateTimeAdapter<any>,
     private workflowPnCasesService: WorkflowPnCasesService,
-    authStateService: AuthStateService,
     private formBuilder: FormBuilder,
-    private location: Location,
     private sitesService: SitesService,
     private entitySelectService: EntitySelectService
   ) {
-    this.selectCurrentUserLocale$.subscribe((locale) => {
-      dateTimeAdapter.setLocale(locale);
-    });
     this.activatedRouteSub$ = this.activateRoute.params.subscribe((params) => {
       this.id = +params['id'];
     });
@@ -112,7 +89,7 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
       if (id === undefined) {
         return '';
       }
-      const result =  this.deviceUsersList.find(x => x.id === id);
+      const result = this.deviceUsersList.find(x => x.id === id);
       if (result === undefined) {
         return '';
       } else {
@@ -144,10 +121,6 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
       });
   }
 
-  get userClaimsEnum() {
-    return UserClaimsEnum;
-  }
-
   ngOnInit() {
     this.dataForm = this.formBuilder.group({
       deadline: ['', Validators.required],
@@ -157,7 +130,8 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     this.loadCase();
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+  }
 
   loadCase() {
     if (!this.id || this.id === 0) {
@@ -183,7 +157,7 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   loadPlaces() {
     this.entitySelectService.getEntitySelectableGroupDictionary(this.workflowCaseModel.incidentPlaceListId).subscribe((operation => {
       if (operation && operation.success) {
-        this.places  = operation.model;
+        this.places = operation.model;
       }
     }));
   }
@@ -191,7 +165,7 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   loadTypes() {
     this.entitySelectService.getEntitySelectableGroupDictionary(this.workflowCaseModel.incidentTypeListId).subscribe((operation => {
       if (operation && operation.success) {
-        this.incidentTypes  = operation.model;
+        this.incidentTypes = operation.model;
       }
     }));
   }
@@ -206,11 +180,11 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     this.workflowCaseModel.incidentType = e.text;
   }
 
-  onDateSelectedIncidentDate(e: any) {
+  onDateSelectedIncidentDate(e: MatDatepickerInputEvent<any, any>) {
     this.workflowCaseModel.dateOfIncident = format(e.value, 'yyyy-MM-dd');
   }
 
-  onDateSelectedDeadline(e: any) {
+  onDateSelectedDeadline(e: MatDatepickerInputEvent<any, any>) {
     this.workflowCaseModel.deadline = format(e.value, 'yyyy-MM-dd');
   }
 }
