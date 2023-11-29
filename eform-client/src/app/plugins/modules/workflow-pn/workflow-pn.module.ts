@@ -14,7 +14,6 @@ import {
 } from './components';
 import { WorkflowPnLayoutComponent } from './layouts';
 import { WorkflowPnCasesService, WorkflowPnSettingsService } from './services';
-import { workflowStoreProviders } from './store/store-providers.config';
 import { WorkflowPnRouting } from './workflow-pn.routing';
 import { OwlDateTimeModule } from '@danielmoncada/angular-datetime-picker';
 import {EformImportedModule} from 'src/app/common/modules/eform-imported/eform-imported.module';
@@ -28,6 +27,8 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatCardModule} from '@angular/material/card';
 import {MtxSelectModule} from '@ng-matero/extensions/select';
+import {StoreModule} from '@ngrx/store';
+import * as workflowCasesReducer from './state/workflow-cases/workflow-cases.reducer';
 
 @NgModule({
   imports: [
@@ -49,6 +50,9 @@ import {MtxSelectModule} from '@ng-matero/extensions/select';
     MatDialogModule,
     MatCardModule,
     MtxSelectModule,
+    StoreModule.forFeature('workflowPn', {
+      workflowCasesState: workflowCasesReducer.reducer,
+    }),
   ],
   declarations: [
     WorkflowPnLayoutComponent,
@@ -63,7 +67,6 @@ import {MtxSelectModule} from '@ng-matero/extensions/select';
   providers: [
     WorkflowPnSettingsService,
     WorkflowPnCasesService,
-    ...workflowStoreProviders,
   ],
 })
 export class WorkflowPnModule {}

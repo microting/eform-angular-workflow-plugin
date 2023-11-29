@@ -21,10 +21,6 @@ export class WorkflowFoldersModalComponent implements OnInit, OnDestroy {
   folders: FolderDto[] = [];
   selectedFolderId: number;
 
-  get userClaims() {
-    return this.authService.userClaims;
-  }
-
   constructor(
     private folderService: FoldersService,
     private authService: AuthService,

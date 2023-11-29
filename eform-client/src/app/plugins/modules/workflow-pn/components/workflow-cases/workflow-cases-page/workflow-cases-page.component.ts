@@ -16,8 +16,13 @@ import {dialogConfigHelper} from 'src/app/common/helpers';
 import {WorkflowCaseDeleteComponent} from '../';
 import {DeleteModalComponent} from 'src/app/common/modules/eform-shared/components';
 import {ExcelIcon, PdfIcon, WordIcon} from 'src/app/common/const';
-import {MatIconRegistry} from "@angular/material/icon";
-import {DomSanitizer} from "@angular/platform-browser";
+import {MatIconRegistry} from '@angular/material/icon';
+import {DomSanitizer} from '@angular/platform-browser';
+import {Store} from '@ngrx/store';
+import {
+  selectWorkflowCasesFiltersName, selectWorkflowCasesPagination,
+  selectWorkflowCasesPaginationIsSortDsc, selectWorkflowCasesPaginationSort
+} from "src/app/plugins/modules/workflow-pn/state/workflow-cases/workflow-cases.selector";
 
 @AutoUnsubscribe()
 @Component({
@@ -79,8 +84,13 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   deleteWorkflowCase$: Subscription;
   getAllSub$: Subscription;
   translatesSub$: Subscription;
+  public selectWorkflowCasesPaginationIsSortDsc$ = this.store.select(selectWorkflowCasesPaginationIsSortDsc);
+  public selectWorkflowCasesPaginationSort$ = this.store.select(selectWorkflowCasesPaginationSort);
+  public selectWorkflowCasesFiltersName$ = this.store.select(selectWorkflowCasesFiltersName);
+  public selectWorkflowCasesPagination$ = this.store.select(selectWorkflowCasesPagination);
 
   constructor(
+    private store: Store,
     public workflowCasesStateService: WorkflowCasesStateService,
     private service: WorkflowPnCasesService,
     private translateService: TranslateService,
@@ -129,11 +139,11 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     this.workflowCasesStateService.onSortTable(sort.active);
     this.getWorkflowCases();
   }
-
-  changePage(e: any) {
-    this.workflowCasesStateService.changePage(e);
-    this.getWorkflowCases();
-  }
+  //
+  // changePage(e: any) {
+  //   this.workflowCasesStateService.changePage(e);
+  //   this.getWorkflowCases();
+  // }
 
   onSearchInputChanged(e: string) {
     this.searchSubject.next(e);
