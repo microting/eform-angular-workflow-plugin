@@ -15,11 +15,12 @@ describe('Workflow cases - Edit', function () {
   it('should not edit workflow case', async () => {
     const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     const modelForUpdate = new WorkflowCaseForEdit();
+    const dateNow = new Date();
     modelForUpdate.status = 'Igangværende';
     modelForUpdate.actionPlan = generateRandmString();
     modelForUpdate.description = generateRandmString();
-    modelForUpdate.deadline = new Date();
-    modelForUpdate.dateOfIncident = new Date();
+    modelForUpdate.deadline = {day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear()};
+    modelForUpdate.dateOfIncident = {day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear()};
     await firstWorkflowCase.update(modelForUpdate, true);
     const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     // expect(findWorkflowCase.id).equal(1);
