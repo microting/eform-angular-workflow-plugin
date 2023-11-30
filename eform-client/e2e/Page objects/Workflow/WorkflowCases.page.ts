@@ -1,6 +1,5 @@
 import Page from '../Page';
-import { parse, format } from 'date-fns';
-import {selectDateOnDatePicker} from 'e2e/Helpers/helper-functions';
+import {selectDateOnDatePicker} from '../../Helpers/helper-functions';
 
 export class WorkflowCasesPage extends Page {
   constructor() {
@@ -297,9 +296,11 @@ export class WorkflowCaseRowObject {
       //     .click();
       // }
       if (updateModel.deadline) {
+        await (await workflowCasesPage.deadlineFormInput()).click();
         await selectDateOnDatePicker(updateModel.deadline.year, updateModel.deadline.month, updateModel.deadline.day);
       }
       if (updateModel.dateOfIncident) {
+        await (await workflowCasesPage.dateOfIncidentFormInput()).click();
         await selectDateOnDatePicker(updateModel.dateOfIncident.year, updateModel.dateOfIncident.month, updateModel.dateOfIncident.day);
       }
       if (updateModel.description) {
