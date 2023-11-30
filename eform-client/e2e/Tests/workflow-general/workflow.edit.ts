@@ -44,25 +44,30 @@ describe('Workflow cases - Edit', function () {
   it('should edit workflow case', async () => {
     const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     const modelForUpdate = new WorkflowCaseForEdit();
+    const dateNow = new Date();
     modelForUpdate.status = 'Igangværende';
     modelForUpdate.actionPlan = generateRandmString();
     modelForUpdate.description = generateRandmString();
-    modelForUpdate.deadline = new Date();
-    modelForUpdate.dateOfIncident = new Date();
+    modelForUpdate.deadline = {day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear()};
+    modelForUpdate.dateOfIncident = {day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear()};
     await firstWorkflowCase.update(modelForUpdate);
     const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     expect(findWorkflowCase.id).equal(1);
     expect(findWorkflowCase.status, 'status not updated').equal(
       modelForUpdate.status
     );
+    const dateOfIncident = new Date();
+    dateOfIncident.setFullYear(modelForUpdate.dateOfIncident.year, modelForUpdate.dateOfIncident.month, modelForUpdate.dateOfIncident.day);
+    const deadline = new Date();
+    deadline.setFullYear(modelForUpdate.deadline.year, modelForUpdate.deadline.month, modelForUpdate.deadline.day);
     expect(
       findWorkflowCase.dateOfIncident,
       'dateOfIncident not updated'
-    ).equal(format(modelForUpdate.dateOfIncident, 'dd.MM.yyyy'));
+    ).equal(format(dateOfIncident, 'dd.MM.yyyy'));
     expect(
       findWorkflowCase.deadline,
       'deadline not updated'
-    ).equal(format(modelForUpdate.deadline, 'dd.MM.yyyy'));
+    ).equal(format(deadline, 'dd.MM.yyyy'));
     expect(findWorkflowCase.description, 'description not updated').equal(
       modelForUpdate.description
     );

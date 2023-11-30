@@ -1,5 +1,6 @@
 import Page from '../Page';
 import { parse, format } from 'date-fns';
+import {selectDateOnDatePicker} from 'e2e/Helpers/helper-functions';
 
 export class WorkflowCasesPage extends Page {
   constructor() {
@@ -262,8 +263,6 @@ export class WorkflowCaseRowObject {
 
   public async openEdit(updateModel: WorkflowCaseForEdit) {
     await this.updateBtn.click();
-    const spinnerAnimation = await $('#spinner-animation');
-    await spinnerAnimation.waitForDisplayed({ timeout: 90000, reverse: true });
     await (await workflowCasesPage.cancelEditBtn()).waitForDisplayed({
       timeout: 20000,
     });
@@ -298,14 +297,10 @@ export class WorkflowCaseRowObject {
       //     .click();
       // }
       if (updateModel.deadline) {
-        await (await workflowCasesPage.deadlineFormInput()).setValue(
-          format(updateModel.deadline, 'MM.dd.yyyy')
-        );
+        await selectDateOnDatePicker(updateModel.deadline.year, updateModel.deadline.month, updateModel.deadline.day);
       }
       if (updateModel.dateOfIncident) {
-        await (await workflowCasesPage.dateOfIncidentFormInput()).setValue(
-          format(updateModel.dateOfIncident, 'MM.dd.yyyy')
-        );
+        await selectDateOnDatePicker(updateModel.dateOfIncident.year, updateModel.dateOfIncident.month, updateModel.dateOfIncident.day);
       }
       if (updateModel.description) {
         await (await workflowCasesPage.descriptionEdit()).setValue(updateModel.description);
@@ -328,10 +323,18 @@ export class WorkflowCaseRowObject {
 }
 
 export class WorkflowCaseForEdit {
-  public dateOfIncident: Date;
+  public dateOfIncident: {
+    year: number;
+    month: number;
+    day: number;
+  };
   // public incidentPlace: string;
   public description: string;
-  public deadline: Date;
+  public deadline: {
+    year: number;
+    month: number;
+    day: number;
+  };
   public actionPlan: string;
   // public toBeSolvedBy: string;
   public status: string;
