@@ -228,7 +228,7 @@ export class WorkflowCaseRowObject {
     await browser.pause(500);
   }
   async getRow(rowNum: number): Promise<WorkflowCaseRowObject> {
-    const row = (await $$('table tr.mat-row'))[rowNum - 1];
+    const row = (await $$('table tr.mat-mdc-row'))[rowNum - 1];
     rowNum = rowNum - 1;
     if (row) {
       this.id = +await (await $$('tbody > tr > td.mat-column-id'))[rowNum].getText();
