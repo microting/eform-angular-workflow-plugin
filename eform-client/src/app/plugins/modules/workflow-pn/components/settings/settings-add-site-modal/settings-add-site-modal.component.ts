@@ -14,7 +14,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 })
 export class SettingsAddSiteModalComponent implements OnInit, OnDestroy {
   siteAdded: EventEmitter<void> = new EventEmitter<void>();
-  availableSites: SiteNameDto[] = [];
+  availableSites: any[] = [];
   selectedSiteId: number;
   addSiteSub$: Subscription;
 

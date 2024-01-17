@@ -66,7 +66,6 @@ namespace Workflow.Pn.Helpers
         public void Dispose()
         {
             _wordProcessingDocument.Save();
-            _wordProcessingDocument.Close();
             _wordProcessingDocument.Dispose();
         }
     }

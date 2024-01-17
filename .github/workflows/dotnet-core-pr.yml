@@ -2,7 +2,7 @@ name: .NET Pull requests
 
 on:
   pull_request:
-    branches: [ master, stable, angular14 ]
+    branches: [ master, stable, angular15 ]
     paths-ignore:
     - '**.md'
     - '.github/**'
@@ -69,7 +69,7 @@ jobs:
     - name: Use Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 18
+        node-version: 18.18.2
     - name: 'Preparing Frontend checkout'
       uses: actions/checkout@v2
       with:
@@ -114,6 +114,7 @@ jobs:
         spec: cypress/e2e/db/*
         config-file: cypress.config.ts
         working-directory: eform-angular-frontend/eform-client
+        command-prefix: "--"
     - name: Change rabbitmq hostname
       run: docker exec -i mariadbtest mysql -u root --password=secretpassword -e 'update 420_SDK.Settings set Value = "my-rabbit" where Name = "rabbitMqHost"'
     - name: Plugin testing
@@ -135,7 +136,7 @@ jobs:
     - uses: actions/checkout@v3
       with:
         path: eform-angular-workflow-plugin
-    - name: Create docker network 🖧
+    - name: Create docker network
       run: docker network create --driver bridge data
     - name: Start MariaDB
       run: |
@@ -147,6 +148,10 @@ jobs:
       run: |
         mysql -u root -h 127.0.0.1 --password=secretpassword -e 'create database `420_eform-angular-workflow-plugin`'
         mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < eform-angular-workflow-plugin/420_eform-angular-workflow-plugin.sql
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
     - name: Build
       run: dotnet build eform-angular-workflow-plugin/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.sln
     - name: Unit Tests

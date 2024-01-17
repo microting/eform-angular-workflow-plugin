@@ -58,15 +58,30 @@ describe('Workflow cases - Edit', function () {
       modelForUpdate.status
     );
     const dateOfIncident = new Date();
-    dateOfIncident.setFullYear(
-      modelForUpdate.dateOfIncident.year,
-      modelForUpdate.dateOfIncident.month - 1,
-      modelForUpdate.dateOfIncident.day);
+    if (dateOfIncident.getMonth() > 1) {
+      dateOfIncident.setFullYear(
+        modelForUpdate.dateOfIncident.year,
+        modelForUpdate.dateOfIncident.month - 1,
+        modelForUpdate.dateOfIncident.day);
+    } else {
+      dateOfIncident.setFullYear(
+        modelForUpdate.dateOfIncident.year,
+        modelForUpdate.dateOfIncident.month,
+        modelForUpdate.dateOfIncident.day);
+    }
+
     const deadline = new Date();
-    deadline.setFullYear(
-      modelForUpdate.deadline.year,
-      modelForUpdate.deadline.month - 1,
-      modelForUpdate.deadline.day);
+    if (dateOfIncident.getMonth() > 1) {
+      deadline.setFullYear(
+        modelForUpdate.deadline.year,
+        modelForUpdate.deadline.month - 1,
+        modelForUpdate.deadline.day);
+    } else {
+      deadline.setFullYear(
+        modelForUpdate.deadline.year,
+        modelForUpdate.deadline.month,
+        modelForUpdate.deadline.day);
+    }
     expect(
       findWorkflowCase.dateOfIncident,
       'dateOfIncident not updated'
