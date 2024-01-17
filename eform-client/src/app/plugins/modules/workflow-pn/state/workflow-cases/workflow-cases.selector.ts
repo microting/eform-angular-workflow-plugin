@@ -1,4 +1,4 @@
-import {WorkflowState} from 'src/app/plugins/modules/workflow-pn/state/workflow.state';
+import {WorkflowState} from '../';
 import {createSelector} from '@ngrx/store';
 
 export const selectWorkflowState = (state: { workflowPn: WorkflowState }) => state.workflowPn;
