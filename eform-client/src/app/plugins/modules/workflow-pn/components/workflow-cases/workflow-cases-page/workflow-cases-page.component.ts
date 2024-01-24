@@ -13,16 +13,17 @@ import {TranslateService} from '@ngx-translate/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {Overlay} from '@angular/cdk/overlay';
 import {dialogConfigHelper} from 'src/app/common/helpers';
-import {WorkflowCaseDeleteComponent} from '../';
 import {DeleteModalComponent} from 'src/app/common/modules/eform-shared/components';
-import {ExcelIcon, PdfIcon, WordIcon} from 'src/app/common/const';
+import {PdfIcon, WordIcon} from 'src/app/common/const';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Store} from '@ngrx/store';
 import {
-  selectWorkflowCasesFiltersName, selectWorkflowCasesPagination,
-  selectWorkflowCasesPaginationIsSortDsc, selectWorkflowCasesPaginationSort
-} from "src/app/plugins/modules/workflow-pn/state/workflow-cases/workflow-cases.selector";
+  selectWorkflowCasesFiltersName,
+  selectWorkflowCasesPagination,
+  selectWorkflowCasesPaginationIsSortDsc,
+  selectWorkflowCasesPaginationSort
+} from '../../../state';
 
 @AutoUnsubscribe()
 @Component({

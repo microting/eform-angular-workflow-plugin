@@ -2,7 +2,7 @@
 
 <div class="d-grid justify-content-between" style="grid-template-columns: 6fr 2fr;">
   <mat-card class="mr-4">
-    <mat-card-title>
+    <mat-card-header>
       <div class="d-flex flex-column">
         <div><strong>ID: </strong>{{ workflowCaseModel.id }}</div>
         <div><strong>{{'Date of incident' | translate}}: </strong>{{ workflowCaseModel.dateOfIncident | date: 'dd.MM.yyyy' }}</div>
@@ -13,10 +13,10 @@
         <div><strong>{{'To be solved by' | translate}}: </strong>{{ getSolverName(workflowCaseModel.toBeSolvedById) }}</div>
         <div><strong>{{'Status' | translate}}: </strong>{{ getStatusText(workflowCaseModel.status) }}</div>
       </div>
-    </mat-card-title>
+    </mat-card-header>
     <mat-card-content>
       <mat-card class="px-0 pt-0">
-        <mat-card-title class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Date of incident' | translate}}</mat-card-title>
+        <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Date of incident' | translate}}</mat-card-header>
         <mat-card-content class="px-3">
           <mat-form-field>
             <mat-label>{{ 'Start date' | translate }}</mat-label>
@@ -35,7 +35,7 @@
         </mat-card-content>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
-        <mat-card-title class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Incident type' | translate}}</mat-card-title>
+        <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Incident type' | translate}}</mat-card-header>
         <mat-card-content class="px-3">
           <mat-form-field>
             <mtx-select
@@ -50,7 +50,7 @@
         </mat-card-content>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
-        <mat-card-title class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Location of incident' | translate}}</mat-card-title>
+        <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Location of incident' | translate}}</mat-card-header>
         <mat-card-content class="px-3">
           <mat-form-field>
             <mtx-select
@@ -66,14 +66,14 @@
         </mat-card-content>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
-        <mat-card-title class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Pictures' | translate}}</mat-card-title>
+        <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Pictures' | translate}}</mat-card-header>
         <mat-card-content class="px-3" *ngIf="workflowCaseModel.picturesOfTask">
           <div *ngIf="workflowCaseModel.picturesOfTask.uploadedDataObj">{{workflowCaseModel.picturesOfTask.uploadedDataObj.fileName}}</div>
           <element-picture [fieldValues]="workflowCaseModel.picturesOfTask"></element-picture>
         </mat-card-content>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
-        <mat-card-title class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Description' | translate}}</mat-card-title>
+        <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Description' | translate}}</mat-card-header>
         <mat-card-content class="px-3">
           <mat-form-field>
             <textarea
@@ -88,13 +88,13 @@
       </mat-card>
       <!-- magement fields -->
       <mat-card class="px-0 pt-0 mt-3">
-        <mat-card-title
+        <mat-card-header
           class="pl-2 text-black py-2"
           style="background-color: rgb(255, 228, 228);"
-        >{{'ALL FIELDS IN RED TO BE FILLED BY MANAGEMENT' | translate}}</mat-card-title>
+        >{{'ALL FIELDS IN RED TO BE FILLED BY MANAGEMENT' | translate}}</mat-card-header>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
-        <mat-card-title class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'Select deadline' | translate}}</mat-card-title>
+        <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'Select deadline' | translate}}</mat-card-header>
         <mat-card-content class="px-3">
           <mat-form-field>
             <mat-label>{{ 'Start date' | translate }}</mat-label>
@@ -113,7 +113,7 @@
         </mat-card-content>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
-        <mat-card-title class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'Action plan' | translate}}</mat-card-title>
+        <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'Action plan' | translate}}</mat-card-header>
         <mat-card-content class="px-3">
           <mat-form-field>
             <textarea
@@ -127,7 +127,7 @@
         </mat-card-content>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
-        <mat-card-title class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'To be solved by' | translate}}</mat-card-title>
+        <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'To be solved by' | translate}}</mat-card-header>
         <mat-card-content class="px-3">
           <mat-form-field>
             <mtx-select
@@ -142,13 +142,13 @@
         </mat-card-content>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
-        <mat-card-title class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'Pictures of task done' | translate}}</mat-card-title>
+        <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'Pictures of task done' | translate}}</mat-card-header>
         <mat-card-content class="px-3" *ngIf="workflowCaseModel.picturesOfTaskDone">
           <element-picture [fieldValues]="workflowCaseModel.picturesOfTaskDone"></element-picture>
         </mat-card-content>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
-        <mat-card-title class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'Status' | translate}}</mat-card-title>
+        <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'Status' | translate}}</mat-card-header>
         <mat-card-content class="px-3">
           <mat-form-field>
             <mtx-select
