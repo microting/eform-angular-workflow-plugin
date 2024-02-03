@@ -9,8 +9,11 @@ import {WorkflowPnCasesService} from '../../../services';
 import {Store} from '@ngrx/store';
 import {
   selectWorkflowCasesFilters,
-  selectWorkflowCasesPagination, updateWorkflowCasesFilters, updateWorkflowCasesPagination,
-  updateWorkflowCasesTotal, WorkflowCasesFiltration
+  selectWorkflowCasesPagination,
+  updateWorkflowCasesFilters,
+  updateWorkflowCasesPagination,
+  updateWorkflowCasesTotal,
+  WorkflowCasesFiltration
 } from '../../../state';
 
 @Injectable({providedIn: 'root'})

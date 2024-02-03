@@ -1,4 +1,4 @@
-import {WorkflowCasesState} from 'src/app/plugins/modules/workflow-pn/state/workflow-cases/workflow-cases.reducer';
+import {WorkflowCasesState} from './';
 
 export interface WorkflowState {
   workflowCasesState: WorkflowCasesState;

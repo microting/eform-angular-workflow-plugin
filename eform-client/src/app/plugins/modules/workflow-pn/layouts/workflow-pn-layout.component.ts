@@ -1,35 +1,40 @@
-import {AfterContentInit, Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterContentInit, Component, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {translates} from './../i18n/translates';
 import {Store} from '@ngrx/store';
-import {selectCurrentUserLocale} from 'src/app/state/auth/auth.selector';
-import {Subscription} from 'rxjs';
+import {take} from 'rxjs';
+import {addPluginToVisited, selectPluginsVisitedPlugins} from 'src/app/state';
 
 @Component({
   selector: 'app-workflow-pn-layout',
-  template: `<router-outlet></router-outlet>`,
+  template: `
+    <router-outlet></router-outlet>`,
 })
-export class WorkflowPnLayoutComponent implements AfterContentInit, OnInit, OnDestroy {
-  private selectCurrentUserLocale$ = this.store.select(selectCurrentUserLocale);
-  currentUserLocaleAsyncSub$: Subscription;
+export class WorkflowPnLayoutComponent implements AfterContentInit, OnInit {
+  private pluginName = 'workflow';
 
   constructor(
-    private store: Store,
     private translateService: TranslateService,
+    store: Store
   ) {
+    store.select(selectPluginsVisitedPlugins)
+      .pipe(take(1))
+      .subscribe(x => {
+        // check current plugin in activated plugin
+        if (x.findIndex(y => y === this.pluginName) === -1) {
+          // add all plugin translates one time
+          Object.keys(translates).forEach(locale => {
+            this.translateService.setTranslation(locale, translates[locale], true);
+          });
+          // add plugin to visited plugins
+          store.dispatch(addPluginToVisited(this.pluginName));
+        }
+      });
   }
 
   ngOnInit() {
   }
 
   ngAfterContentInit() {
-    this.currentUserLocaleAsyncSub$ = this.selectCurrentUserLocale$.subscribe((locale) => {
-      const i18n = translates[locale];
-      this.translateService.setTranslation(locale, i18n, true);
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.currentUserLocaleAsyncSub$.unsubscribe();
   }
 }
