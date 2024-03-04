@@ -71,7 +71,7 @@ describe('Workflow cases - Edit', function () {
     }
 
     const deadline = new Date();
-    if (dateOfIncident.getMonth() > 1) {
+    if (deadline.getMonth() > 1) {
       deadline.setFullYear(
         modelForUpdate.deadline.year,
         modelForUpdate.deadline.month - 1,
