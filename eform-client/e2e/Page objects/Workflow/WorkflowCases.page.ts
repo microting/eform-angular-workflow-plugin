@@ -1,6 +1,6 @@
 import Page from '../Page';
 import {selectDateOnDatePicker} from '../../Helpers/helper-functions';
-
+import { $ } from '@wdio/globals';
 export class WorkflowCasesPage extends Page {
   constructor() {
     super();

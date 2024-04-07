@@ -2,6 +2,7 @@ import loginPage from '../../Page objects/Login.page';
 import workflowCasesPage from '../../Page objects/Workflow/WorkflowCases.page';
 import { expect } from 'chai';
 import { format } from 'date-fns';
+import { $ } from '@wdio/globals';
 
 describe('Workflow cases - Filtration', function () {
   before(async () => {
