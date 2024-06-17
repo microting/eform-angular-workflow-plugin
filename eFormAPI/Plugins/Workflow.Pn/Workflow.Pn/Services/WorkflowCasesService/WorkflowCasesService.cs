@@ -214,15 +214,31 @@ namespace Workflow.Pn.Services.WorkflowCasesService
 
                 if (result != null)
                 {
+                    var fileName = picturesOfTask.FileName;
+                    if (fileName.Length < 25)
+                    {
+                        var ud = await sdkDbContext.UploadedDatas.AsNoTracking().SingleAsync(x => x.Id == picturesOfTask.UploadedDataId);
+
+                        if (ud.FileLocation.Contains("https"))
+                        {
+                            await core.DownloadUploadedData(ud.Id);
+                            ud = await sdkDbContext.UploadedDatas.AsNoTracking().SingleAsync(x => x.Id == picturesOfTask.UploadedDataId);
+                        }
+
+                        fileName = $"{picturesOfTask.UploadedDataId}_700_{ud.Checksum}{ud.Extension}";
+                        picturesOfTask.FileName = fileName;
+                        await picturesOfTask.Update(_workflowPnDbContext);
+                    }
+
                     Infrastructure.Models.FieldValue fieldValue = new Infrastructure.Models.FieldValue()
                     {
                         Id = picturesOfTask.Id,
                         Longitude = picturesOfTask.Longitude,
                         Latitude = picturesOfTask.Latitude,
-                        UploadedDataObj = new UploadedDataObj()
+                        UploadedDataObj = new UploadedDataObj
                         {
                             Id = result.Id,
-                            FileName = picturesOfTask.FileName
+                            FileName = fileName
                         }
                     };
                     workflowCase.PicturesOfTask.Add(fieldValue);

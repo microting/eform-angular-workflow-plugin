@@ -19,7 +19,14 @@ SOFTWARE.
 */
 
 
+using System.Linq;
+using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
 using eFormCore;
+using Microting.eForm.Dto;
+using Microting.eForm.Infrastructure;
+using Microting.eForm.Infrastructure.Data.Entities;
 using Microting.eFormApi.BasePn.Abstractions;
 using Microting.eFormApi.BasePn.Infrastructure.Helpers.PluginDbOptions;
 using Workflow.Pn.Helpers;
@@ -281,6 +288,8 @@ namespace Workflow.Pn
             WorkflowPnDbContext context = serviceProvider.GetRequiredService<WorkflowPnDbContext>();
             var sdkDbContext = core.DbContextHelper.GetDbContext();
 
+            // CheckUploadedDataIntegrity(sdkDbContext, core);
+
             if (pluginDbOptions.Value.IncidentPlaceListId == 0)
             {
                 int incidentPlaceListId = await SeedHelper.CreateAccidentLocationList(core);
@@ -333,6 +342,75 @@ namespace Workflow.Pn
                 checkList.IsEditable = false;
                 checkList.IsHidden = true;
                 await checkList.Update(sdkDbContext);
+            }
+        }
+
+        private static void CheckUploadedDataIntegrity(MicrotingDbContext dbContext, Core core)
+        {
+            AmazonS3Client s3Client;
+            string s3AccessKeyId = dbContext.Settings.Single(x => x.Name == Settings.s3AccessKeyId.ToString()).Value;
+            string s3SecretAccessKey = dbContext.Settings.Single(x => x.Name == Settings.s3SecrectAccessKey.ToString()).Value;
+            string s3Endpoint = dbContext.Settings.Single(x => x.Name == Settings.s3Endpoint.ToString()).Value;
+            string s3BucktName = dbContext.Settings.Single(x => x.Name == Settings.s3BucketName.ToString()).Value;
+            string customerNo = dbContext.Settings.Single(x => x.Name == Settings.customerNo.ToString()).Value;
+
+            if (s3Endpoint.Contains("https"))
+            {
+                s3Client = new AmazonS3Client(s3AccessKeyId, s3SecretAccessKey, new AmazonS3Config
+                {
+                    ServiceURL = s3Endpoint,
+                });
+            }
+            else
+            {
+                s3Client = new AmazonS3Client(s3AccessKeyId, s3SecretAccessKey, RegionEndpoint.EUCentral1);
+
+            }
+            var uploadedDatas = dbContext.UploadedDatas.Where(x => x.FileLocation.Contains("https")).ToList();
+
+            foreach (UploadedData ud in uploadedDatas)
+            {
+                if (ud.FileName == null)
+                {
+                    core.DownloadUploadedData(ud.Id).GetAwaiter().GetResult();
+                }
+                else
+                {
+                    try
+                    {
+                        GetObjectMetadataRequest request = new GetObjectMetadataRequest
+                        {
+                            BucketName = $"{s3BucktName}/{customerNo}",
+                            Key = ud.FileName
+                        };
+                        var result = s3Client.GetObjectMetadataAsync(request).ConfigureAwait(false).GetAwaiter().GetResult();
+                    }
+                    catch (AmazonS3Exception s3Exception)
+                    {
+                        if (s3Exception.ErrorCode == "Forbidden")
+                        {
+                            core.DownloadUploadedData(ud.Id).GetAwaiter().GetResult();
+                        }
+                    } catch (Exception ex)
+                    {
+                        try
+                        {
+                            GetObjectMetadataRequest request = new GetObjectMetadataRequest
+                            {
+                                BucketName = s3BucktName,
+                                Key = $"{s3BucktName}/{ud.FileName}"
+                            };
+                            var result = s3Client.GetObjectMetadataAsync(request).ConfigureAwait(false).GetAwaiter().GetResult();
+                        }
+                        catch (AmazonS3Exception s3Exception)
+                        {
+                            if (s3Exception.ErrorCode == "Forbidden")
+                            {
+                                core.DownloadUploadedData(ud.Id).GetAwaiter().GetResult();
+                            }
+                        }
+                    }
+                }
             }
         }
 
