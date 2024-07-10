@@ -79,7 +79,9 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
       sortable: true,
       formatter: (rowData: WorkflowCaseModel) => this.getStatusText(rowData.status)
     },
-    {header: this.translateService.stream('Actions'), field: 'actions'},
+    {
+      pinned: 'right',
+      header: this.translateService.stream('Actions'), field: 'actions'},
   ];
   workflowCaseDeletedSub$: Subscription;
   deleteWorkflowCase$: Subscription;

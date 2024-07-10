@@ -63,5 +63,7 @@ namespace Workflow.Pn.Infrastructure.Models.Cases
         public List<FieldValue> PicturesOfTask { get; set; } = new List<FieldValue>();
 
         public List<FieldValue> PicturesOfTaskDone { get; set; } = new List<FieldValue>();
+
+        public int FieldIdPicturesOfTaskDone { get; set; }
     }
 }

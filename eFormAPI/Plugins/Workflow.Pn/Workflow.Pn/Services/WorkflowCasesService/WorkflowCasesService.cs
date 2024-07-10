@@ -169,6 +169,12 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             var core = await _coreHelper.GetCore();
             var sdkDbContext = core.DbContextHelper.GetDbContext();
 
+            var secondEformIdValue = _workflowPnDbContext.PluginConfigurationValues
+                .SingleOrDefault(x => x.Name == "WorkflowBaseSettings:SecondEformId")?.Value;
+            var secondEformId = int.Parse(secondEformIdValue!);
+            var childCheckList = await sdkDbContext.CheckLists.FirstAsync(x => x.ParentId == secondEformId);
+            var fieldIdOfTaskCompleted = await sdkDbContext.Fields.FirstAsync(x => x.CheckListId == childCheckList.Id && x.FieldTypeId == 5);
+
             // get query
             var workflowDbCase = await _workflowPnDbContext.WorkflowCases
                 .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
@@ -199,6 +205,8 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                 IncidentTypeListId = incidentTypeListId.Value,
                 Id = workflowDbCase.Id,
                 CreatedBySiteName = workflowDbCase.CreatedBySiteName,
+                // FieldIdPicturesOfTaskDone = fieldIdOfTaskCompleted.Id, // TODO implement correct frontend part to make this work
+                FieldIdPicturesOfTaskDone = 0,
 
             };
 
@@ -209,10 +217,10 @@ namespace Workflow.Pn.Services.WorkflowCasesService
             int i = picturesOfTasks.Count;
             foreach (PicturesOfTask picturesOfTask in picturesOfTasks)
             {
-                var result = await sdkDbContext.UploadedDatas.SingleOrDefaultAsync(x =>
+                var uploadedData = await sdkDbContext.UploadedDatas.SingleOrDefaultAsync(x =>
                     x.Id == picturesOfTask.UploadedDataId && x.WorkflowState != Constants.WorkflowStates.Removed);
 
-                if (result != null)
+                if (uploadedData != null)
                 {
                     var fileName = picturesOfTask.FileName;
                     if (fileName.Length < 25)
@@ -237,9 +245,9 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                         Latitude = picturesOfTask.Latitude,
                         UploadedDataObj = new UploadedDataObj
                         {
-                            Id = result.Id,
+                            Id = uploadedData.Id,
                             FileName = fileName
-                        }
+                        },
                     };
                     workflowCase.PicturesOfTask.Add(fieldValue);
                 }

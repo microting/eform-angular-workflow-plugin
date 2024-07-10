@@ -22,4 +22,5 @@ export class WorkflowCaseModel {
   status: number;
   picturesOfTask: Array<FieldValueDto>;
   picturesOfTaskDone: Array<FieldValueDto>;
+  fieldIdPicturesOfTaskDone: number;
 }

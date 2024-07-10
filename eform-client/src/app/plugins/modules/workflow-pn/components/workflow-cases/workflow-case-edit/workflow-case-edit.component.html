@@ -69,7 +69,7 @@
         <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(232, 234, 246);">{{'Pictures' | translate}}</mat-card-header>
         <mat-card-content class="px-3" *ngIf="workflowCaseModel.picturesOfTask">
           <div *ngIf="workflowCaseModel.picturesOfTask.uploadedDataObj">{{workflowCaseModel.picturesOfTask.uploadedDataObj.fileName}}</div>
-          <element-picture [fieldValues]="workflowCaseModel.picturesOfTask"></element-picture>
+          <element-picture [fieldValues]="workflowCaseModel.picturesOfTask" [fieldId]="0"></element-picture>
         </mat-card-content>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
@@ -144,7 +144,7 @@
       <mat-card class="px-0 pt-0 mt-3">
         <mat-card-header class="pl-2 text-black py-2" style="background-color: rgb(255, 228, 228);">{{'Pictures of task done' | translate}}</mat-card-header>
         <mat-card-content class="px-3" *ngIf="workflowCaseModel.picturesOfTaskDone">
-          <element-picture [fieldValues]="workflowCaseModel.picturesOfTaskDone"></element-picture>
+          <element-picture [fieldValues]="workflowCaseModel.picturesOfTaskDone" [fieldId]="workflowCaseModel.fieldIdPicturesOfTaskDone"></element-picture>
         </mat-card-content>
       </mat-card>
       <mat-card class="px-0 pt-0 mt-3">
