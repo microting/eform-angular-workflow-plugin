@@ -285,7 +285,14 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                             FileName = picturesOfTask.FileName
                         }
                     };
-                    workflowCase.PicturesOfTaskDone.Add(fieldValue);
+                    if (fieldValue.UploadedDataObj.FileName.Length > 20)
+                    {
+                        workflowCase.PicturesOfTaskDone.Add(fieldValue);
+                    }
+                    else
+                    {
+                        await picturesOfTask.Delete(_workflowPnDbContext);
+                    }
                 }
                 else
                 {
@@ -469,7 +476,15 @@ namespace Workflow.Pn.Services.WorkflowCasesService
                             foreach (var imagesName in picturesOfTasks)
                             {
                                 Console.WriteLine($"Trying to insert image into document : {imagesName}");
-                                imagesHtml = await InsertImage(core, imagesName, imagesHtml, 700, 650, basePicturePath);
+                                try
+                                {
+                                    imagesHtml = await InsertImage(core, imagesName, imagesHtml, 700, 650,
+                                        basePicturePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                }
                             }
 
                             html = html.Replace("{%Content%}", imagesHtml);
