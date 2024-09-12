@@ -27,8 +27,10 @@ using eFormCore;
 using Microting.eForm.Dto;
 using Microting.eForm.Infrastructure;
 using Microting.eForm.Infrastructure.Data.Entities;
+using Microting.EformAngularFrontendBase.Infrastructure.Data;
 using Microting.eFormApi.BasePn.Abstractions;
 using Microting.eFormApi.BasePn.Infrastructure.Helpers.PluginDbOptions;
+using Microting.eFormWorkflowBase.Helpers;
 using Workflow.Pn.Helpers;
 
 namespace Workflow.Pn
@@ -83,6 +85,7 @@ namespace Workflow.Pn
             services.AddSingleton<IWorkflowLocalizationService, WorkflowLocalizationService>();
             services.AddTransient<IWorkflowPnSettingsService, WorkflowPnSettingsService>();
             services.AddTransient<IWorkflowCasesService, WorkflowCasesService>();
+            services.AddTransient<IWorkflowCasesService, WorkflowCasesService>();
             services.AddControllers();
             SeedWorkOrderForms(services);
         }
@@ -102,6 +105,17 @@ namespace Workflow.Pn
                 builder.EnableRetryOnFailure();
                 builder.MigrationsAssembly(PluginAssembly().FullName);
             }));
+
+            var angularDbConnectionString = connectionString.Replace(
+                "eform-angular-workflow-plugin",
+                "Angular");
+            services.AddDbContext<BaseDbContext>(o => o.UseMySql(angularDbConnectionString, new MariaDbServerVersion(
+                new Version(10, 4, 0)), mySqlOptionsAction: builder =>
+            {
+                builder.EnableRetryOnFailure();
+                builder.MigrationsAssembly(PluginAssembly().FullName);
+            }));
+
 
             var contextFactory = new WorkflowPnContextFactory();
             var context = contextFactory.CreateDbContext(new[] { connectionString });
