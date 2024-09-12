@@ -31,6 +31,7 @@ using Microting.eFormWorkflowBase.Helpers;
 using Microting.eFormWorkflowBase.Infrastructure.Data.Entities;
 using Microting.eFormWorkflowBase.Messages;
 using Workflow.Pn.Helpers;
+using Workflow.Pn.Infrastructure.Helpers;
 using Cell = DocumentFormat.OpenXml.Spreadsheet.Cell;
 using CellValue = DocumentFormat.OpenXml.Spreadsheet.CellValue;
 using CellValues = DocumentFormat.OpenXml.Spreadsheet.CellValues;
@@ -61,19 +62,17 @@ using Microting.eFormApi.BasePn.Infrastructure.Models.Common;
 using Microting.eFormWorkflowBase.Infrastructure.Const;
 using Microting.eFormWorkflowBase.Infrastructure.Data;
 using Rebus.Bus;
-using RebusService;
 using WorkflowLocalizationService;
 
 public class WorkflowCasesService(
     IEFormCoreService coreHelper,
     IUserService userService,
-    IRebusService rebusService,
     WorkflowPnDbContext workflowPnDbContext,
     IWorkflowLocalizationService workflowLocalizationService,
     IPluginDbOptions<WorkflowBaseSettings> options)
     : IWorkflowCasesService
 {
-    private readonly IBus _bus = rebusService.GetBus();
+    private readonly EmailHelper _emailHelper;
 
     public async Task<OperationDataResult<Paged<WorkflowCasesModel>>> Index(WorkflowCasesResponse request)
     {
@@ -378,14 +377,21 @@ public class WorkflowCasesService(
             switch (solvedByNotSelected)
             {
                 case true when statusClosed:
-                    // send email with pdf report to device user
-                    await _bus.SendLocal(new QueueEformEmail
+                {
+                    Case _case = await
+                        sdkDbContext.Cases.SingleOrDefaultAsync(x =>
+                            x.MicrotingCheckUid == workflowCase.CheckMicrotingUid);
+                    Site createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
+                    if (!string.IsNullOrEmpty(workflowCase.SolvedBy))
                     {
-                        CaseId = workflowCase.Id,
-                        // UserName = await _userService.GetCurrentUserFullName(),
-                        // CurrentUserLanguageId = _userService.GetCurrentUserLanguage().GetAwaiter().GetResult().Id,
-                        // SolvedUser = new List<KeyValuePair<string, int>>()
-                    });
+                        Site site = await sdkDbContext.Sites.SingleOrDefaultAsync(x =>
+                            x.Name == workflowCase.SolvedBy);
+
+                        if (workflowCase.SolvedBy != createdBySite.Name)
+                        {
+                            await _emailHelper.GenerateReportAndSendEmail(site.LanguageId, site.Name, workflowCase);
+                        }
+                    }
 
                     if (workflowCase.DeployedMicrotingUid != null)
                     {
@@ -394,6 +400,7 @@ public class WorkflowCasesService(
 
                     workflowCase.DeployedMicrotingUid = null;
                     await workflowCase.Update(workflowPnDbContext);
+                }
                     break;
                 case false when canceled:
                 case false when notInitiated:
@@ -408,20 +415,19 @@ public class WorkflowCasesService(
                     break;
                 case false when statusClosed:
                 {
-                    // var language = await sdkDbContext.Languages.FirstAsync(x => x.Id == solvedUser.LanguageId);
-                    // var solvedUsers = new List<KeyValuePair<string, int>>
-                    // {
-                    //     new(solvedUser.Name, language.Id),
-                    // };
-
-                    // send email with pdf report to device user and solved user
-                    await _bus.SendLocal(new QueueEformEmail
+                    Case _case = await
+                        sdkDbContext.Cases.SingleOrDefaultAsync(x => x.MicrotingCheckUid == workflowCase.CheckMicrotingUid);
+                    Site createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
+                    if (!string.IsNullOrEmpty(workflowCase.SolvedBy))
                     {
-                        CaseId = workflowCase.Id,
-                        // UserName = await _userService.GetCurrentUserFullName(),
-                        // CurrentUserLanguageId = _userService.GetCurrentUserLanguage().GetAwaiter().GetResult().Id,
-                        // SolvedUser = solvedUsers
-                    });
+                        Site site = await sdkDbContext.Sites.SingleOrDefaultAsync(x =>
+                            x.Name == workflowCase.SolvedBy);
+
+                        if (workflowCase.SolvedBy != createdBySite.Name)
+                        {
+                            await _emailHelper.GenerateReportAndSendEmail(site.LanguageId, site.Name, workflowCase);
+                        }
+                    }
 
                     if (workflowCase.DeployedMicrotingUid != null)
                     {

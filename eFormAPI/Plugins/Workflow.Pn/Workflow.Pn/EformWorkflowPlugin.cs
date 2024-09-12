@@ -48,7 +48,6 @@ namespace Workflow.Pn
     using Microting.eFormApi.BasePn.Infrastructure.Models.Application.NavigationMenu;
     using Microting.eFormApi.BasePn.Infrastructure.Settings;
     using Services.WorkflowPnSettingsService;
-    using Services.RebusService;
     using System;
     using System.Collections.Generic;
     using System.Reflection;
@@ -77,18 +76,6 @@ namespace Workflow.Pn
 
         public void Configure(IApplicationBuilder appBuilder)
         {
-            var serviceProvider = appBuilder.ApplicationServices;
-
-            var rabbitMqHost = "localhost";
-
-            if (_connectionString.Contains("frontend"))
-            {
-                var dbPrefix = Regex.Match(_connectionString, @"atabase=(\d*)_").Groups[1].Value;
-                rabbitMqHost = $"frontend-{dbPrefix}-rabbitmq";
-            }
-
-            var rebusService = serviceProvider.GetService<IRebusService>();
-            rebusService.Start(_connectionString, "admin", "password", rabbitMqHost);
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -96,7 +83,6 @@ namespace Workflow.Pn
             services.AddSingleton<IWorkflowLocalizationService, WorkflowLocalizationService>();
             services.AddTransient<IWorkflowPnSettingsService, WorkflowPnSettingsService>();
             services.AddTransient<IWorkflowCasesService, WorkflowCasesService>();
-            services.AddSingleton<IRebusService, RebusService>();
             services.AddControllers();
             SeedWorkOrderForms(services);
         }

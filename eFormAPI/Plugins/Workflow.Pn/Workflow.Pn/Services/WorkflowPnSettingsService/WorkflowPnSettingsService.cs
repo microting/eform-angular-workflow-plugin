@@ -31,7 +31,6 @@ using Microting.eFormApi.BasePn.Infrastructure.Consts;
 using Microting.eFormWorkflowBase.Infrastructure.Data.Entities;
 using Rebus.Bus;
 using Workflow.Pn.Infrastructure.Models;
-using Workflow.Pn.Services.RebusService;
 
 namespace Workflow.Pn.Services.WorkflowPnSettingsService
 {
@@ -55,7 +54,6 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
         private readonly IPluginDbOptions<WorkflowBaseSettings> _options;
         private readonly IUserService _userService;
         private readonly IEFormCoreService _coreHelper;
-        private readonly IRebusService _rebusService;
         private readonly IBus _bus;
 
 
@@ -65,8 +63,7 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
             IWorkflowLocalizationService workflowLocalizationService,
             WorkflowPnDbContext dbContext,
             IPluginDbOptions<WorkflowBaseSettings> options,
-            IUserService userService,
-            IRebusService rebusService)
+            IUserService userService)
         {
             _coreHelper = coreHelper;
             _logger = logger;
@@ -74,8 +71,6 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
             _options = options;
             _userService = userService;
             _workflowLocalizationService = workflowLocalizationService;
-            _rebusService = rebusService;
-            _bus = _rebusService.GetBus();
         }
 
         public async Task<OperationDataResult<WorkflowSettingsModel>> GetAllSettingsAsync()
