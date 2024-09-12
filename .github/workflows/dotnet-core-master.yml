@@ -48,7 +48,7 @@ jobs:
     - name: Build the tagged Docker image
       run: docker build . -t microtingas/workflow-container:latest -t microtingas/workflow-container:1.0.0 --build-arg GITVERSION=1.00 --build-arg PLUGINVERSION=1.0.0
     - run: docker save microtingas/workflow-container:latest -o workflow-container.tar
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: workflow-container
         path: workflow-container.tar
@@ -77,7 +77,7 @@ jobs:
       with:
         node-version: 20
     - name: 'Preparing Frontend checkout'
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: microting/eform-angular-frontend
         ref: ${{ steps.extract_branch.outputs.branch }}
