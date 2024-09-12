@@ -22,6 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+using Microting.eFormWorkflowBase.Messages;
+using Rebus.Handlers;
+using Workflow.Pn.Handlers;
+
 namespace Workflow.Pn.Installers
 {
     using Castle.MicroKernel.Registration;
@@ -32,6 +36,7 @@ namespace Workflow.Pn.Installers
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
+            container.Register(Component.For<IHandleMessages<QueueEformEmail>>().ImplementedBy<EFormEmailHandler>().LifestyleTransient());
         }
     }
 }

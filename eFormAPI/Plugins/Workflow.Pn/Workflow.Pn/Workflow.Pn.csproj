@@ -23,14 +23,20 @@
     <EmbeddedResource Include="Resources\Templates\page.html" />
     <None Remove="Resources\Templates\file.docx" />
     <EmbeddedResource Include="Resources\Templates\file.docx" />
+    <None Remove="Resources\Email.html" />
+    <EmbeddedResource Include="Resources\Email.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="HtmlToOpenXml.dll" Version="3.1.1" />
     <PackageReference Include="Microting.eForm" Version="8.0.52" />
+    <PackageReference Include="Microting.EformAngularFrontendBase" Version="8.0.51" />
     <PackageReference Include="Microting.eFormApi.BasePn" Version="8.0.52" />
     <PackageReference Include="McMaster.NETCore.Plugins" Version="1.4.0" />
     <PackageReference Include="Microting.eFormWorkflowBase" Version="8.0.45" />
+    <PackageReference Include="sendgrid" Version="9.29.3" />
   </ItemGroup>
 
 
