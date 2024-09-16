@@ -393,7 +393,7 @@ public class WorkflowCasesService(
 
                         if (workflowCase.SolvedBy != createdBySite.Name)
                         {
-                            await GenerateReportAndSendEmail(site.LanguageId, site.Name, workflowCase);
+                            await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase);
                         }
                     }
 
@@ -429,7 +429,7 @@ public class WorkflowCasesService(
 
                         if (workflowCase.SolvedBy != createdBySite.Name)
                         {
-                            await GenerateReportAndSendEmail(site.LanguageId, site.Name, workflowCase);
+                            await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase);
                         }
                     }
 
@@ -914,7 +914,7 @@ public class WorkflowCasesService(
 
     public async Task GenerateReportAndSendEmail(int languageId, string userName, WorkflowCase workflowCase)
     {
-        var emailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name == userName
+        var emailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name.Replace(" ", "") == userName
             .Replace("Mobil", "")
             .Replace("Tablet", ""));
         WorkflowReportHelper _workflowReportHelper = new WorkflowReportHelper(await coreHelper.GetCore(), workflowPnDbContext);
