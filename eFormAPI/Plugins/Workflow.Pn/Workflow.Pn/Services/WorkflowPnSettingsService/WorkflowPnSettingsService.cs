@@ -77,6 +77,8 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
         {
             try
             {
+                var core = await _coreHelper.GetCore();
+                var microuserDbContext = core.DbContextHelper.GetDbContext();
                 var assignedSitesIds = await _dbContext.AssignedSites.Where(y => y.WorkflowState != Constants.WorkflowStates.Removed).Select(x => x.SiteMicrotingUid).ToListAsync();
                 var workOrdersSettings = new WorkflowSettingsModel
                 {
@@ -85,14 +87,14 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
 
                 if (assignedSitesIds.Count > 0)
                 {
-                    var allSites = await _coreHelper.GetCore().Result.SiteReadAll(true);
+                    var allSites = await microuserDbContext.Sites.Where(x => x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
 
                     foreach (var id in assignedSitesIds)
                     {
-                        var siteNameModel = allSites.Where(x => x.SiteId == id).Select(x => new SiteNameModel
+                        var siteNameModel = allSites.Where(x => x.MicrotingUid == id).Select(x => new SiteNameModel
                         {
-                            SiteName = x.SiteName,
-                            SiteUId = x.SiteId
+                            SiteName = x.Name,
+                            SiteUId = x.MicrotingUid!.Value
                         }).FirstOrDefault();
                         if (siteNameModel != null)
                         {
@@ -154,19 +156,19 @@ namespace Workflow.Pn.Services.WorkflowPnSettingsService
             }
             var language = await sdkDbContext.Languages.SingleAsync(x => x.Id == site.LanguageId);
             var mainElement = await theCore.ReadeForm(newTaskId, language);
-            switch (language.Name)
+            switch (language.LanguageCode)
             {
-                case LanguageNames.Danish:
+                case "da":
                 {
                     mainElement.Label = "Ny hændelse";
                     break;
                 }
-                case LanguageNames.English:
+                case "en-US":
                 {
-                    mainElement.Label = "Near incidet";
+                    mainElement.Label = "New incident";
                     break;
                 }
-                case LanguageNames.German:
+                case "de-DE":
                 {
                     mainElement.Label = "Neuer Vorfall";
                     break;
