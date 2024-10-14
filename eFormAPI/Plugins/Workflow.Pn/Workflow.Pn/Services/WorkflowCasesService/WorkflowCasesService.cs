@@ -388,7 +388,9 @@ public class WorkflowCasesService(
                     Site createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
                     if (!string.IsNullOrEmpty(workflowCase.SolvedBy))
                     {
-                        Site site = await sdkDbContext.Sites.SingleOrDefaultAsync(x =>
+                        Site site = await sdkDbContext.Sites
+                            .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
+                            .SingleOrDefaultAsync(x =>
                             x.Name == workflowCase.SolvedBy);
 
                         if (workflowCase.SolvedBy != createdBySite.Name)
