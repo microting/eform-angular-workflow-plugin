@@ -32,6 +32,7 @@ using Microting.EformAngularFrontendBase.Infrastructure.Data;
 using Microting.eFormWorkflowBase.Helpers;
 using Microting.eFormWorkflowBase.Infrastructure.Data.Entities;
 using Microting.eFormWorkflowBase.Messages;
+using QuestPDF.Fluent;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using Workflow.Pn.Helpers;
@@ -456,38 +457,38 @@ public class WorkflowCasesService(
                     }
 
                     // Docx and PDF files
-                    string timeStamp = DateTime.UtcNow.ToString("yyyyMMdd") + "_" +
-                                       DateTime.UtcNow.ToString("hhmmss");
-                    string downloadPath = Path.Combine(Path.GetTempPath(), "pdf");
-                    string docxFileName = $"{timeStamp}{model.ToBeSolvedById}_temp.docx";
-                    string tempPDFFileName = $"{timeStamp}{model.ToBeSolvedById}_temp.pdf";
-                    string tempPDFFilePath = Path.Combine(downloadPath, tempPDFFileName);
+                    // string timeStamp = DateTime.UtcNow.ToString("yyyyMMdd") + "_" +
+                                       // DateTime.UtcNow.ToString("hhmmss");
+                    // string downloadPath = Path.Combine(Path.GetTempPath(), "pdf");
+                    // string docxFileName = $"{timeStamp}{model.ToBeSolvedById}_temp.docx";
+                    // string tempPDFFileName = $"{timeStamp}{model.ToBeSolvedById}_temp.pdf";
+                    // string tempPDFFilePath = Path.Combine(downloadPath, tempPDFFileName);
 
-                    var resourceString = "Workflow.Pn.Resources.Templates.page.html";
-                    var assembly = Assembly.GetExecutingAssembly();
-                    string html;
-                    await using (var resourceStream = assembly.GetManifestResourceStream(resourceString))
-                    {
-                        using var reader = new StreamReader(resourceStream ??
-                                                            throw new InvalidOperationException(
-                                                                $"{nameof(resourceStream)} is null"));
-                        html = await reader.ReadToEndAsync();
-                    }
-
-                    // Read docx stream
-                    resourceString = "Workflow.Pn.Resources.Templates.file.docx";
-                    var docxFileResourceStream = assembly.GetManifestResourceStream(resourceString);
-                    if (docxFileResourceStream == null)
-                    {
-                        throw new InvalidOperationException($"{nameof(docxFileResourceStream)} is null");
-                    }
-
-                    var docxFileStream = new MemoryStream();
-                    await docxFileResourceStream.CopyToAsync(docxFileStream);
-                    await docxFileResourceStream.DisposeAsync();
-                    string basePicturePath = Path.Combine(Path.GetTempPath(), "pictures");
-                    var word = new WordProcessor(docxFileStream);
-                    string imagesHtml = "";
+                    // var resourceString = "Workflow.Pn.Resources.Templates.page.html";
+                    // var assembly = Assembly.GetExecutingAssembly();
+                    // string html;
+                    // await using (var resourceStream = assembly.GetManifestResourceStream(resourceString))
+                    // {
+                    //     using var reader = new StreamReader(resourceStream ??
+                    //                                         throw new InvalidOperationException(
+                    //                                             $"{nameof(resourceStream)} is null"));
+                    //     html = await reader.ReadToEndAsync();
+                    // }
+                    //
+                    // // Read docx stream
+                    // resourceString = "Workflow.Pn.Resources.Templates.file.docx";
+                    // var docxFileResourceStream = assembly.GetManifestResourceStream(resourceString);
+                    // if (docxFileResourceStream == null)
+                    // {
+                    //     throw new InvalidOperationException($"{nameof(docxFileResourceStream)} is null");
+                    // }
+                    //
+                    // var docxFileStream = new MemoryStream();
+                    // await docxFileResourceStream.CopyToAsync(docxFileStream);
+                    // await docxFileResourceStream.DisposeAsync();
+                    // string basePicturePath = Path.Combine(Path.GetTempPath(), "pictures");
+                    // var word = new WordProcessor(docxFileStream);
+                    // string imagesHtml = "";
                     var picturesOfTasks = new List<string>();
 
                     var pictures =
@@ -499,49 +500,51 @@ public class WorkflowCasesService(
                         picturesOfTasks.Add(picturesOfTask.FileName);
                     }
 
-                    foreach (var imagesName in picturesOfTasks)
-                    {
-                        Console.WriteLine($"Trying to insert image into document : {imagesName}");
-                        try
-                        {
-                            imagesHtml = await InsertImage(core, imagesName, imagesHtml, 700, 650,
-                                basePicturePath);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-                    }
+                    var hash = await GeneratePdf(picturesOfTasks, (int)model.ToBeSolvedById);
 
-                    html = html.Replace("{%Content%}", imagesHtml);
-
-                    word.AddHtml(html);
-                    word.Dispose();
-                    docxFileStream.Position = 0;
-
-                    // Build docx
-                    await using (var docxFile = new FileStream(docxFileName, FileMode.Create, FileAccess.Write))
-                    {
-                        docxFileStream.WriteTo(docxFile);
-                    }
-
-                    // Convert to PDF
-                    ReportHelper.ConvertToPdf(docxFileName, downloadPath);
-                    File.Delete(docxFileName);
-
-                    // Upload PDF
-                    // string pdfFileName = null;
-                    string hash = await core.PdfUpload(tempPDFFilePath);
-                    if (hash != null)
-                    {
-                        //rename local file
-                        FileInfo fileInfo = new FileInfo(tempPDFFilePath);
-                        fileInfo.CopyTo(downloadPath + hash + ".pdf", true);
-                        fileInfo.Delete();
-                        await core.PutFileToStorageSystem(Path.Combine(downloadPath, $"{hash}.pdf"), $"{hash}.pdf");
-
-                        // TODO Remove from file storage?
-                    }
+                    // foreach (var imagesName in picturesOfTasks)
+                    // {
+                    //     Console.WriteLine($"Trying to insert image into document : {imagesName}");
+                    //     try
+                    //     {
+                    //         imagesHtml = await InsertImage(core, imagesName, imagesHtml, 700, 650,
+                    //             basePicturePath);
+                    //     }
+                    //     catch (Exception ex)
+                    //     {
+                    //         Console.WriteLine(ex.Message);
+                    //     }
+                    // }
+                    //
+                    // html = html.Replace("{%Content%}", imagesHtml);
+                    //
+                    // word.AddHtml(html);
+                    // word.Dispose();
+                    // docxFileStream.Position = 0;
+                    //
+                    // // Build docx
+                    // await using (var docxFile = new FileStream(docxFileName, FileMode.Create, FileAccess.Write))
+                    // {
+                    //     docxFileStream.WriteTo(docxFile);
+                    // }
+                    //
+                    // // Convert to PDF
+                    // ReportHelper.ConvertToPdf(docxFileName, downloadPath);
+                    // File.Delete(docxFileName);
+                    //
+                    // // Upload PDF
+                    // // string pdfFileName = null;
+                    // string hash = await core.PdfUpload(tempPDFFilePath);
+                    // if (hash != null)
+                    // {
+                    //     //rename local file
+                    //     FileInfo fileInfo = new FileInfo(tempPDFFilePath);
+                    //     fileInfo.CopyTo(downloadPath + hash + ".pdf", true);
+                    //     fileInfo.Delete();
+                    //     await core.PutFileToStorageSystem(Path.Combine(downloadPath, $"{hash}.pdf"), $"{hash}.pdf");
+                    //
+                    //     // TODO Remove from file storage?
+                    // }
 
                     // eform is deployed to solver device user
                     Folder folder =
@@ -616,6 +619,64 @@ public class WorkflowCasesService(
             return new OperationResult(false,
                 $"{workflowLocalizationService.GetString("CaseCouldNotBeUpdated")} Exception: {ex.Message}");
         }
+    }
+
+    private async Task<string> GeneratePdf(List<string> picturesOfTasks, int sitId)
+    {
+        var core = await coreHelper.GetCore();
+        picturesOfTasks.Reverse();
+        string downloadPath = Path.Combine(Path.GetTempPath(), "reports", "results");
+        Directory.CreateDirectory(downloadPath);
+        string timeStamp = DateTime.UtcNow.ToString("yyyyMMdd") + "_" + DateTime.UtcNow.ToString("hhmmss");
+        string tempPDFFileName = $"{timeStamp}{sitId}_temp.pdf";
+        string tempPDFFilePath = Path.Combine(downloadPath, tempPDFFileName);
+        var document = Document.Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Content()
+                    .Padding(1, QuestPDF.Infrastructure.Unit.Centimetre)
+                    .Column(x =>
+                    {
+                        // loop over all images and add them to the document
+                        var i = 0;
+                        foreach (var imageName in picturesOfTasks)
+                        {
+                            var storageResult = core.GetFileFromS3Storage(imageName).GetAwaiter().GetResult();
+                            x.Item().Image(storageResult.ResponseStream)
+                                .FitArea();
+                            if (i < picturesOfTasks.Count - 1)
+                            {
+                                x.Item().PageBreak();
+                            }
+                            i++;
+                        }
+                    });
+            });
+        }).GeneratePdf();
+
+        await using var fileStream = new FileStream(tempPDFFilePath, FileMode.Create, FileAccess.Write);
+        // save the byte[] to a file.
+        await fileStream.WriteAsync(document, 0, document.Length);
+        await fileStream.FlushAsync();
+
+        // Upload PDF
+        // string pdfFileName = null;
+        string hash = await core.PdfUpload(tempPDFFilePath);
+        if (hash != null)
+        {
+            //rename local file
+            FileInfo fileInfo = new FileInfo(tempPDFFilePath);
+            fileInfo.CopyTo(downloadPath + "/" + hash + ".pdf", true);
+            fileInfo.Delete();
+            await core.PutFileToStorageSystem(Path.Combine(downloadPath, $"{hash}.pdf"), $"{hash}.pdf");
+
+            // delete local file
+            File.Delete(downloadPath + "/" + hash + ".pdf");
+            // TODO Remove from file storage?
+        }
+
+        return hash;
     }
 
     public async Task<OperationDataResult<List<WorkflowPlacesModel>>> GetPlaces()
@@ -834,12 +895,12 @@ public class WorkflowCasesService(
 
         using (var image = new MagickImage(stream))
         {
-            var profile = image.GetExifProfile();
-            // Write all values to the console
-            foreach (var value in profile.Values)
-            {
-                Console.WriteLine("{0}({1}): {2}", value.Tag, value.DataType, value.ToString());
-            }
+            // var profile = image.GetExifProfile();
+            // // Write all values to the console
+            // foreach (var value in profile.Values)
+            // {
+            //     Console.WriteLine("{0}({1}): {2}", value.Tag, value.DataType, value.ToString());
+            // }
 
             //image.AutoOrient();
             // decimal currentRation = image.Height / (decimal)image.Width;
@@ -850,7 +911,7 @@ public class WorkflowCasesService(
             // image.Crop(newWidth, newHeight);
             // if (newWidth > newHeight)
             // {
-            image.Rotate(90);
+            // image.Rotate(90);
             // }
             var base64String = image.ToBase64();
             itemsHtml +=

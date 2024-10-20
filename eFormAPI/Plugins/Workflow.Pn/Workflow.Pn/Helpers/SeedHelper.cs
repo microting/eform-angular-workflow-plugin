@@ -103,7 +103,7 @@ namespace Workflow.Pn.Helpers
                 MultiApproval = false,
                 FastNavigation = false,
                 DisplayOrder = 0,
-                EnableQuickSync = true
+                EnableQuickSync = true,
             };
 
             List<DataItem> dataItems = new List<DataItem>
@@ -119,7 +119,8 @@ namespace Workflow.Pn.Helpers
                     false,
                     new DateTime(),
                     new DateTime(),
-                    ""
+                    "",
+                    "371265"
                 ),
                 new EntitySelect(
                     371261,
@@ -131,7 +132,9 @@ namespace Workflow.Pn.Helpers
                     1,
                     false,
                     0,
-                    accidentTypesList),
+                    accidentTypesList,
+                    "371261"
+                    ),
                 new EntitySelect(
                     371262,
                     false,
@@ -142,7 +145,9 @@ namespace Workflow.Pn.Helpers
                     2,
                     false,
                     0,
-                    accidentLocationList),
+                    accidentLocationList,
+                    "371262"
+                    ),
                 new Picture(
                     371263,
                     false,
@@ -153,7 +158,8 @@ namespace Workflow.Pn.Helpers
                     3,
                     false,
                     0,
-                    false
+                    false,
+                    "371263"
                 ),
                 new Comment(
                     371264,
@@ -166,7 +172,8 @@ namespace Workflow.Pn.Helpers
                     false,
                     "",
                     0,
-                    false
+                    false,
+                    "371264"
                 ),
                 new SaveButton(
                     371266,
@@ -177,7 +184,8 @@ namespace Workflow.Pn.Helpers
                     Constants.FieldColors.Green,
                     5,
                     false,
-                    "Gem og send|Save and send|Speichern und senden"
+                    "Gem og send|Save and send|Speichern und senden",
+                    "371266"
                 )
             };
 
@@ -195,6 +203,7 @@ namespace Workflow.Pn.Helpers
                 false,
                 new List<DataItemGroup>(),
                 dataItems);
+            dataElement.OriginalId = "142108";
 
             newTaskForm.ElementList.Add(dataElement);
 
@@ -270,7 +279,8 @@ namespace Workflow.Pn.Helpers
                     "",
                     Constants.FieldColors.Yellow,
                     0,
-                    false
+                    false,
+                    "371267"
                 ),
                 new ShowPdf(
                     371268,
@@ -281,7 +291,8 @@ namespace Workflow.Pn.Helpers
                     Constants.FieldColors.Default,
                     1,
                     false,
-                    "https://eform.microting.com/app_files/uploads/20200914114927_14937_9fae9a0b11bda418201523437984027c.pdf"
+                    "https://eform.microting.com/app_files/uploads/20200914114927_14937_9fae9a0b11bda418201523437984027c.pdf",
+                    "371268"
                 ),
                 new Comment(
                     371271,
@@ -294,10 +305,11 @@ namespace Workflow.Pn.Helpers
                     false,
                     "",
                     0,
-                    false
+                    false,
+                    "371271"
                     ),
                 new Comment(
-                    371271,
+                    371272,
                     false,
                     false,
                     "Handlingsplan|Action plan|Aktionsplan",
@@ -307,7 +319,8 @@ namespace Workflow.Pn.Helpers
                     false,
                     "",
                     0,
-                    false
+                    false,
+                    "371272"
                 ),
                 new Picture(
                     371270,
@@ -319,7 +332,8 @@ namespace Workflow.Pn.Helpers
                     4,
                     false,
                     0,
-                    false
+                    false,
+                    "371270"
                 ),
                 new SaveButton(
                     371266,
@@ -330,7 +344,8 @@ namespace Workflow.Pn.Helpers
                     Constants.FieldColors.Green,
                     5,
                     false,
-                    "Gem og send|Save and send|Speichern und senden"
+                    "Gem og send|Save and send|Speichern und senden",
+                    "371266"
                 )
             };
 
@@ -422,7 +437,8 @@ namespace Workflow.Pn.Helpers
                     "",
                     Constants.FieldColors.Yellow,
                     0,
-                    false
+                    false,
+                    "371267"
                 ),
                 new SaveButton(
                     371266,
@@ -433,7 +449,8 @@ namespace Workflow.Pn.Helpers
                     Constants.FieldColors.Green,
                     5,
                     false,
-                    "TILBAGE|BACK|ZURÜCK"
+                    "TILBAGE|BACK|ZURÜCK",
+                    "371266"
                 )
             };
 
