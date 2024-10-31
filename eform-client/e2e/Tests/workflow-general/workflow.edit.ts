@@ -13,7 +13,6 @@ describe('Workflow cases - Edit', function () {
     await workflowCasesPage.goToWorkflowCasesPage();
   });
   it('should not edit workflow case', async () => {
-    const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     const modelForUpdate = new WorkflowCaseForEdit();
     const dateNow = new Date();
     modelForUpdate.status = 'Igangværende';
@@ -21,6 +20,7 @@ describe('Workflow cases - Edit', function () {
     modelForUpdate.description = generateRandmString();
     modelForUpdate.deadline = {day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear()};
     modelForUpdate.dateOfIncident = {day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear()};
+    const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     await firstWorkflowCase.update(modelForUpdate, true);
     const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     // expect(findWorkflowCase.id).equal(1);
@@ -43,7 +43,6 @@ describe('Workflow cases - Edit', function () {
     );
   });
   it('should edit workflow case', async () => {
-    const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     const modelForUpdate = new WorkflowCaseForEdit();
     const dateNow = new Date();
     modelForUpdate.status = 'Igangværende';
@@ -51,6 +50,7 @@ describe('Workflow cases - Edit', function () {
     modelForUpdate.description = generateRandmString();
     modelForUpdate.deadline = {day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear()};
     modelForUpdate.dateOfIncident = {day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear()};
+    const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     await firstWorkflowCase.update(modelForUpdate);
     const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     expect(findWorkflowCase.id).equal(1);
