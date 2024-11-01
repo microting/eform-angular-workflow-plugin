@@ -13,6 +13,7 @@ describe('Workflow cases - Edit', function () {
     await workflowCasesPage.goToWorkflowCasesPage();
   });
   it('should not edit workflow case', async () => {
+    // TODO investigate why this test is failing on 30th of october 2024
     const modelForUpdate = new WorkflowCaseForEdit();
     const dateNow = new Date();
     modelForUpdate.status = 'Igangværende';
