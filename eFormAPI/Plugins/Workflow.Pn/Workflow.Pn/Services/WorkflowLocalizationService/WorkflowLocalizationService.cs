@@ -27,15 +27,11 @@ namespace Workflow.Pn.Services.WorkflowLocalizationService
     using Microsoft.Extensions.Localization;
     using Microting.eFormApi.BasePn.Localization.Abstractions;
 
-    public class WorkflowLocalizationService : IWorkflowLocalizationService
+    public class WorkflowLocalizationService(IEformLocalizerFactory factory) : IWorkflowLocalizationService
     {
-        private readonly IStringLocalizer _localizer;
+        private readonly IStringLocalizer _localizer = factory.Create(typeof(EformWorkflowPlugin));
 
         // ReSharper disable once SuggestBaseTypeForParameter
-        public WorkflowLocalizationService(IEformLocalizerFactory factory)
-        {
-            _localizer = factory.Create(typeof(EformWorkflowPlugin));
-        }
 
         public string GetString(string key)
         {

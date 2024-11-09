@@ -20,6 +20,7 @@ SOFTWARE.
 
 
 using System.Linq;
+using System.Runtime.InteropServices;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -32,6 +33,7 @@ using Microting.eFormApi.BasePn.Abstractions;
 using Microting.eFormApi.BasePn.Infrastructure.Helpers.PluginDbOptions;
 using Microting.eFormWorkflowBase.Helpers;
 using QuestPDF.Infrastructure;
+using Sentry;
 using Workflow.Pn.Helpers;
 
 namespace Workflow.Pn
@@ -100,6 +102,50 @@ namespace Workflow.Pn
 
         public void ConfigureDbContext(IServiceCollection services, string connectionString)
         {
+            SentrySdk.Init(options =>
+            {
+                // A Sentry Data Source Name (DSN) is required.
+                // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/
+                // You can set it in the SENTRY_DSN environment variable, or you can set it in code here.
+                options.Dsn = "https://80b935299e69fe24c21043140b62f2ab@o4506241219428352.ingest.us.sentry.io/4508266849501184";
+
+                // When debug is enabled, the Sentry client will emit detailed debugging information to the console.
+                // This might be helpful, or might interfere with the normal operation of your application.
+                // We enable it here for demonstration purposes when first trying Sentry.
+                // You shouldn't do this in your applications unless you're troubleshooting issues with Sentry.
+                options.Debug = false;
+
+                // This option is recommended. It enables Sentry's "Release Health" feature.
+                options.AutoSessionTracking = true;
+
+                // This option is recommended for client applications only. It ensures all threads use the same global scope.
+                // If you're writing a background service of any kind, you should remove this.
+                options.IsGlobalModeEnabled = true;
+
+                // This option will enable Sentry's tracing features. You still need to start transactions and spans.
+                options.EnableTracing = true;
+            });
+
+            string pattern = @"Database=(\d+)_eform-angular-workflow-plugin;";
+            Match match = Regex.Match(connectionString!, pattern);
+
+            if (match.Success)
+            {
+                string numberString = match.Groups[1].Value;
+                int number = int.Parse(numberString);
+                SentrySdk.ConfigureScope(scope =>
+                {
+                    scope.SetTag("customerNo", number.ToString());
+                    Console.WriteLine("customerNo: " + number);
+                    scope.SetTag("osVersion", Environment.OSVersion.ToString());
+                    Console.WriteLine("osVersion: " + Environment.OSVersion);
+                    scope.SetTag("osArchitecture", RuntimeInformation.OSArchitecture.ToString());
+                    Console.WriteLine("osArchitecture: " + RuntimeInformation.OSArchitecture);
+                    scope.SetTag("osName", RuntimeInformation.OSDescription);
+                    Console.WriteLine("osName: " + RuntimeInformation.OSDescription);
+                });
+            }
+
             _connectionString = connectionString;
             services.AddDbContext<WorkflowPnDbContext>(o => o.UseMySql(connectionString, new MariaDbServerVersion(
                 new Version(10, 4, 0)), mySqlOptionsAction: builder =>

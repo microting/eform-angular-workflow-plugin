@@ -25,6 +25,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using eFormCore;
 using ImageMagick;
+using Microsoft.Extensions.Logging;
 using Microting.eForm.Dto;
 using Microting.eForm.Helpers;
 using Microting.eForm.Infrastructure.Models;
@@ -35,6 +36,7 @@ using Microting.eFormWorkflowBase.Messages;
 using QuestPDF.Fluent;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using Sentry;
 using Workflow.Pn.Helpers;
 using Workflow.Pn.Infrastructure.Helpers;
 using Cell = DocumentFormat.OpenXml.Spreadsheet.Cell;
@@ -75,6 +77,7 @@ public class WorkflowCasesService(
     WorkflowPnDbContext workflowPnDbContext,
     IWorkflowLocalizationService workflowLocalizationService,
     IPluginDbOptions<WorkflowBaseSettings> options,
+    ILogger<WorkflowCasesService> logger,
     BaseDbContext _baseDbContext)
     : IWorkflowCasesService
 {
@@ -363,16 +366,17 @@ public class WorkflowCasesService(
             workflowCase.UpdatedByUserId = userService.UserId;
             workflowCase.Deadline = string.IsNullOrEmpty(model.Deadline) ? null : DateTime.Parse(model.Deadline);
             workflowCase.IncidentPlace = model.IncidentPlace;
-            if (model.IncidentPlaceId != null) workflowCase.IncidentPlaceId = (int)model.IncidentPlaceId;
+            if (model.IncidentPlaceId != null)
+            {
+                workflowCase.IncidentPlaceId = (int)model.IncidentPlaceId;
+            }
+
             workflowCase.IncidentType = model.IncidentType;
-            if (model.IncidentTypeId != null) workflowCase.IncidentTypeId = (int)model.IncidentTypeId;
-            //if(model.IncidentPlace.HasValue)
-            // {
-            //     workflowCase.IncidentPlace = await sdkDbContext.FieldOptionTranslations
-            //         .Where(x => x.Id == model.IncidentPlace)
-            //         .Select(x => x.Text)
-            //         .FirstAsync();
-            // }
+            if (model.IncidentTypeId != null)
+            {
+                workflowCase.IncidentTypeId = (int)model.IncidentTypeId;
+            }
+
             workflowCase.ActionPlan = model.ActionPlan;
             workflowCase.Description = model.Description;
             workflowCase.DateOfIncident = DateTime.Parse(model.DateOfIncident);
@@ -392,7 +396,7 @@ public class WorkflowCasesService(
                         Site site = await sdkDbContext.Sites
                             .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
                             .SingleOrDefaultAsync(x =>
-                            x.Name == workflowCase.SolvedBy);
+                                x.Name == workflowCase.SolvedBy);
 
                         if (workflowCase.SolvedBy != createdBySite.Name)
                         {
@@ -423,14 +427,15 @@ public class WorkflowCasesService(
                 case false when statusClosed:
                 {
                     Case _case = await
-                        sdkDbContext.Cases.SingleOrDefaultAsync(x => x.MicrotingCheckUid == workflowCase.CheckMicrotingUid);
+                        sdkDbContext.Cases.SingleOrDefaultAsync(x =>
+                            x.MicrotingCheckUid == workflowCase.CheckMicrotingUid);
                     Site createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
                     if (!string.IsNullOrEmpty(workflowCase.SolvedBy))
                     {
                         Site site = await sdkDbContext.Sites
                             .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
                             .SingleOrDefaultAsync(x =>
-                            x.Name == workflowCase.SolvedBy);
+                                x.Name == workflowCase.SolvedBy);
 
                         if (workflowCase.SolvedBy != createdBySite.Name)
                         {
@@ -456,39 +461,6 @@ public class WorkflowCasesService(
                             workflowLocalizationService.GetString("DeadlineIsMissing"));
                     }
 
-                    // Docx and PDF files
-                    // string timeStamp = DateTime.UtcNow.ToString("yyyyMMdd") + "_" +
-                                       // DateTime.UtcNow.ToString("hhmmss");
-                    // string downloadPath = Path.Combine(Path.GetTempPath(), "pdf");
-                    // string docxFileName = $"{timeStamp}{model.ToBeSolvedById}_temp.docx";
-                    // string tempPDFFileName = $"{timeStamp}{model.ToBeSolvedById}_temp.pdf";
-                    // string tempPDFFilePath = Path.Combine(downloadPath, tempPDFFileName);
-
-                    // var resourceString = "Workflow.Pn.Resources.Templates.page.html";
-                    // var assembly = Assembly.GetExecutingAssembly();
-                    // string html;
-                    // await using (var resourceStream = assembly.GetManifestResourceStream(resourceString))
-                    // {
-                    //     using var reader = new StreamReader(resourceStream ??
-                    //                                         throw new InvalidOperationException(
-                    //                                             $"{nameof(resourceStream)} is null"));
-                    //     html = await reader.ReadToEndAsync();
-                    // }
-                    //
-                    // // Read docx stream
-                    // resourceString = "Workflow.Pn.Resources.Templates.file.docx";
-                    // var docxFileResourceStream = assembly.GetManifestResourceStream(resourceString);
-                    // if (docxFileResourceStream == null)
-                    // {
-                    //     throw new InvalidOperationException($"{nameof(docxFileResourceStream)} is null");
-                    // }
-                    //
-                    // var docxFileStream = new MemoryStream();
-                    // await docxFileResourceStream.CopyToAsync(docxFileStream);
-                    // await docxFileResourceStream.DisposeAsync();
-                    // string basePicturePath = Path.Combine(Path.GetTempPath(), "pictures");
-                    // var word = new WordProcessor(docxFileStream);
-                    // string imagesHtml = "";
                     var picturesOfTasks = new List<string>();
 
                     var pictures =
@@ -501,50 +473,6 @@ public class WorkflowCasesService(
                     }
 
                     var hash = await GeneratePdf(picturesOfTasks, (int)model.ToBeSolvedById);
-
-                    // foreach (var imagesName in picturesOfTasks)
-                    // {
-                    //     Console.WriteLine($"Trying to insert image into document : {imagesName}");
-                    //     try
-                    //     {
-                    //         imagesHtml = await InsertImage(core, imagesName, imagesHtml, 700, 650,
-                    //             basePicturePath);
-                    //     }
-                    //     catch (Exception ex)
-                    //     {
-                    //         Console.WriteLine(ex.Message);
-                    //     }
-                    // }
-                    //
-                    // html = html.Replace("{%Content%}", imagesHtml);
-                    //
-                    // word.AddHtml(html);
-                    // word.Dispose();
-                    // docxFileStream.Position = 0;
-                    //
-                    // // Build docx
-                    // await using (var docxFile = new FileStream(docxFileName, FileMode.Create, FileAccess.Write))
-                    // {
-                    //     docxFileStream.WriteTo(docxFile);
-                    // }
-                    //
-                    // // Convert to PDF
-                    // ReportHelper.ConvertToPdf(docxFileName, downloadPath);
-                    // File.Delete(docxFileName);
-                    //
-                    // // Upload PDF
-                    // // string pdfFileName = null;
-                    // string hash = await core.PdfUpload(tempPDFFilePath);
-                    // if (hash != null)
-                    // {
-                    //     //rename local file
-                    //     FileInfo fileInfo = new FileInfo(tempPDFFilePath);
-                    //     fileInfo.CopyTo(downloadPath + hash + ".pdf", true);
-                    //     fileInfo.Delete();
-                    //     await core.PutFileToStorageSystem(Path.Combine(downloadPath, $"{hash}.pdf"), $"{hash}.pdf");
-                    //
-                    //     // TODO Remove from file storage?
-                    // }
 
                     // eform is deployed to solver device user
                     Folder folder =
@@ -614,8 +542,9 @@ public class WorkflowCasesService(
         }
         catch (Exception ex)
         {
-            Log.LogException(ex.Message);
-            Log.LogException(ex.StackTrace);
+            SentrySdk.CaptureException(ex);
+            logger.LogError(ex.Message);
+            logger.LogTrace(ex.StackTrace);
             return new OperationResult(false,
                 $"{workflowLocalizationService.GetString("CaseCouldNotBeUpdated")} Exception: {ex.Message}");
         }
@@ -649,6 +578,7 @@ public class WorkflowCasesService(
                             {
                                 x.Item().PageBreak();
                             }
+
                             i++;
                         }
                     });
@@ -712,8 +642,9 @@ public class WorkflowCasesService(
         }
         catch (Exception ex)
         {
-            Log.LogException(ex.Message);
-            Log.LogException(ex.StackTrace);
+            SentrySdk.CaptureException(ex);
+            logger.LogError(ex.Message);
+            logger.LogTrace(ex.StackTrace);
             return new OperationDataResult<List<WorkflowPlacesModel>>(false,
                 $"{workflowLocalizationService.GetString("ErrorWhileGetPlaces")} Exception: {ex.Message}");
         }
@@ -895,24 +826,6 @@ public class WorkflowCasesService(
 
         using (var image = new MagickImage(stream))
         {
-            // var profile = image.GetExifProfile();
-            // // Write all values to the console
-            // foreach (var value in profile.Values)
-            // {
-            //     Console.WriteLine("{0}({1}): {2}", value.Tag, value.DataType, value.ToString());
-            // }
-
-            //image.AutoOrient();
-            // decimal currentRation = image.Height / (decimal)image.Width;
-            // int newWidth = imageSize;
-            // int newHeight = (int)Math.Round((currentRation * newWidth));
-            //
-            // image.Resize(newWidth, newHeight);
-            // image.Crop(newWidth, newHeight);
-            // if (newWidth > newHeight)
-            // {
-            // image.Rotate(90);
-            // }
             var base64String = image.ToBase64();
             itemsHtml +=
                 $@"<p><img src=""data:image/png;base64,{base64String}"" width=""{imageWidth}px"" alt="""" /></p>";
@@ -969,6 +882,7 @@ public class WorkflowCasesService(
         }
         catch (Exception ex)
         {
+            SentrySdk.CaptureException(ex);
             throw new Exception("Failed to send email message", ex);
         }
         finally
@@ -979,10 +893,12 @@ public class WorkflowCasesService(
 
     public async Task GenerateReportAndSendEmail(int languageId, string userName, WorkflowCase workflowCase)
     {
-        var emailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name.Replace(" ", "") == userName
-            .Replace("Mobil", "")
-            .Replace("Tablet", ""));
-        WorkflowReportHelper _workflowReportHelper = new WorkflowReportHelper(await coreHelper.GetCore(), workflowPnDbContext);
+        var emailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name.Replace(" ", "") ==
+            userName
+                .Replace("Mobil", "")
+                .Replace("Tablet", ""));
+        WorkflowReportHelper _workflowReportHelper =
+            new WorkflowReportHelper(await coreHelper.GetCore(), workflowPnDbContext);
         var filePath = await _workflowReportHelper.GenerateReportAnd(languageId, workflowCase, "pdf");
         var assembly = Assembly.GetExecutingAssembly();
         var assemblyName = assembly.GetName().Name;
@@ -993,10 +909,12 @@ public class WorkflowCasesService(
         {
             throw new InvalidOperationException("Resource not found");
         }
+
         using (var reader = new StreamReader(stream, Encoding.UTF8))
         {
             html = await reader.ReadToEndAsync();
         }
+
         html = html
             .Replace(
                 "<a href=\"{{link}}\">Link til sag</a>", "")
