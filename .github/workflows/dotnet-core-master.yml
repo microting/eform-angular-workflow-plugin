@@ -48,7 +48,7 @@ jobs:
     - name: Build the tagged Docker image
       run: docker build . -t microtingas/workflow-container:latest -t microtingas/workflow-container:1.0.0 --build-arg GITVERSION=1.00 --build-arg PLUGINVERSION=1.0.0
     - run: docker save microtingas/workflow-container:latest -o workflow-container.tar
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: workflow-container
         path: workflow-container.tar
@@ -68,7 +68,7 @@ jobs:
       run: |
         docker pull mariadb:10.8
         docker run --name mariadbtest --network data -e MYSQL_ROOT_PASSWORD=secretpassword -p 3306:3306 -d mariadb:10.8
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: workflow-container
     - run: docker load -i workflow-container.tar
