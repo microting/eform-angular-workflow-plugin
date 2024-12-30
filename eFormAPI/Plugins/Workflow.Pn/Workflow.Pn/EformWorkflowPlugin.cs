@@ -149,6 +149,7 @@ namespace Workflow.Pn
             {
                 builder.EnableRetryOnFailure();
                 builder.MigrationsAssembly(PluginAssembly().FullName);
+                builder.TranslateParameterizedCollectionsToConstants();
             }));
 
             var angularDbConnectionString = connectionString.Replace(
@@ -159,6 +160,7 @@ namespace Workflow.Pn
             {
                 builder.EnableRetryOnFailure();
                 builder.MigrationsAssembly(PluginAssembly().FullName);
+                builder.TranslateParameterizedCollectionsToConstants();
             }));
 
 
