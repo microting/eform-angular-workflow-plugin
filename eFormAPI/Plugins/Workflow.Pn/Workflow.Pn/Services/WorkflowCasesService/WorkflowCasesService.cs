@@ -414,7 +414,6 @@ public class WorkflowCasesService(
                 }
                     break;
                 case false when canceled:
-                case false when notInitiated:
                 case false when noStatus:
                     if (workflowCase.DeployedMicrotingUid != null)
                     {
@@ -453,6 +452,7 @@ public class WorkflowCasesService(
                     break;
                 }
                 case false when statusOngoing:
+                case false when notInitiated:
                 {
 
                     if (workflowCase.Deadline == null)
