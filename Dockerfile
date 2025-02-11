@@ -22,7 +22,7 @@ WORKDIR /app
 COPY --from=build-env /app/eFormAPI.Web/out .
 RUN mkdir -p ./Plugins/Workflow.Pn
 COPY --from=build-env /app/Workflow.Pn/out ./Plugins/Workflow.Pn
-COPY --from=node-env /app/dist wwwroot
+COPY --from=node-env /app/dist/browser wwwroot
 RUN rm connection.json; exit 0
 
 ENTRYPOINT ["dotnet", "eFormAPI.Web.dll"]
