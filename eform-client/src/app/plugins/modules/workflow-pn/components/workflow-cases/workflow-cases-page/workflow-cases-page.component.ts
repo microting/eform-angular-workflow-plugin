@@ -27,9 +27,10 @@ import {
 
 @AutoUnsubscribe()
 @Component({
-  selector: 'app-workflow-cases-page',
-  templateUrl: './workflow-cases-page.component.html',
-  styleUrls: ['./workflow-cases-page.component.scss'],
+    selector: 'app-workflow-cases-page',
+    templateUrl: './workflow-cases-page.component.html',
+    styleUrls: ['./workflow-cases-page.component.scss'],
+    standalone: false
 })
 export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   workflowCasesModel: Paged<WorkflowCaseModel> = new Paged<WorkflowCaseModel>();

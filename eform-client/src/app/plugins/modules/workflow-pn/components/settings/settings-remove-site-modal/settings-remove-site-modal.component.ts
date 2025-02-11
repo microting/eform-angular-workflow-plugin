@@ -13,9 +13,10 @@ import { Subscription } from 'rxjs';
 
 @AutoUnsubscribe()
 @Component({
-  selector: 'app-settings-remove-site-modal',
-  templateUrl: './settings-remove-site-modal.component.html',
-  styleUrls: ['./settings-remove-site-modal.component.scss'],
+    selector: 'app-settings-remove-site-modal',
+    templateUrl: './settings-remove-site-modal.component.html',
+    styleUrls: ['./settings-remove-site-modal.component.scss'],
+    standalone: false
 })
 export class SettingsRemoveSiteModalComponent implements OnInit, OnDestroy {
   @ViewChild('frame', { static: false }) frame;

@@ -6,9 +6,10 @@ import {take} from 'rxjs';
 import {addPluginToVisited, selectPluginsVisitedPlugins} from 'src/app/state';
 
 @Component({
-  selector: 'app-workflow-pn-layout',
-  template: `
+    selector: 'app-workflow-pn-layout',
+    template: `
     <router-outlet></router-outlet>`,
+    standalone: false
 })
 export class WorkflowPnLayoutComponent implements AfterContentInit, OnInit {
   private pluginName = 'workflow';

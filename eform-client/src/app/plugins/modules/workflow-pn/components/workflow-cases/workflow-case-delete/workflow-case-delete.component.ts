@@ -13,9 +13,10 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @AutoUnsubscribe()
 @Component({
-  selector: 'app-workflow-case-delete',
-  templateUrl: './workflow-case-delete.component.html',
-  styleUrls: ['./workflow-case-delete.component.scss'],
+    selector: 'app-workflow-case-delete',
+    templateUrl: './workflow-case-delete.component.html',
+    styleUrls: ['./workflow-case-delete.component.scss'],
+    standalone: false
 })
 export class WorkflowCaseDeleteComponent implements OnInit, OnDestroy {
   workflowCaseDeleted: EventEmitter<void> = new EventEmitter<void>();

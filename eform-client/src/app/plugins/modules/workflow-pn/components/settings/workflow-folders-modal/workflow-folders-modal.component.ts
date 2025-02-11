@@ -12,9 +12,10 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @AutoUnsubscribe()
 @Component({
-  selector: 'app-workflow-folders-modal',
-  templateUrl: './workflow-folders-modal.component.html',
-  styleUrls: ['./workflow-folders-modal.component.scss']
+    selector: 'app-workflow-folders-modal',
+    templateUrl: './workflow-folders-modal.component.html',
+    styleUrls: ['./workflow-folders-modal.component.scss'],
+    standalone: false
 })
 export class WorkflowFoldersModalComponent implements OnInit, OnDestroy {
   folderSelected: EventEmitter<FolderDto> = new EventEmitter<FolderDto>();

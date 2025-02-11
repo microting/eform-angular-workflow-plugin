@@ -24,9 +24,10 @@ import {DeleteModalComponent} from 'src/app/common/modules/eform-shared/componen
 
 @AutoUnsubscribe()
 @Component({
-  selector: 'app-workflow-settings',
-  templateUrl: './workflow-settings.component.html',
-  styleUrls: ['./workflow-settings.component.scss'],
+    selector: 'app-workflow-settings',
+    templateUrl: './workflow-settings.component.html',
+    styleUrls: ['./workflow-settings.component.scss'],
+    standalone: false
 })
 export class WorkflowSettingsComponent implements OnInit, OnDestroy {
   @ViewChild('addSiteModal') addSiteModal: SettingsAddSiteModalComponent;

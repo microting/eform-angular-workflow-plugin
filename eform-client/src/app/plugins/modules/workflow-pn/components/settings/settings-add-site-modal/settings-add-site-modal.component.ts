@@ -8,9 +8,10 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @AutoUnsubscribe()
 @Component({
-  selector: 'app-settings-add-site-modal',
-  templateUrl: './settings-add-site-modal.component.html',
-  styleUrls: ['./settings-add-site-modal.component.scss'],
+    selector: 'app-settings-add-site-modal',
+    templateUrl: './settings-add-site-modal.component.html',
+    styleUrls: ['./settings-add-site-modal.component.scss'],
+    standalone: false
 })
 export class SettingsAddSiteModalComponent implements OnInit, OnDestroy {
   siteAdded: EventEmitter<void> = new EventEmitter<void>();

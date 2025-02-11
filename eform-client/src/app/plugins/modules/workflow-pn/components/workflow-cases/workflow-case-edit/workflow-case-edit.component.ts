@@ -20,9 +20,10 @@ import {MatDatepickerInputEvent} from '@angular/material/datepicker';
 
 @AutoUnsubscribe()
 @Component({
-  selector: 'app-workflow-case-edit',
-  templateUrl: './workflow-case-edit.component.html',
-  styleUrls: ['./workflow-case-edit.component.scss'],
+    selector: 'app-workflow-case-edit',
+    templateUrl: './workflow-case-edit.component.html',
+    styleUrls: ['./workflow-case-edit.component.scss'],
+    standalone: false
 })
 export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   deviceUsersList: SiteNameDto[] = [];
