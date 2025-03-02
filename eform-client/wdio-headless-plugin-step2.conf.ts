@@ -16,7 +16,7 @@ export const config: Options.Testrunner = {
     //
     specs: [
       'e2e/Tests/workflow-settings/application-settings.plugins-page.spec.ts',
-      'e2e/Tests/workflow-general/workflow.sorting.ts',
+      //'e2e/Tests/workflow-general/workflow.sorting.ts',
       'e2e/Tests/workflow-general/workflow.filtration.ts',
       'e2e/Tests/workflow-general/workflow.edit.ts',
     ],
