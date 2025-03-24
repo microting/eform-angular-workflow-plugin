@@ -1,44 +1,44 @@
 <h3 mat-dialog-title>{{'Are you sure you want to delete' | translate}}?</h3>
-<div mat-dialog-content>
-  <div class="d-flex flex-row justify-content-between">
-    <p>ID</p>
-    <strong>{{workflowCaseModel.id}}</strong>
+  <div mat-dialog-content>
+    <div class="d-flex flex-row justify-content-between">
+      <p>ID</p>
+      <strong>{{workflowCaseModel.id}}</strong>
+    </div>
+    <div class="d-flex flex-row justify-content-between">
+      <p>{{'Date of incident' | translate}}</p>
+      <strong>{{workflowCaseModel.dateOfIncident ? (workflowCaseModel.dateOfIncident | date: 'dd.MM.yyyy') : '--'}}</strong>
+    </div>
+    <div class="d-flex flex-row justify-content-between">
+      <p>{{'Created by' | translate}}</p>
+      <strong>{{workflowCaseModel.createdBySiteName ?? '--'}}</strong>
+    </div>
+    <div class="d-flex flex-row justify-content-between">
+      <p>{{'Incident type' | translate}}</p>
+      <strong>{{workflowCaseModel.incidentType ?? '--'}}</strong>
+    </div>
+    <div class="d-flex flex-row justify-content-between">
+      <p>{{'Incident place' | translate}}</p>
+      <strong>{{workflowCaseModel.incidentPlace ?? '--'}}</strong>
+    </div>
+    <div class="d-flex flex-row justify-content-between">
+      <p>{{'Description' | translate}}</p>
+      <strong>{{workflowCaseModel.description ?? '--'}}</strong>
+    </div>
   </div>
-  <div class="d-flex flex-row justify-content-between">
-    <p>{{'Date of incident' | translate}}</p>
-    <strong>{{workflowCaseModel.dateOfIncident | date: 'dd.MM.yyyy' ?? '--'}}</strong>
+  <div mat-dialog-actions class="d-flex flex-row justify-content-end">
+    <button
+      mat-raised-button
+      color="warn"
+      id="workflowCaseDeleteDeleteBtn"
+      (click)="deleteWorkflowCase()"
+    >
+      {{'Delete' | translate}}
+    </button>
+    <button
+      mat-raised-button
+      id="workflowCaseDeleteCancelBtn"
+      (click)="hide()"
+    >
+      {{'Cancel' | translate}}
+    </button>
   </div>
-  <div class="d-flex flex-row justify-content-between">
-    <p>{{'Created by' | translate}}</p>
-    <strong>{{workflowCaseModel.createdBySiteName ?? '--'}}</strong>
-  </div>
-  <div class="d-flex flex-row justify-content-between">
-    <p>{{'Incident type' | translate}}</p>
-    <strong>{{workflowCaseModel.incidentType ?? '--'}}</strong>
-  </div>
-  <div class="d-flex flex-row justify-content-between">
-    <p>{{'Incident place' | translate}}</p>
-    <strong>{{workflowCaseModel.incidentPlace ?? '--'}}</strong>
-  </div>
-  <div class="d-flex flex-row justify-content-between">
-    <p>{{'Description' | translate}}</p>
-    <strong>{{workflowCaseModel.description ?? '--'}}</strong>
-  </div>
-</div>
-<div mat-dialog-actions class="d-flex flex-row justify-content-end">
-  <button
-    mat-raised-button
-    color="warn"
-    id="workflowCaseDeleteDeleteBtn"
-    (click)="deleteWorkflowCase()"
-  >
-    {{'Delete' | translate}}
-  </button>
-  <button
-    mat-raised-button
-    id="workflowCaseDeleteCancelBtn"
-    (click)="hide()"
-  >
-    {{'Cancel' | translate}}
-  </button>
-</div>
