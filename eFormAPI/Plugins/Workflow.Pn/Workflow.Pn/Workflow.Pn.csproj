@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlToOpenXml.dll" Version="3.2.4" />
+    <PackageReference Include="HtmlToOpenXml.dll" Version="3.2.5" />
     <PackageReference Include="Microting.eForm" Version="9.0.31" />
     <PackageReference Include="Microting.EformAngularFrontendBase" Version="9.0.27" />
     <PackageReference Include="Microting.eFormApi.BasePn" Version="9.0.31" />
