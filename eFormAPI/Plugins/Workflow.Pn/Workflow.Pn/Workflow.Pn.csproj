@@ -32,7 +32,7 @@
   <ItemGroup>
     <PackageReference Include="HtmlToOpenXml.dll" Version="3.2.5" />
     <PackageReference Include="Microting.eForm" Version="9.0.32" />
-    <PackageReference Include="Microting.EformAngularFrontendBase" Version="9.0.27" />
+    <PackageReference Include="Microting.EformAngularFrontendBase" Version="9.0.28" />
     <PackageReference Include="Microting.eFormApi.BasePn" Version="9.0.32" />
     <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0" />
     <PackageReference Include="Microting.eFormWorkflowBase" Version="8.0.93" />
