@@ -1,8 +1,10 @@
 version: 2
 updates:
 - package-ecosystem: nuget
-  directory: "/eFormAPI/Plugins/Workflow.Pn"
+  directory: "/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn"
   schedule:
     interval: daily
-    time: "04:00"
-  open-pull-requests-limit: 10
+- package-ecosystem: nuget
+  directory: "/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.Test"
+  schedule:
+    interval: daily
