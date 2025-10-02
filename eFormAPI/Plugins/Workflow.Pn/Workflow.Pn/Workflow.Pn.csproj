@@ -38,7 +38,7 @@
     <PackageReference Include="Microting.eFormWorkflowBase" Version="8.0.110" />
     <PackageReference Include="QuestPDF" Version="2025.7.2" />
     <PackageReference Include="sendgrid" Version="9.29.3" />
-    <PackageReference Include="Sentry" Version="5.15.1" />
+    <PackageReference Include="Sentry" Version="5.16.0" />
   </ItemGroup>
 
 
