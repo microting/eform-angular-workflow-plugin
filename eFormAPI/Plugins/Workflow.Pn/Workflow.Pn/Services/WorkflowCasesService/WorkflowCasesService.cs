@@ -952,13 +952,13 @@ public class WorkflowCasesService(
             .Replace("{{Type}}", workflowCase.IncidentType)
             .Replace("{{Location}}", workflowCase.IncidentPlace)
             .Replace("{{Description}}", workflowCase.Description.Replace("&", "&amp;"))
-            .Replace("<p>Ansvarlig: {{SolvedBy}}</p>", solvedBy)
-            .Replace("<p>Handlingsplan: {{ActionPlan}}</p>", "");
+            .Replace("{{SolvedBy}}", solvedBy)
+            .Replace("{{ActionPlan}}", "");
 
         await SendFileAsync(
             "no-reply@microting.com",
             userName,
-            $"{workflowCase.IncidentType};  {workflowCase.IncidentPlace}; {workflowCase.CreatedAt:dd-MM-yyyy}",
+            $"Opfølgning: {workflowCase.IncidentType};  {workflowCase.IncidentPlace}; {workflowCase.CreatedAt:dd-MM-yyyy}",
             emailRecipient?.Email,
             filePath,
             null,
