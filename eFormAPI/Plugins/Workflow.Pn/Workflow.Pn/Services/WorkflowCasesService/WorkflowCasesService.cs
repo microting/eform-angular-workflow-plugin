@@ -319,7 +319,9 @@ public class WorkflowCasesService(
 
         if (!string.IsNullOrEmpty(workflowDbCase.SolvedBy))
         {
-            workflowCase.ToBeSolvedById = sdkDbContext.Sites.First(y => y.Name == workflowDbCase.SolvedBy).Id;
+            workflowCase.ToBeSolvedById = sdkDbContext.Sites
+                .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
+                .First(y => y.Name == workflowDbCase.SolvedBy).Id;
         }
 
         return new OperationDataResult<WorkflowCasesUpdateModel>(true, workflowCase);
@@ -346,7 +348,8 @@ public class WorkflowCasesService(
             }
 
             var sdkDbContext = core.DbContextHelper.GetDbContext();
-            var solvedUser = await sdkDbContext.Sites.Where(x => x.Id == model.ToBeSolvedById)
+            var solvedUser = await sdkDbContext.Sites
+                .Where(x => x.Id == model.ToBeSolvedById)
                 .Select(x => new
                 {
                     x.Name,
