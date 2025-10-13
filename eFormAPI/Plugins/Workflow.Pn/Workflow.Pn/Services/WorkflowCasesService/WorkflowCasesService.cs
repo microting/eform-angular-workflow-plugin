@@ -400,7 +400,7 @@ public class WorkflowCasesService(
 
                         if (workflowCase.SolvedBy != createdBySite.Name)
                         {
-                            await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase);
+                            await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase, "");
                         }
                     }
 
@@ -415,14 +415,33 @@ public class WorkflowCasesService(
                     break;
                 case false when canceled:
                 case false when noStatus:
+                {
                     if (workflowCase.DeployedMicrotingUid != null)
                     {
-                        await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
+                        await core.CaseDelete((int) workflowCase.DeployedMicrotingUid);
                     }
 
                     workflowCase.DeployedMicrotingUid = null;
                     await workflowCase.Update(workflowPnDbContext);
+
+
+                    await workflowCase.Update(workflowPnDbContext);
+                    Site site = await sdkDbContext.Sites.SingleOrDefaultAsync(x =>
+                        x.Id == model.ToBeSolvedById);
+                    Case _case = await
+                        sdkDbContext.Cases.SingleOrDefaultAsync(x =>
+                            x.MicrotingCheckUid == workflowCase.CheckMicrotingUid);
+
+                    Site createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
+
+                    if (workflowCase.SolvedBy != createdBySite.Name)
+                    {
+                        await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase, workflowCase.SolvedBy);
+                    }
+
+
                     break;
+                }
                 case false when statusClosed:
                 {
                     Case _case = await
@@ -438,7 +457,7 @@ public class WorkflowCasesService(
 
                         if (workflowCase.SolvedBy != createdBySite.Name)
                         {
-                            await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase);
+                            await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase, workflowCase.SolvedBy);
                         }
                     }
 
@@ -530,10 +549,20 @@ public class WorkflowCasesService(
 
                     Site site = await sdkDbContext.Sites.SingleOrDefaultAsync(x =>
                         x.Id == model.ToBeSolvedById);
+                    Case _case = await
+                        sdkDbContext.Cases.SingleOrDefaultAsync(x =>
+                            x.MicrotingCheckUid == workflowCase.CheckMicrotingUid);
 
                     workflowCase.DeployedMicrotingUid =
                         (int)await core.CaseCreate(mainElement, "", (int)site.MicrotingUid, folder.Id);
                     await workflowCase.Update(workflowPnDbContext);
+                    Site createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
+
+                    if (workflowCase.SolvedBy != createdBySite.Name)
+                    {
+                        await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase, workflowCase.SolvedBy);
+                    }
+
                     break;
                 }
             }
@@ -891,7 +920,7 @@ public class WorkflowCasesService(
         }
     }
 
-    public async Task GenerateReportAndSendEmail(int languageId, string userName, WorkflowCase workflowCase)
+    public async Task GenerateReportAndSendEmail(int languageId, string userName, WorkflowCase workflowCase, string solvedBy)
     {
         var emailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name.Replace(" ", "") ==
             userName
@@ -923,7 +952,7 @@ public class WorkflowCasesService(
             .Replace("{{Type}}", workflowCase.IncidentType)
             .Replace("{{Location}}", workflowCase.IncidentPlace)
             .Replace("{{Description}}", workflowCase.Description.Replace("&", "&amp;"))
-            .Replace("<p>Ansvarlig: {{SolvedBy}}</p>", "")
+            .Replace("<p>Ansvarlig: {{SolvedBy}}</p>", solvedBy)
             .Replace("<p>Handlingsplan: {{ActionPlan}}</p>", "");
 
         await SendFileAsync(
