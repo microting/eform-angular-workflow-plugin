@@ -123,13 +123,13 @@ namespace Workflow.Pn
                 options.IsGlobalModeEnabled = true;
             });
 
-            string pattern = @"Database=(\d+)_eform-angular-workflow-plugin;";
-            Match match = Regex.Match(connectionString!, pattern);
+            var pattern = @"Database=(\d+)_eform-angular-workflow-plugin;";
+            var match = Regex.Match(connectionString!, pattern);
 
             if (match.Success)
             {
-                string numberString = match.Groups[1].Value;
-                int number = int.Parse(numberString);
+                var numberString = match.Groups[1].Value;
+                var number = int.Parse(numberString);
                 SentrySdk.ConfigureScope(scope =>
                 {
                     scope.SetTag("customerNo", number.ToString());
@@ -327,31 +327,31 @@ namespace Workflow.Pn
 
         private async void SeedWorkOrderForms(IServiceCollection serviceCollection)
         {
-            ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
-            IPluginDbOptions<WorkflowBaseSettings> pluginDbOptions =
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var pluginDbOptions =
                 serviceProvider.GetRequiredService<IPluginDbOptions<WorkflowBaseSettings>>();
 
-            Core core = await serviceProvider.GetRequiredService<IEFormCoreService>().GetCore();
-            WorkflowPnDbContext context = serviceProvider.GetRequiredService<WorkflowPnDbContext>();
+            var core = await serviceProvider.GetRequiredService<IEFormCoreService>().GetCore();
+            var context = serviceProvider.GetRequiredService<WorkflowPnDbContext>();
             var sdkDbContext = core.DbContextHelper.GetDbContext();
 
             // CheckUploadedDataIntegrity(sdkDbContext, core);
 
             if (pluginDbOptions.Value.IncidentPlaceListId == 0)
             {
-                int incidentPlaceListId = await SeedHelper.CreateAccidentLocationList(core);
+                var incidentPlaceListId = await SeedHelper.CreateAccidentLocationList(core);
                 await pluginDbOptions.UpdateDb(settings => settings.IncidentPlaceListId = incidentPlaceListId, context, 1);
             }
 
             if (pluginDbOptions.Value.IncidentTypeListId == 0)
             {
-                int incidentPlaceListId = await SeedHelper.CreateAccidentTypesList(core);
+                var incidentPlaceListId = await SeedHelper.CreateAccidentTypesList(core);
                 await pluginDbOptions.UpdateDb(settings => settings.IncidentTypeListId = incidentPlaceListId, context, 1);
             }
 
             if (pluginDbOptions.Value.FirstEformId == 0)
             {
-                int newTaskId = await SeedHelper.CreateNewTaskEform(core);
+                var newTaskId = await SeedHelper.CreateNewTaskEform(core);
                 await pluginDbOptions.UpdateDb(settings => settings.FirstEformId = newTaskId, context, 1);
             }
             else
@@ -365,7 +365,7 @@ namespace Workflow.Pn
 
             if (pluginDbOptions.Value.SecondEformId == 0)
             {
-                int taskListId = await SeedHelper.CreateTaskListEform(core);
+                var taskListId = await SeedHelper.CreateTaskListEform(core);
                 await pluginDbOptions.UpdateDb(settings => settings.SecondEformId = taskListId, context, 1);
             }
             else
@@ -379,7 +379,7 @@ namespace Workflow.Pn
 
             if (pluginDbOptions.Value.InstructionseFormId == 0)
             {
-                int formId = await SeedHelper.CreateInstructioneForm(core);
+                var formId = await SeedHelper.CreateInstructioneForm(core);
                 await pluginDbOptions.UpdateDb(settings => settings.InstructionseFormId = formId, context, 1);
             }
             else
@@ -395,11 +395,11 @@ namespace Workflow.Pn
         private static void CheckUploadedDataIntegrity(MicrotingDbContext dbContext, Core core)
         {
             AmazonS3Client s3Client;
-            string s3AccessKeyId = dbContext.Settings.Single(x => x.Name == Settings.s3AccessKeyId.ToString()).Value;
-            string s3SecretAccessKey = dbContext.Settings.Single(x => x.Name == Settings.s3SecrectAccessKey.ToString()).Value;
-            string s3Endpoint = dbContext.Settings.Single(x => x.Name == Settings.s3Endpoint.ToString()).Value;
-            string s3BucktName = dbContext.Settings.Single(x => x.Name == Settings.s3BucketName.ToString()).Value;
-            string customerNo = dbContext.Settings.Single(x => x.Name == Settings.customerNo.ToString()).Value;
+            var s3AccessKeyId = dbContext.Settings.Single(x => x.Name == Settings.s3AccessKeyId.ToString()).Value;
+            var s3SecretAccessKey = dbContext.Settings.Single(x => x.Name == Settings.s3SecrectAccessKey.ToString()).Value;
+            var s3Endpoint = dbContext.Settings.Single(x => x.Name == Settings.s3Endpoint.ToString()).Value;
+            var s3BucktName = dbContext.Settings.Single(x => x.Name == Settings.s3BucketName.ToString()).Value;
+            var customerNo = dbContext.Settings.Single(x => x.Name == Settings.customerNo.ToString()).Value;
 
             if (s3Endpoint.Contains("https"))
             {
@@ -415,7 +415,7 @@ namespace Workflow.Pn
             }
             var uploadedDatas = dbContext.UploadedDatas.Where(x => x.FileLocation.Contains("https")).ToList();
 
-            foreach (UploadedData ud in uploadedDatas)
+            foreach (var ud in uploadedDatas)
             {
                 if (ud.FileName == null)
                 {
@@ -425,7 +425,7 @@ namespace Workflow.Pn
                 {
                     try
                     {
-                        GetObjectMetadataRequest request = new GetObjectMetadataRequest
+                        var request = new GetObjectMetadataRequest
                         {
                             BucketName = $"{s3BucktName}/{customerNo}",
                             Key = ud.FileName
@@ -442,7 +442,7 @@ namespace Workflow.Pn
                     {
                         try
                         {
-                            GetObjectMetadataRequest request = new GetObjectMetadataRequest
+                            var request = new GetObjectMetadataRequest
                             {
                                 BucketName = s3BucktName,
                                 Key = $"{s3BucktName}/{ud.FileName}"

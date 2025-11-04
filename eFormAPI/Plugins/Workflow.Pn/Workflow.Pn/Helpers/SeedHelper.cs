@@ -19,7 +19,7 @@ namespace Workflow.Pn.Helpers
     {
         public static async Task<int> CreateAccidentTypesList(Core core)
         {
-            EntityGroupList model = await core.Advanced_EntityGroupAll(
+            var model = await core.Advanced_EntityGroupAll(
                 "id",
                 "eform-angular-workflow-plugin-editable-AccidentType",
                 0, 1, Constants.FieldTypes.EntitySelect,
@@ -37,7 +37,7 @@ namespace Workflow.Pn.Helpers
 
         public static async Task<int> CreateAccidentLocationList(Core core)
         {
-            EntityGroupList model = await core.Advanced_EntityGroupAll(
+            var model = await core.Advanced_EntityGroupAll(
                 "id",
                 "eform-angular-workflow-plugin-editable-AccidentLocations",
                 0, 1, Constants.FieldTypes.EntitySelect,
@@ -67,11 +67,11 @@ namespace Workflow.Pn.Helpers
             {
                 timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time");
             }
-            int accidentTypesList = await CreateAccidentTypesList(core);
-            int accidentLocationList = await CreateAccidentLocationList(core);
-            Language language = await sdkDbContext.Languages.FirstAsync();
+            var accidentTypesList = await CreateAccidentTypesList(core);
+            var accidentLocationList = await CreateAccidentLocationList(core);
+            var language = await sdkDbContext.Languages.FirstAsync();
 
-            List<Template_Dto> templatesDto = await core.TemplateItemReadAll(false,
+            var templatesDto = await core.TemplateItemReadAll(false,
                 "",
                 "eform-angular-workflow-plugin-newtask",
                 false,
@@ -92,7 +92,7 @@ namespace Workflow.Pn.Helpers
                 return id;
             }
 
-            MainElement newTaskForm = new MainElement
+            var newTaskForm = new MainElement
             {
                 Id = 5769,
                 Repeated = 0,
@@ -106,7 +106,7 @@ namespace Workflow.Pn.Helpers
                 EnableQuickSync = true,
             };
 
-            List<DataItem> dataItems = new List<DataItem>
+            var dataItems = new List<DataItem>
             {
                 new Date(
                     371265,
@@ -190,7 +190,7 @@ namespace Workflow.Pn.Helpers
             };
 
 
-            DataElement dataElement = new DataElement(
+            var dataElement = new DataElement(
                 142108,
                 "Ny opgave|New task|Neue Aufgabe",
                 0,
@@ -221,7 +221,7 @@ namespace Workflow.Pn.Helpers
         public static async Task<int> CreateTaskListEform(Core core)
         {
             var sdkDbContext = core.DbContextHelper.GetDbContext();
-            string timeZone = "Europe/Copenhagen";
+            var timeZone = "Europe/Copenhagen";
             TimeZoneInfo timeZoneInfo;
 
             try
@@ -233,8 +233,8 @@ namespace Workflow.Pn.Helpers
                 timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time");
             }
 
-            Language language = await sdkDbContext.Languages.FirstAsync();
-            List<Template_Dto> templatesDto = await core.TemplateItemReadAll(false,
+            var language = await sdkDbContext.Languages.FirstAsync();
+            var templatesDto = await core.TemplateItemReadAll(false,
                     "",
                     "eform-angular-workflow-plugin-tasklist",
                     false,
@@ -255,7 +255,7 @@ namespace Workflow.Pn.Helpers
                 return id;
             }
 
-            MainElement taskListForm = new MainElement
+            var taskListForm = new MainElement
             {
                 Id = 7680,
                 Repeated = 0,
@@ -269,7 +269,7 @@ namespace Workflow.Pn.Helpers
                 EnableQuickSync = true
             };
 
-            List<DataItem> dataItems = new List<DataItem>
+            var dataItems = new List<DataItem>
             {
                 new None(
                     371267,
@@ -350,7 +350,7 @@ namespace Workflow.Pn.Helpers
             };
 
 
-            DataElement dataElement = new DataElement(
+            var dataElement = new DataElement(
                 142109,
                 "Hændelse registreret|Incident registered|Vorfall registriert",
                 0,
@@ -379,7 +379,7 @@ namespace Workflow.Pn.Helpers
         public static async Task<int> CreateInstructioneForm(Core core)
         {
             var sdkDbContext = core.DbContextHelper.GetDbContext();
-            string timeZone = "Europe/Copenhagen";
+            var timeZone = "Europe/Copenhagen";
             TimeZoneInfo timeZoneInfo;
 
             try
@@ -391,8 +391,8 @@ namespace Workflow.Pn.Helpers
                 timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time");
             }
 
-            Language language = await sdkDbContext.Languages.FirstAsync();
-            List<Template_Dto> templatesDto = await core.TemplateItemReadAll(false,
+            var language = await sdkDbContext.Languages.FirstAsync();
+            var templatesDto = await core.TemplateItemReadAll(false,
                 "",
                 "eform-angular-workflow-plugin-instructions",
                 false,
@@ -413,7 +413,7 @@ namespace Workflow.Pn.Helpers
                 return id;
             }
 
-            MainElement taskListForm = new MainElement
+            var taskListForm = new MainElement
             {
                 Id = 7680,
                 Repeated = 0,
@@ -427,7 +427,7 @@ namespace Workflow.Pn.Helpers
                 EnableQuickSync = true
             };
 
-            List<DataItem> dataItems = new List<DataItem>
+            var dataItems = new List<DataItem>
             {
                 new None(
                     371267,
@@ -456,7 +456,7 @@ namespace Workflow.Pn.Helpers
 
 
 
-            DataElement dataElement = new DataElement(
+            var dataElement = new DataElement(
                 142109,
                 "Brugervejledning|User Manual|Benutzerhandbuch",
                 0,

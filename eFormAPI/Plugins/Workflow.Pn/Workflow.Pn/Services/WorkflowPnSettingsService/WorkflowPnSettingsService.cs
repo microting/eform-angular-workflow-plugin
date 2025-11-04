@@ -273,7 +273,7 @@ public class WorkflowPnSettingsService(
                 x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
             if (checkListSites != null)
             {
-                foreach (CheckListSite checkListSite in checkListSites)
+                foreach (var checkListSite in checkListSites)
                 {
                     await theCore.CaseDelete(checkListSite.MicrotingUid);
                 }

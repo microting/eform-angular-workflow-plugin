@@ -90,7 +90,7 @@ namespace Workflow.Pn.Controllers
         {
             var result =  await _workflowPnSettingsService.DownloadEFormPdf(id, fileType);
             const int bufferSize = 4086;
-            byte[] buffer = new byte[bufferSize];
+            var buffer = new byte[bufferSize];
             Response.OnStarting(async () =>
             {
                 if (!result.Success)
@@ -98,7 +98,7 @@ namespace Workflow.Pn.Controllers
                     Response.ContentLength = result.Message.Length;
                     Response.ContentType = "text/plain";
                     Response.StatusCode = 400;
-                    byte[] bytes = Encoding.UTF8.GetBytes(result.Message);
+                    var bytes = Encoding.UTF8.GetBytes(result.Message);
                     await Response.Body.WriteAsync(bytes, 0, result.Message.Length);
                     await Response.Body.FlushAsync();
                 }

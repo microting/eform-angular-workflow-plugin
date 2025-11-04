@@ -201,7 +201,7 @@ public class WorkflowCasesService(
         var incidentTypeListId = await workflowPnDbContext.PluginConfigurationValues.SingleOrDefaultAsync(x =>
             x.Name == $"WorkflowBaseSettings:{nameof(WorkflowBaseSettings.IncidentTypeListId)}");
 
-        WorkflowCasesUpdateModel workflowCase = new WorkflowCasesUpdateModel
+        var workflowCase = new WorkflowCasesUpdateModel
         {
             ActionPlan = workflowDbCase.ActionPlan,
             DateOfIncident = workflowDbCase.DateOfIncident.ToString("yyyy-MM-dd"), // 2021-08-29,
@@ -224,8 +224,8 @@ public class WorkflowCasesService(
             .Where(x => x.WorkflowCaseId == workflowDbCase.Id
                         && x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
 
-        int i = picturesOfTasks.Count;
-        foreach (PicturesOfTask picturesOfTask in picturesOfTasks)
+        var i = picturesOfTasks.Count;
+        foreach (var picturesOfTask in picturesOfTasks)
         {
             var uploadedData = await sdkDbContext.UploadedDatas.SingleOrDefaultAsync(x =>
                 x.Id == picturesOfTask.UploadedDataId && x.WorkflowState != Constants.WorkflowStates.Removed);
@@ -250,7 +250,7 @@ public class WorkflowCasesService(
                     await picturesOfTask.Update(workflowPnDbContext);
                 }
 
-                Infrastructure.Models.FieldValue fieldValue = new Infrastructure.Models.FieldValue()
+                var fieldValue = new Infrastructure.Models.FieldValue()
                 {
                     Id = picturesOfTask.Id,
                     Longitude = picturesOfTask.Longitude,
@@ -279,14 +279,14 @@ public class WorkflowCasesService(
             .Where(x => x.WorkflowCaseId == workflowDbCase.Id
                         && x.WorkflowState != Constants.WorkflowStates.Removed).ToListAsync();
 
-        foreach (PicturesOfTaskDone picturesOfTask in picturesOfTaskDones)
+        foreach (var picturesOfTask in picturesOfTaskDones)
         {
             var result = await sdkDbContext.UploadedDatas.SingleOrDefaultAsync(x =>
                 x.Id == picturesOfTask.UploadedDataId && x.WorkflowState != Constants.WorkflowStates.Removed);
 
             if (result != null)
             {
-                Infrastructure.Models.FieldValue fieldValue = new Infrastructure.Models.FieldValue()
+                var fieldValue = new Infrastructure.Models.FieldValue()
                 {
                     Id = picturesOfTask.Id,
                     Longitude = picturesOfTask.Longitude,
@@ -390,21 +390,13 @@ public class WorkflowCasesService(
             {
                 case true when statusClosed:
                 {
-                    Case _case = await
+                    var theCase = await
                         sdkDbContext.Cases.SingleOrDefaultAsync(x =>
                             x.MicrotingCheckUid == workflowCase.CheckMicrotingUid);
-                    Site createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
+                    var createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == theCase.SiteId);
                     if (!string.IsNullOrEmpty(workflowCase.SolvedBy))
                     {
-                        Site site = await sdkDbContext.Sites
-                            .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
-                            .SingleOrDefaultAsync(x =>
-                                x.Name == workflowCase.SolvedBy);
-
-                        if (workflowCase.SolvedBy != createdBySite.Name)
-                        {
-                            await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase, "");
-                        }
+                        await GenerateReportAndSendEmail(createdBySite.LanguageId, createdBySite.Name.Replace(" ", ""), workflowCase, "");
                     }
 
                     if (workflowCase.DeployedMicrotingUid != null)
@@ -429,39 +421,26 @@ public class WorkflowCasesService(
 
 
                     await workflowCase.Update(workflowPnDbContext);
-                    Site site = await sdkDbContext.Sites.SingleOrDefaultAsync(x =>
-                        x.Id == model.ToBeSolvedById);
-                    Case _case = await
+                    var _case = await
                         sdkDbContext.Cases.SingleOrDefaultAsync(x =>
                             x.MicrotingCheckUid == workflowCase.CheckMicrotingUid);
 
-                    Site createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
+                    var createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
 
-                    if (workflowCase.SolvedBy != createdBySite.Name)
-                    {
-                        await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase, workflowCase.SolvedBy);
-                    }
+                    await GenerateReportAndSendEmail(createdBySite.LanguageId, createdBySite.Name.Replace(" ", ""), workflowCase, workflowCase.SolvedBy);
 
 
                     break;
                 }
                 case false when statusClosed:
                 {
-                    Case _case = await
+                    var theCase = await
                         sdkDbContext.Cases.SingleOrDefaultAsync(x =>
                             x.MicrotingCheckUid == workflowCase.CheckMicrotingUid);
-                    Site createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
+                    var createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == theCase.SiteId);
                     if (!string.IsNullOrEmpty(workflowCase.SolvedBy))
                     {
-                        Site site = await sdkDbContext.Sites
-                            .Where(x => x.WorkflowState != Constants.WorkflowStates.Removed)
-                            .SingleOrDefaultAsync(x =>
-                                x.Name == workflowCase.SolvedBy);
-
-                        if (workflowCase.SolvedBy != createdBySite.Name)
-                        {
-                            await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase, workflowCase.SolvedBy);
-                        }
+                        await GenerateReportAndSendEmail(createdBySite.LanguageId, createdBySite.Name.Replace(" ", ""), workflowCase, workflowCase.SolvedBy);
                     }
 
                     if (workflowCase.DeployedMicrotingUid != null)
@@ -489,7 +468,7 @@ public class WorkflowCasesService(
                         await workflowPnDbContext.PicturesOfTasks.Where(x =>
                             x.WorkflowCaseId == workflowCase.Id).ToListAsync();
 
-                    foreach (PicturesOfTask picturesOfTask in pictures)
+                    foreach (var picturesOfTask in pictures)
                     {
                         picturesOfTasks.Add(picturesOfTask.FileName);
                     }
@@ -497,7 +476,7 @@ public class WorkflowCasesService(
                     var hash = await GeneratePdf(picturesOfTasks, (int)model.ToBeSolvedById);
 
                     // eform is deployed to solver device user
-                    Folder folder =
+                    var folder =
                         await sdkDbContext.Folders.SingleOrDefaultAsync(x =>
                             x.Id == options.Value.FolderTasksId);
                     var mainElement = await core.ReadeForm(options.Value.SecondEformId,
@@ -511,7 +490,7 @@ public class WorkflowCasesService(
                     var dataElement = mainElement.ElementList[0] as DataElement;
                     mainElement.Label = workflowCase.IncidentType;
                     dataElement.Label = workflowCase.IncidentType;
-                    DateTime startDate = new DateTime(2020, 1, 1);
+                    var startDate = new DateTime(2020, 1, 1);
                     mainElement.DisplayOrder = (workflowCase.Deadline - startDate).Value.Days;
                     dataElement.Description = new CDataValue
                     {
@@ -550,21 +529,18 @@ public class WorkflowCasesService(
                         await core.CaseDelete((int)workflowCase.DeployedMicrotingUid);
                     }
 
-                    Site site = await sdkDbContext.Sites.SingleOrDefaultAsync(x =>
+                    var site = await sdkDbContext.Sites.SingleOrDefaultAsync(x =>
                         x.Id == model.ToBeSolvedById);
-                    Case _case = await
+                    var theCase = await
                         sdkDbContext.Cases.SingleOrDefaultAsync(x =>
                             x.MicrotingCheckUid == workflowCase.CheckMicrotingUid);
 
                     workflowCase.DeployedMicrotingUid =
                         (int)await core.CaseCreate(mainElement, "", (int)site.MicrotingUid, folder.Id);
                     await workflowCase.Update(workflowPnDbContext);
-                    Site createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == _case.SiteId);
+                    var createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == theCase.SiteId);
 
-                    if (workflowCase.SolvedBy != createdBySite.Name)
-                    {
-                        await GenerateReportAndSendEmail(site.LanguageId, site.Name.Replace(" ", ""), workflowCase, workflowCase.SolvedBy);
-                    }
+                    await GenerateReportAndSendEmail(createdBySite.LanguageId, createdBySite.Name.Replace(" ", ""), workflowCase, workflowCase.SolvedBy);
 
                     break;
                 }
@@ -586,11 +562,11 @@ public class WorkflowCasesService(
     {
         var core = await coreHelper.GetCore();
         picturesOfTasks.Reverse();
-        string downloadPath = Path.Combine(Path.GetTempPath(), "reports", "results");
+        var downloadPath = Path.Combine(Path.GetTempPath(), "reports", "results");
         Directory.CreateDirectory(downloadPath);
-        string timeStamp = DateTime.UtcNow.ToString("yyyyMMdd") + "_" + DateTime.UtcNow.ToString("hhmmss");
-        string tempPDFFileName = $"{timeStamp}{sitId}_temp.pdf";
-        string tempPDFFilePath = Path.Combine(downloadPath, tempPDFFileName);
+        var timeStamp = DateTime.UtcNow.ToString("yyyyMMdd") + "_" + DateTime.UtcNow.ToString("hhmmss");
+        var tempPDFFileName = $"{timeStamp}{sitId}_temp.pdf";
+        var tempPDFFilePath = Path.Combine(downloadPath, tempPDFFileName);
         var document = Document.Create(container =>
         {
             container.Page(page =>
@@ -624,11 +600,11 @@ public class WorkflowCasesService(
 
         // Upload PDF
         // string pdfFileName = null;
-        string hash = await core.PdfUpload(tempPDFFilePath);
+        var hash = await core.PdfUpload(tempPDFFilePath);
         if (hash != null)
         {
             //rename local file
-            FileInfo fileInfo = new FileInfo(tempPDFFilePath);
+            var fileInfo = new FileInfo(tempPDFFilePath);
             fileInfo.CopyTo(downloadPath + "/" + hash + ".pdf", true);
             fileInfo.Delete();
             await core.PutFileToStorageSystem(Path.Combine(downloadPath, $"{hash}.pdf"), $"{hash}.pdf");
@@ -729,7 +705,7 @@ public class WorkflowCasesService(
 
         var filePath = await reportHelper.GenerateReportAnd(0, workflowDbCase, fileType);
 
-        FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
         return new OperationDataResult<Stream>(true, fileStream);
     }
@@ -835,8 +811,8 @@ public class WorkflowCasesService(
         int imageWidth, string basePicturePath)
     {
 
-        bool s3Enabled = core.GetSdkSetting(Settings.s3Enabled).Result.ToLower() == "true";
-        bool swiftEnabled = core.GetSdkSetting(Settings.swiftEnabled).Result.ToLower() == "true";
+        var s3Enabled = core.GetSdkSetting(Settings.s3Enabled).Result.ToLower() == "true";
+        var swiftEnabled = core.GetSdkSetting(Settings.swiftEnabled).Result.ToLower() == "true";
         var filePath = Path.Combine(basePicturePath, imageName);
         Stream stream;
         if (s3Enabled)
@@ -929,7 +905,7 @@ public class WorkflowCasesService(
             userName
                 .Replace("Mobil", "")
                 .Replace("Tablet", ""));
-        WorkflowReportHelper _workflowReportHelper =
+        var _workflowReportHelper =
             new WorkflowReportHelper(await coreHelper.GetCore(), workflowPnDbContext);
         var filePath = await _workflowReportHelper.GenerateReportAnd(languageId, workflowCase, "pdf");
         var assembly = Assembly.GetExecutingAssembly();
