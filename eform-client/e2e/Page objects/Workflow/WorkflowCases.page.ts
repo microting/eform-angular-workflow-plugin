@@ -246,7 +246,7 @@ export class WorkflowCaseRowObject {
       this.actionPlan = await (await $$('tbody > tr > td.mat-column-actionPlan'))[rowNum].getText();
       this.toBeSolvedBy = await (await $$('tbody > tr > td.mat-column-solvedBy'))[rowNum].getText();
       this.status = await (await $$('tbody > tr > td.mat-column-status'))[rowNum].getText();
-      this.menuBtn = await $(`#action-items-${rowNum} #actionMenu`);
+      this.menuBtn = await $(`#actionMenu-${rowNum}`);
       this.updateBtn = await $(`#editWorkflowCaseBtn-${rowNum}`);
       this.deleteBtn = await $(`#deleteBtn-${rowNum}`);
     }
