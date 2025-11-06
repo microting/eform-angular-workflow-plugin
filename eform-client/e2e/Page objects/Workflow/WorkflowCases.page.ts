@@ -195,6 +195,7 @@ export class WorkflowCaseRowObject {
   public actionPlan: string;
   public toBeSolvedBy: string;
   public status: string;
+  public menuBtn: WebdriverIO.Element;
   public updateBtn: WebdriverIO.Element;
   public deleteBtn: WebdriverIO.Element;
 
@@ -245,14 +246,18 @@ export class WorkflowCaseRowObject {
       this.actionPlan = await (await $$('tbody > tr > td.mat-column-actionPlan'))[rowNum].getText();
       this.toBeSolvedBy = await (await $$('tbody > tr > td.mat-column-solvedBy'))[rowNum].getText();
       this.status = await (await $$('tbody > tr > td.mat-column-status'))[rowNum].getText();
-      this.updateBtn = (await $$('#editWorkflowCaseBtn'))[rowNum];
-      this.deleteBtn = await $$('#deleteBtn')[rowNum];
+      this.menuBtn = await $(`#action-items-${rowNum} #actionMenu`);
+      this.updateBtn = await $(`#editWorkflowCaseBtn-${rowNum}`);
+      this.deleteBtn = await $(`#deleteBtn-${rowNum}`);
     }
     return this;
   }
 
 
   public async openDelete() {
+    await this.menuBtn.waitForClickable({ timeout: 20000 });
+    await this.menuBtn.click();
+    await browser.pause(500);
     await this.deleteBtn.waitForClickable({ timeout: 20000 });
     await this.deleteBtn.click();
     await (await workflowCasesPage.workflowCaseDeleteCancelBtn()).waitForDisplayed({
@@ -261,6 +266,10 @@ export class WorkflowCaseRowObject {
   }
 
   public async openEdit(updateModel: WorkflowCaseForEdit) {
+    await this.menuBtn.waitForClickable({ timeout: 20000 });
+    await this.menuBtn.click();
+    await browser.pause(500);
+    await this.updateBtn.waitForClickable({ timeout: 20000 });
     await this.updateBtn.click();
     await (await workflowCasesPage.cancelEditBtn()).waitForDisplayed({
       timeout: 20000,
