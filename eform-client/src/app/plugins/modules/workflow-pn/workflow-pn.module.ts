@@ -29,6 +29,7 @@ import {MtxSelectModule} from '@ng-matero/extensions/select';
 import {StoreModule} from '@ngrx/store';
 import * as workflowCasesReducer from './state/workflow-cases/workflow-cases.reducer';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 @NgModule({
   imports: [
@@ -53,6 +54,9 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
       workflowCasesState: workflowCasesReducer.reducer,
     }),
     MatDatepickerModule,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
   ],
   declarations: [
     WorkflowPnLayoutComponent,
