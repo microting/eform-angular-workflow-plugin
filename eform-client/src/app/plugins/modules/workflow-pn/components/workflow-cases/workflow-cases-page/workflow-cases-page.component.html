@@ -44,41 +44,47 @@
   [noResultText]="'No workflow cases found' | translate">
 </mtx-grid>
 
-<ng-template #actionsTpl let-row>
-  <div class="d-flex">
-    <button
-      mat-icon-button
-      id="editWorkflowCaseBtn"
-      matTooltip="{{ 'Edit Workflow Case' | translate }}"
-      [routerLink]="['/plugins/workflow-pn/edit-workflow-case/', row.id]"
-    >
-      <mat-icon>edit</mat-icon>
+<ng-template #actionsTpl let-row let-i="index">
+  <div class="workflow-case-actions" id="action-items-{{i}}">
+    <button id="actionMenu" mat-icon-button [matMenuTriggerFor]="menu" matTooltip="{{ 'Actions' | translate }}">
+      <mat-icon>more_vert</mat-icon>
     </button>
-    <button
-      mat-icon-button
-      matTooltip="{{ 'Download PDF' | translate }}"
-      (click)="downloadFile(row.id, 'pdf')"
-      color="accent"
-    >
-      <mat-icon svgIcon="file-pdf"></mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      color="primary"
-      (click)="downloadFile(row.id, 'docx')"
-      matTooltip="{{ 'Download Docx' | translate }}"
-    >
-      <mat-icon svgIcon="file-word"></mat-icon>
-    </button>
-    <button
-      mat-icon-button
-      color="warn"
-      id="deleteBtn"
-      (click)="showDeleteWorkflowCaseModal(row)"
-      matTooltip="{{ 'Delete' | translate }}"
-    >
-      <mat-icon>delete</mat-icon>
-    </button>
+
+    <mat-menu #menu="matMenu">
+      <button
+        mat-menu-item
+        id="editWorkflowCaseBtn-{{i}}"
+        [routerLink]="['/plugins/workflow-pn/edit-workflow-case/', row.id]"
+      >
+        <mat-icon>edit</mat-icon>
+        <span>{{ 'Edit Workflow Case' | translate }}</span>
+      </button>
+      <button
+        mat-menu-item
+        id="downloadPdfBtn-{{i}}"
+        (click)="downloadFile(row.id, 'pdf')"
+      >
+        <mat-icon svgIcon="file-pdf"></mat-icon>
+        <span>{{ 'Download PDF' | translate }}</span>
+      </button>
+      <button
+        mat-menu-item
+        id="downloadDocxBtn-{{i}}"
+        (click)="downloadFile(row.id, 'docx')"
+      >
+        <mat-icon svgIcon="file-word"></mat-icon>
+        <span>{{ 'Download Docx' | translate }}</span>
+      </button>
+      <button
+        mat-menu-item
+        color="warn"
+        id="deleteBtn-{{i}}"
+        (click)="showDeleteWorkflowCaseModal(row)"
+      >
+        <mat-icon color="warn">delete</mat-icon>
+        <span>{{ 'Delete' | translate }}</span>
+      </button>
+    </mat-menu>
   </div>
 </ng-template>
 
