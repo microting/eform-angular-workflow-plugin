@@ -82,7 +82,10 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
     },
     {
       pinned: 'right',
-      header: this.translateService.stream('Actions'), field: 'actions'},
+      header: this.translateService.stream('Actions'),
+      field: 'actions',
+      width: '160px',
+    },
   ];
   workflowCaseDeletedSub$: Subscription;
   deleteWorkflowCase$: Subscription;
