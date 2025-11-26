@@ -396,7 +396,7 @@ public class WorkflowCasesService(
                     var createdBySite = await sdkDbContext.Sites.SingleOrDefaultAsync(x => x.Id == theCase.SiteId);
                     if (!string.IsNullOrEmpty(workflowCase.SolvedBy))
                     {
-                        await GenerateReportAndSendEmail(createdBySite.LanguageId, createdBySite.Name.Replace(" ", ""), workflowCase, "");
+                        await GenerateReportAndSendEmail(createdBySite.LanguageId, createdBySite.Name.Replace(" ", ""), workflowCase, workflowCase.SolvedBy);
                     }
 
                     if (workflowCase.DeployedMicrotingUid != null)
@@ -867,7 +867,7 @@ public class WorkflowCasesService(
         string fromEmail,
         string fromName,
         string subject,
-        string to,
+        List<string> to,
         string fileName,
         string text = null, string html = null)
     {
@@ -877,8 +877,10 @@ public class WorkflowCasesService(
                 _baseDbContext.ConfigurationValues.Single(x => x.Id == "EmailSettings:SendGridKey");
             var client = new SendGridClient(sendGridKey.Value);
             var fromEmailAddress = new EmailAddress(fromEmail.Replace(" ", ""), fromName);
-            var toEmail = new EmailAddress(to.Replace(" ", ""));
-            var msg = MailHelper.CreateSingleEmail(fromEmailAddress, toEmail, subject, text, html);
+            // var toEmail = new EmailAddress(to.Replace(" ", ""));
+            var msg = MailHelper.CreateSingleEmailToMultipleRecipients(fromEmailAddress,
+                to.Select(x => new EmailAddress(x.Replace(" ", ""))).ToList(), subject, text, html, false);
+            // var msg = MailHelper.CreateSingleEmail(fromEmailAddress, toEmail, subject, text, html);
             var bytes = await File.ReadAllBytesAsync(fileName);
             var file = Convert.ToBase64String(bytes);
             msg.AddAttachment(Path.GetFileName(fileName), file);
@@ -901,10 +903,17 @@ public class WorkflowCasesService(
 
     public async Task GenerateReportAndSendEmail(int languageId, string userName, WorkflowCase workflowCase, string solvedBy)
     {
+        var emailRecipients = new List<string>();
         var emailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name.Replace(" ", "") ==
             userName
                 .Replace("Mobil", "")
                 .Replace("Tablet", ""));
+        emailRecipients.Add(emailRecipient.Email);
+        var solvedByemailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name == solvedBy.Replace(" ", ""));
+        if (solvedByemailRecipient != null)
+        {
+            emailRecipients.Add(solvedByemailRecipient.Email);
+        }
         var _workflowReportHelper =
             new WorkflowReportHelper(await coreHelper.GetCore(), workflowPnDbContext);
         var filePath = await _workflowReportHelper.GenerateReportAnd(languageId, workflowCase, "pdf");
@@ -938,7 +947,7 @@ public class WorkflowCasesService(
             "no-reply@microting.com",
             userName,
             $"Opfølgning: {workflowCase.IncidentType};  {workflowCase.IncidentPlace}; {workflowCase.CreatedAt:dd-MM-yyyy}",
-            emailRecipient?.Email,
+            emailRecipients,
             filePath,
             null,
             html);
