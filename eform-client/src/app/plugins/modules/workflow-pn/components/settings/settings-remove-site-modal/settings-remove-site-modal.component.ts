@@ -27,7 +27,7 @@ export class SettingsRemoveSiteModalComponent implements OnInit, OnDestroy {
   selectedSite: SiteNameDto = new SiteNameDto();
   removeSub$: Subscription;
 
-  
+  ngOnInit(): void {}
 
   show(site: SiteNameDto) {
     this.selectedSite = site;

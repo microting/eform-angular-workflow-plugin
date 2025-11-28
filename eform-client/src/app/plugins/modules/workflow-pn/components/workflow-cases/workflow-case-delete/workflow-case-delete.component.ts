@@ -26,8 +26,6 @@ export class WorkflowCaseDeleteComponent implements OnInit, OnDestroy {
   workflowCaseDeleted: EventEmitter<void> = new EventEmitter<void>();
   deleteWorkflowCase$: Subscription;
 
-  
-
   deleteWorkflowCase() {
     this.deleteWorkflowCase$ = this.workflowCaseService
       .deleteWorkflowCase(this.workflowCaseModel.id)
