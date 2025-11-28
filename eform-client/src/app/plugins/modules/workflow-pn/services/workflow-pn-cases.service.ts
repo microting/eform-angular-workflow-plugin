@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   OperationDataResult,
@@ -19,7 +19,7 @@ export let WorkflowPnCasesMethods = {
   providedIn: 'root',
 })
 export class WorkflowPnCasesService {
-  constructor(private apiBaseService: ApiBaseService) {}
+  private apiBaseService = inject(ApiBaseService);
 
   getWorkflowCases(
     model: any

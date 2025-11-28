@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, inject} from '@angular/core';
 import {AutoUnsubscribe} from 'ngx-auto-unsubscribe';
 import {Subject, Subscription, zip} from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
@@ -33,6 +33,15 @@ import {
     standalone: false
 })
 export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
+  private store = inject(Store);
+  public workflowCasesStateService = inject(WorkflowCasesStateService);
+  private service = inject(WorkflowPnCasesService);
+  private translateService = inject(TranslateService);
+  private dialog = inject(MatDialog);
+  private overlay = inject(Overlay);
+  private iconRegistry = inject(MatIconRegistry);
+  private sanitizer = inject(DomSanitizer);
+
   workflowCasesModel: Paged<WorkflowCaseModel> = new Paged<WorkflowCaseModel>();
   searchSubject = new Subject();
   statuses = [
@@ -96,25 +105,16 @@ export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   public selectWorkflowCasesFiltersName$ = this.store.select(selectWorkflowCasesFiltersName);
   public selectWorkflowCasesPagination$ = this.store.select(selectWorkflowCasesPagination);
 
-  constructor(
-    private store: Store,
-    public workflowCasesStateService: WorkflowCasesStateService,
-    private service: WorkflowPnCasesService,
-    private translateService: TranslateService,
-    private dialog: MatDialog,
-    private overlay: Overlay,
-    iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer,
-  ) {
+  
+
+  ngOnInit() {
     this.searchSubject.pipe(debounceTime(500)).subscribe((val) => {
       this.workflowCasesStateService.updateNameFilter(val.toString());
       this.getWorkflowCases();
     });
-    iconRegistry.addSvgIconLiteral('file-word', sanitizer.bypassSecurityTrustHtml(WordIcon));
-    iconRegistry.addSvgIconLiteral('file-pdf', sanitizer.bypassSecurityTrustHtml(PdfIcon));
-  }
+    this.iconRegistry.addSvgIconLiteral('file-word', this.sanitizer.bypassSecurityTrustHtml(WordIcon));
+    this.iconRegistry.addSvgIconLiteral('file-pdf', this.sanitizer.bypassSecurityTrustHtml(PdfIcon));
 
-  ngOnInit() {
     this.getWorkflowCases();
   }
 

@@ -3,6 +3,7 @@ import {
   EventEmitter,
   OnDestroy,
   OnInit, ViewChild,
+  inject
 } from '@angular/core';
 import {Router} from '@angular/router';
 import {AutoUnsubscribe} from 'ngx-auto-unsubscribe';
@@ -30,6 +31,14 @@ import {DeleteModalComponent} from 'src/app/common/modules/eform-shared/componen
     standalone: false
 })
 export class WorkflowSettingsComponent implements OnInit, OnDestroy {
+  private workflowPnSettingsService = inject(WorkflowPnSettingsService);
+  private router = inject(Router);
+  private foldersService = inject(FoldersService);
+  private sitesService = inject(SitesService);
+  public dialog = inject(MatDialog);
+  private overlay = inject(Overlay);
+  private translateService = inject(TranslateService);
+
   @ViewChild('addSiteModal') addSiteModal: SettingsAddSiteModalComponent;
   typeahead = new EventEmitter<string>();
   settingsModel: WorkflowSettingsModel = new WorkflowSettingsModel();
@@ -68,16 +77,8 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
     },
   ];
   siteSelectedSub$: Subscription;
-  constructor(
-    private workflowPnSettingsService: WorkflowPnSettingsService,
-    private router: Router,
-    private foldersService: FoldersService,
-    private sitesService: SitesService,
-    public dialog: MatDialog,
-    private overlay: Overlay,
-    private translateService: TranslateService,
-  ) {
-  }
+
+  
 
   ngOnInit() {
     this.getSettings();

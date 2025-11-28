@@ -5,6 +5,7 @@ import {
   OnInit,
   Output,
   ViewChild,
+  inject
 } from '@angular/core';
 import { SiteNameDto } from 'src/app/common/models';
 import {WorkflowPnSettingsService} from '../../../services';
@@ -19,12 +20,12 @@ import { Subscription } from 'rxjs';
     standalone: false
 })
 export class SettingsRemoveSiteModalComponent implements OnInit, OnDestroy {
+  private settingsService = inject(WorkflowPnSettingsService);
+
   @ViewChild('frame', { static: false }) frame;
   @Output() siteRemoved: EventEmitter<void> = new EventEmitter<void>();
   selectedSite: SiteNameDto = new SiteNameDto();
   removeSub$: Subscription;
-
-  constructor(private settingsService: WorkflowPnSettingsService) {}
 
   ngOnInit(): void {}
 

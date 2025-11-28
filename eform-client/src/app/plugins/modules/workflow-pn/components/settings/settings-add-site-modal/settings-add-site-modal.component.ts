@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnDestroy, OnInit, inject} from '@angular/core';
 import {SiteNameDto} from 'src/app/common/models';
 import {AutoUnsubscribe} from 'ngx-auto-unsubscribe';
 import {Subscription} from 'rxjs';
@@ -14,19 +14,19 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
     standalone: false
 })
 export class SettingsAddSiteModalComponent implements OnInit, OnDestroy {
+  private settingsService = inject(WorkflowPnSettingsService);
+  public dialogRef = inject(MatDialogRef<SettingsAddSiteModalComponent>);
+  private model = inject<{ sites: SiteNameDto[], assignedSites: SiteNameDto[] }>(MAT_DIALOG_DATA);
+
   siteAdded: EventEmitter<void> = new EventEmitter<void>();
   availableSites: any[] = [];
   selectedSiteId: number;
   addSiteSub$: Subscription;
 
-  constructor(
-    private settingsService: WorkflowPnSettingsService,
-    public dialogRef: MatDialogRef<SettingsAddSiteModalComponent>,
-    @Inject(MAT_DIALOG_DATA) model: { sites: SiteNameDto[], assignedSites: SiteNameDto[] }
-  ) {
+  constructor() {
     // Removing assigned sites from all sites by id
     const propEqual = eqBy(prop('siteUId'));
-    this.availableSites = symmetricDifferenceWith(propEqual, model.sites, model.assignedSites);
+    this.availableSites = symmetricDifferenceWith(propEqual, this.model.sites, this.model.assignedSites);
   }
 
   ngOnInit(): void {
