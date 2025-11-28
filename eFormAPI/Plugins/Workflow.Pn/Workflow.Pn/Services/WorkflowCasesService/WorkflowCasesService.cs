@@ -904,12 +904,12 @@ public class WorkflowCasesService(
     public async Task GenerateReportAndSendEmail(int languageId, string userName, WorkflowCase workflowCase, string solvedBy)
     {
         var emailRecipients = new List<string>();
-        var emailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name.Replace(" ", "") ==
+        var emailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name.ToLower().Replace(" ", "").Trim() ==
             userName
                 .Replace("Mobil", "")
-                .Replace("Tablet", ""));
+                .Replace("Tablet", "").ToLower().Replace(" ", "").Trim());
         emailRecipients.Add(emailRecipient.Email);
-        var solvedByemailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name == solvedBy.Replace(" ", ""));
+        var solvedByemailRecipient = await _baseDbContext.EmailRecipients.SingleOrDefaultAsync(x => x.Name.ToLower().Replace(" ", "").Trim() == solvedBy.ToLower().Replace(" ", "").Trim());
         if (solvedByemailRecipient != null)
         {
             emailRecipients.Add(solvedByemailRecipient.Email);
