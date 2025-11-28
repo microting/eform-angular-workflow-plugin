@@ -78,6 +78,62 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
   }
 
+  goBack() {
+    this.router
+      .navigate([
+        '/plugins/workflow-pn/cases'
+      ])
+      .then();
+  }
+
+  getStatusText(id: number) {
+    if (this.statuses.length > 0) {
+      if (!id) {
+        return '';
+      }
+      return this.statuses.find(x => x.id === id).text;
+    } else {
+      return '';
+    }
+  }
+
+  getSolverName(id: number) {
+    if (this.deviceUsersList.length > 0) {
+      if (id === undefined) {
+        return '';
+      }
+      const result = this.deviceUsersList.find(x => x.id === id);
+      if (result === undefined) {
+        return '';
+      } else {
+        return result.siteName;
+      }
+    } else {
+      return '';
+    }
+  }
+
+  updateWorkflowCase() {
+    this.workflowCaseModel = {
+      ...this.workflowCaseModel,
+      deadline: this.workflowCaseModel.deadline,
+      dateOfIncident: this.workflowCaseModel.dateOfIncident
+      // deadline: format(this.dataForm.value.deadline, 'yyyy-MM-dd'),
+      // dateOfIncident: format(this.dataForm.value.dateOfIncident, 'yyyy-MM-dd'),
+    };
+    this.updateSub$ = this.workflowPnCasesService
+      .updateCase(this.workflowCaseModel)
+      .subscribe((data) => {
+        if (data && data.success) {
+          this.router
+            .navigate([
+              '/plugins/workflow-pn/cases'
+            ])
+            .then();
+        }
+      });
+  }
+
   loadCase() {
     if (!this.id || this.id === 0) {
       return;
