@@ -68,16 +68,8 @@ export class WorkflowSettingsComponent implements OnInit, OnDestroy {
     },
   ];
   siteSelectedSub$: Subscription;
-  constructor(
-    private workflowPnSettingsService: WorkflowPnSettingsService,
-    private router: Router,
-    private foldersService: FoldersService,
-    private sitesService: SitesService,
-    public dialog: MatDialog,
-    private overlay: Overlay,
-    private translateService: TranslateService,
-  ) {
-  }
+
+  
 
   ngOnInit() {
     this.getSettings();

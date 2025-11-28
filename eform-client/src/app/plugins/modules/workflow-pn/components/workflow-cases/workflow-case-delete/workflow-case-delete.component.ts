@@ -1,9 +1,9 @@
 import {
   Component,
   EventEmitter,
-  Inject,
   OnDestroy,
   OnInit,
+  inject
 } from '@angular/core';
 import {AutoUnsubscribe} from 'ngx-auto-unsubscribe';
 import {Subscription} from 'rxjs';
@@ -19,18 +19,14 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
     standalone: false
 })
 export class WorkflowCaseDeleteComponent implements OnInit, OnDestroy {
+  private workflowCaseService = inject(WorkflowPnCasesService);
+  public dialogRef = inject(MatDialogRef<WorkflowCaseDeleteComponent>);
+  public workflowCaseModel = inject<WorkflowCaseModel>(MAT_DIALOG_DATA);
+
   workflowCaseDeleted: EventEmitter<void> = new EventEmitter<void>();
   deleteWorkflowCase$: Subscription;
 
-  constructor(
-    private workflowCaseService: WorkflowPnCasesService,
-    public dialogRef: MatDialogRef<WorkflowCaseDeleteComponent>,
-    @Inject(MAT_DIALOG_DATA) public workflowCaseModel: WorkflowCaseModel = new WorkflowCaseModel(),
-  ) {
-  }
-
-  ngOnInit() {
-  }
+  
 
   deleteWorkflowCase() {
     this.deleteWorkflowCase$ = this.workflowCaseService

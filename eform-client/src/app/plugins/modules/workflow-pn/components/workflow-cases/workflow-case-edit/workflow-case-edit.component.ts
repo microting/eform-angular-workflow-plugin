@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, inject} from '@angular/core';
 import {
   CommonDictionaryTextModel,
   SiteNameDto,
@@ -26,6 +26,14 @@ import {MatDatepickerInputEvent} from '@angular/material/datepicker';
     standalone: false
 })
 export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
+  private activateRoute = inject(ActivatedRoute);
+  private router = inject(Router);
+  private authStore = inject(Store);
+  private workflowPnCasesService = inject(WorkflowPnCasesService);
+  private formBuilder = inject(FormBuilder);
+  private sitesService = inject(SitesService);
+  private entitySelectService = inject(EntitySelectService);
+
   deviceUsersList: SiteNameDto[] = [];
   places: Array<CommonDictionaryTextModel> = [];
   incidentTypes: Array<CommonDictionaryTextModel> = [];
@@ -49,80 +57,16 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     {id: 4, text: 'Annulleret'}, // Canceled
   ];
 
-  constructor(
-    private activateRoute: ActivatedRoute,
-    private router: Router,
-    private authStore: Store,
-    private workflowPnCasesService: WorkflowPnCasesService,
-    private formBuilder: FormBuilder,
-    private sitesService: SitesService,
-    private entitySelectService: EntitySelectService
-  ) {
+  
+
+  ngOnInit() {
     this.activatedRouteSub$ = this.activateRoute.params.subscribe((params) => {
       this.id = +params['id'];
     });
     this.activateRoute.queryParams.subscribe((params) => {
       this.reverseRoute = params['reverseRoute'];
     });
-  }
 
-  goBack() {
-    this.router
-      .navigate([
-        '/plugins/workflow-pn/cases'
-      ])
-      .then();
-  }
-
-  getStatusText(id: number) {
-    if (this.statuses.length > 0) {
-      if (!id) {
-        return '';
-      }
-      return this.statuses.find(x => x.id === id).text;
-    } else {
-      return '';
-    }
-  }
-
-  getSolverName(id: number) {
-    if (this.deviceUsersList.length > 0) {
-      if (id === undefined) {
-        return '';
-      }
-      const result = this.deviceUsersList.find(x => x.id === id);
-      if (result === undefined) {
-        return '';
-      } else {
-        return result.siteName;
-      }
-    } else {
-      return '';
-    }
-  }
-
-  updateWorkflowCase() {
-    this.workflowCaseModel = {
-      ...this.workflowCaseModel,
-      deadline: this.workflowCaseModel.deadline,
-      dateOfIncident: this.workflowCaseModel.dateOfIncident
-      // deadline: format(this.dataForm.value.deadline, 'yyyy-MM-dd'),
-      // dateOfIncident: format(this.dataForm.value.dateOfIncident, 'yyyy-MM-dd'),
-    };
-    this.updateSub$ = this.workflowPnCasesService
-      .updateCase(this.workflowCaseModel)
-      .subscribe((data) => {
-        if (data && data.success) {
-          this.router
-            .navigate([
-              '/plugins/workflow-pn/cases'
-            ])
-            .then();
-        }
-      });
-  }
-
-  ngOnInit() {
     this.dataForm = this.formBuilder.group({
       deadline: ['', Validators.required],
       dateOfIncident: ['', Validators.required],

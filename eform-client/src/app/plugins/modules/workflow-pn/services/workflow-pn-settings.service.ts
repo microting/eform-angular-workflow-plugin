@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   OperationDataResult,
@@ -17,7 +17,7 @@ export let WorkflowPnSettingsMethods = {
 
 @Injectable()
 export class WorkflowPnSettingsService {
-  constructor(private apiBaseService: ApiBaseService) {}
+  private apiBaseService = inject(ApiBaseService);
 
   getAllSettings(): Observable<OperationDataResult<WorkflowSettingsModel>> {
     return this.apiBaseService.get(WorkflowPnSettingsMethods.WorkflowSettings);
