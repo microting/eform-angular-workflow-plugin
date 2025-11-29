@@ -1,9 +1,9 @@
 import {
   Component,
   EventEmitter,
-  Inject,
   OnDestroy,
   OnInit,
+  inject
 } from '@angular/core';
 import { AuthService, FoldersService} from 'src/app/common/services';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
@@ -18,18 +18,18 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
     standalone: false
 })
 export class WorkflowFoldersModalComponent implements OnInit, OnDestroy {
+  private folderService = inject(FoldersService);
+  private authService = inject(AuthService);
+  private model = inject<{folders: FolderDto[], selectedFolderId?: number}>(MAT_DIALOG_DATA);
+  public dialogRef = inject(MatDialogRef<WorkflowFoldersModalComponent>);
+
   folderSelected: EventEmitter<FolderDto> = new EventEmitter<FolderDto>();
   folders: FolderDto[] = [];
   selectedFolderId: number;
 
-  constructor(
-    private folderService: FoldersService,
-    private authService: AuthService,
-    @Inject(MAT_DIALOG_DATA) model: {folders: FolderDto[], selectedFolderId?: number},
-    public dialogRef: MatDialogRef<WorkflowFoldersModalComponent>,
-    ) {
-    this.folders = model.folders;
-    this.selectedFolderId = model.selectedFolderId;
+  constructor() {
+    this.folders = this.model.folders;
+    this.selectedFolderId = this.model.selectedFolderId;
   }
 
   ngOnInit() {

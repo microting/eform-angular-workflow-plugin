@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, inject} from '@angular/core';
 import {
   CommonDictionaryTextModel,
   SiteNameDto,
@@ -26,6 +26,14 @@ import {MatDatepickerInputEvent} from '@angular/material/datepicker';
     standalone: false
 })
 export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
+  private activateRoute = inject(ActivatedRoute);
+  private router = inject(Router);
+  private authStore = inject(Store);
+  private workflowPnCasesService = inject(WorkflowPnCasesService);
+  private formBuilder = inject(FormBuilder);
+  private sitesService = inject(SitesService);
+  private entitySelectService = inject(EntitySelectService);
+
   deviceUsersList: SiteNameDto[] = [];
   places: Array<CommonDictionaryTextModel> = [];
   incidentTypes: Array<CommonDictionaryTextModel> = [];
@@ -49,21 +57,25 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
     {id: 4, text: 'Annulleret'}, // Canceled
   ];
 
-  constructor(
-    private activateRoute: ActivatedRoute,
-    private router: Router,
-    private authStore: Store,
-    private workflowPnCasesService: WorkflowPnCasesService,
-    private formBuilder: FormBuilder,
-    private sitesService: SitesService,
-    private entitySelectService: EntitySelectService
-  ) {
+  
+
+  ngOnInit() {
     this.activatedRouteSub$ = this.activateRoute.params.subscribe((params) => {
       this.id = +params['id'];
     });
     this.activateRoute.queryParams.subscribe((params) => {
       this.reverseRoute = params['reverseRoute'];
     });
+
+    this.dataForm = this.formBuilder.group({
+      deadline: ['', Validators.required],
+      dateOfIncident: ['', Validators.required],
+    });
+    this.getSites();
+    this.loadCase();
+  }
+
+  ngOnDestroy() {
   }
 
   goBack() {
@@ -120,18 +132,6 @@ export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
             .then();
         }
       });
-  }
-
-  ngOnInit() {
-    this.dataForm = this.formBuilder.group({
-      deadline: ['', Validators.required],
-      dateOfIncident: ['', Validators.required],
-    });
-    this.getSites();
-    this.loadCase();
-  }
-
-  ngOnDestroy() {
   }
 
   loadCase() {

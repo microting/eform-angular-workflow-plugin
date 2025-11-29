@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {tap} from 'rxjs';
 import {updateTableSort} from 'src/app/common/helpers';
 import {
@@ -18,15 +18,15 @@ import {
 
 @Injectable({providedIn: 'root'})
 export class WorkflowCasesStateService {
+  private store = inject(Store);
+  private service = inject(WorkflowPnCasesService);
+
   private selectWorkflowCasesPagination$ = this.store.select(selectWorkflowCasesPagination);
   private selectWorkflowCasesFilters$ = this.store.select(selectWorkflowCasesFilters);
   currentPagination: CommonPaginationState;
   currentFilters: WorkflowCasesFiltration;
 
-  constructor(
-    private store: Store,
-    private service: WorkflowPnCasesService,
-  ) {
+  constructor() {
     this.selectWorkflowCasesPagination$.subscribe((x) => this.currentPagination = x);
     this.selectWorkflowCasesFilters$.subscribe((x) => this.currentFilters = x);
   }
