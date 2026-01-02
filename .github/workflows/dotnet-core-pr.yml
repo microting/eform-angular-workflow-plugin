@@ -33,13 +33,13 @@ jobs:
         cd eform-angular-frontend/eform-client && ../../eform-angular-workflow-plugin/testinginstallpn.sh
     - name: Get the version release
       id: get_release_version
-      run: echo ::set-output name=VERSION::$(cd eform-angular-workflow-plugin && git describe --abbrev=0 --tags | cut -d "v" -f 2)
+      run: echo "VERSION=$(cd eform-angular-workflow-plugin && git describe --abbrev=0 --tags | cut -d "v" -f 2)" >> $GITHUB_OUTPUT
     - name: Get the version
       id: get_version
-      run: echo ::set-output name=VERSION::$(cd eform-angular-workflow-plugin && git describe --abbrev=0 --tags | cut -d "v" -f 2)
+      run: echo "VERSION=$(cd eform-angular-workflow-plugin && git describe --abbrev=0 --tags | cut -d "v" -f 2)" >> $GITHUB_OUTPUT
     - name: Get the work order version
       id: get_frontend_version
-      run: echo ::set-output name=FRONTENDVERSION::$(cd eform-angular-frontend && git describe --abbrev=0 --tags | cut -d "v" -f 2)
+      run: echo "FRONTENDVERSION=$(cd eform-angular-frontend && git describe --abbrev=0 --tags | cut -d "v" -f 2)" >> $GITHUB_OUTPUT
     - name: Copy Dockerfile
       run: cp eform-angular-workflow-plugin/Dockerfile .
     - name: Build the tagged Docker image

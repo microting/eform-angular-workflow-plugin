@@ -149,7 +149,6 @@ namespace Workflow.Pn
             {
                 builder.EnableRetryOnFailure();
                 builder.MigrationsAssembly(PluginAssembly().FullName);
-                builder.TranslateParameterizedCollectionsToConstants();
             }));
 
             var angularDbConnectionString = connectionString.Replace(
@@ -160,7 +159,6 @@ namespace Workflow.Pn
             {
                 builder.EnableRetryOnFailure();
                 builder.MigrationsAssembly(PluginAssembly().FullName);
-                builder.TranslateParameterizedCollectionsToConstants();
             }));
 
 
@@ -438,7 +436,7 @@ namespace Workflow.Pn
                         {
                             core.DownloadUploadedData(ud.Id).GetAwaiter().GetResult();
                         }
-                    } catch (Exception ex)
+                    } catch (Exception)
                     {
                         try
                         {
