@@ -25,8 +25,8 @@ test.describe('Application settings page - site header section', () => {
 
     const plugin = await pluginPage.getFirstPluginRowObj();
     expect(plugin.id).toBe(1);
-    expect(plugin.name).toBe('Microting Workflow Plugin');
-    expect(plugin.status).toBe('toggle_off');
+    expect(plugin.name.trim()).toBe('Microting Workflow Plugin');
+    expect(plugin.status.trim()).toBe('toggle_off');
   });
 
   test('should activate the plugin', async () => {
@@ -39,7 +39,7 @@ test.describe('Application settings page - site header section', () => {
     // After enableOrDisablePlugin: re-logged in and on plugins page
     const pluginAfter = await pluginPage.getFirstPluginRowObj();
     expect(pluginAfter.id).toBe(1);
-    expect(pluginAfter.name).toBe('Microting Workflow Plugin');
-    expect(pluginAfter.status).toBe('toggle_on');
+    expect(pluginAfter.name.trim()).toBe('Microting Workflow Plugin');
+    expect(pluginAfter.status.trim()).toBe('toggle_on');
   });
 });

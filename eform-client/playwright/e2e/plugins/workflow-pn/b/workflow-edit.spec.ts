@@ -57,14 +57,14 @@ test.describe('Workflow cases - Edit', () => {
     const dateOfIncident = new Date();
     dateOfIncident.setFullYear(
       modelForUpdate.dateOfIncident.year,
-      modelForUpdate.dateOfIncident.month,
+      modelForUpdate.dateOfIncident.month - 1,
       modelForUpdate.dateOfIncident.day,
     );
 
     const deadline = new Date();
     deadline.setFullYear(
       modelForUpdate.deadline.year,
-      modelForUpdate.deadline.month,
+      modelForUpdate.deadline.month - 1,
       modelForUpdate.deadline.day,
     );
 
