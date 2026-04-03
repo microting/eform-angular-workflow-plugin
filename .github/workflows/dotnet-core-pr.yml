@@ -155,7 +155,8 @@ jobs:
     - name: Build
       run: dotnet build eform-angular-workflow-plugin/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.sln
     - name: Unit Tests
-      run: dotnet test --no-restore -c Release -v n eform-angular-workflow-plugin/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.Test/Workflow.Pn.Test.csproj  workflow-playwright-test:
+      run: dotnet test --no-restore -c Release -v n eform-angular-workflow-plugin/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.Test/Workflow.Pn.Test.csproj
+  workflow-playwright-test:
     needs: workflow-build
     runs-on: ubuntu-22.04
     strategy:
