@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../../../../Page objects/Login.page';
+import { LoginPage } from '../../../Page objects/Login.page';
 import { WorkflowCasesPage, WorkflowCaseForEdit } from '../WorkflowCases.page';
-import { generateRandmString } from '../../../../helper-functions';
+import { generateRandmString } from '../../../helper-functions';
 import { format } from 'date-fns';
 
 let page;

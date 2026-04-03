@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { LoginPage } from '../../../../Page objects/Login.page';
-import { MyEformsPage } from '../../../../Page objects/MyEforms.page';
-import { PluginPage } from '../../../../Page objects/Plugin.page';
+import { LoginPage } from '../../../Page objects/Login.page';
+import { MyEformsPage } from '../../../Page objects/MyEforms.page';
+import { PluginPage } from '../../../Page objects/Plugin.page';
 
 let page;
 

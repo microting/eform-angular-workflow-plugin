@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
-import { LoginPage } from '../../../../Page objects/Login.page';
+import { LoginPage } from '../../../Page objects/Login.page';
 import { WorkflowCasesPage } from '../WorkflowCases.page';
-import { testSorting } from '../../../../helper-functions';
+import { testSorting } from '../../../helper-functions';
 
 let page;
 
