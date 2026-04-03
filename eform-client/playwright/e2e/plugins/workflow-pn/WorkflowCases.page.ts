@@ -1,6 +1,6 @@
 import { Page, Locator } from '@playwright/test';
-import { PageWithNavbarPage } from '../../../Page objects/PageWithNavbar.page';
-import { selectDateOnNewDatePicker } from '../../../helper-functions';
+import { PageWithNavbarPage } from '../../Page objects/PageWithNavbar.page';
+import { selectDateOnNewDatePicker } from '../../helper-functions';
 
 export class WorkflowCasesPage extends PageWithNavbarPage {
   constructor(page: Page) {
