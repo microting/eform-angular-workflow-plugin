@@ -8,8 +8,6 @@ let page;
 test.describe('Application settings page - site header section', () => {
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
-    const loginPage = new LoginPage(page);
-    await loginPage.open('/auth');
   });
 
   test.afterAll(async () => {
@@ -21,6 +19,7 @@ test.describe('Application settings page - site header section', () => {
     const myEformsPage = new MyEformsPage(page);
     const pluginPage = new PluginPage(page);
 
+    await loginPage.open('/auth');
     await loginPage.login();
     await myEformsPage.Navbar.goToPluginsPage();
 
@@ -31,9 +30,7 @@ test.describe('Application settings page - site header section', () => {
   });
 
   test('should activate the plugin', async () => {
-    test.setTimeout(180000);
-    const loginPage = new LoginPage(page);
-    const myEformsPage = new MyEformsPage(page);
+    test.setTimeout(240000);
     const pluginPage = new PluginPage(page);
 
     const plugin = await pluginPage.getFirstPluginRowObj();

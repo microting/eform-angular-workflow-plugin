@@ -27,8 +27,8 @@ test.describe('Workflow cases - Edit', () => {
     modelForUpdate.status = 'Igangværende';
     modelForUpdate.actionPlan = generateRandmString();
     modelForUpdate.description = generateRandmString();
-    modelForUpdate.deadline = { day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear() };
-    modelForUpdate.dateOfIncident = { day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear() };
+    modelForUpdate.deadline = { day: dateNow.getDate(), month: dateNow.getMonth() + 1, year: dateNow.getFullYear() };
+    modelForUpdate.dateOfIncident = { day: dateNow.getDate(), month: dateNow.getMonth() + 1, year: dateNow.getFullYear() };
     const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     await firstWorkflowCase.update(modelForUpdate, true);
     const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
@@ -46,8 +46,8 @@ test.describe('Workflow cases - Edit', () => {
     modelForUpdate.status = 'Igangværende';
     modelForUpdate.actionPlan = generateRandmString();
     modelForUpdate.description = generateRandmString();
-    modelForUpdate.deadline = { day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear() };
-    modelForUpdate.dateOfIncident = { day: dateNow.getDate(), month: dateNow.getMonth(), year: dateNow.getFullYear() };
+    modelForUpdate.deadline = { day: dateNow.getDate(), month: dateNow.getMonth() + 1, year: dateNow.getFullYear() };
+    modelForUpdate.dateOfIncident = { day: dateNow.getDate(), month: dateNow.getMonth() + 1, year: dateNow.getFullYear() };
     const firstWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
     await firstWorkflowCase.update(modelForUpdate);
     const findWorkflowCase = await workflowCasesPage.getFirstWorkflowCase();
