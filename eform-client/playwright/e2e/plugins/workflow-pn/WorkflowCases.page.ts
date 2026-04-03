@@ -163,15 +163,15 @@ export class WorkflowCaseRowObject {
     const rowIndex = rowNum - 1;
     const rows = this.page.locator('table tr.mat-mdc-row');
     if ((await rows.count()) >= rowNum) {
-      this.id = +(await this.page.locator('tbody > tr > td.mat-column-id').nth(rowIndex).textContent() || '0');
-      this.dateOfIncident = await this.page.locator('tbody > tr > td.mat-column-dateOfIncident').nth(rowIndex).textContent() || '';
-      this.incidentType = await this.page.locator('tbody > tr > td.mat-column-incidentType').nth(rowIndex).textContent() || '';
-      this.incidentPlace = await this.page.locator('tbody > tr > td.mat-column-incidentPlace').nth(rowIndex).textContent() || '';
-      this.description = await this.page.locator('tbody > tr > td.mat-column-description').nth(rowIndex).textContent() || '';
-      this.deadline = await this.page.locator('tbody > tr > td.mat-column-deadline').nth(rowIndex).textContent() || '';
-      this.actionPlan = await this.page.locator('tbody > tr > td.mat-column-actionPlan').nth(rowIndex).textContent() || '';
-      this.toBeSolvedBy = await this.page.locator('tbody > tr > td.mat-column-solvedBy').nth(rowIndex).textContent() || '';
-      this.status = await this.page.locator('tbody > tr > td.mat-column-status').nth(rowIndex).textContent() || '';
+      this.id = +(await this.page.locator('tbody > tr > td.mat-column-id').nth(rowIndex).textContent() || '0').trim();
+      this.dateOfIncident = (await this.page.locator('tbody > tr > td.mat-column-dateOfIncident').nth(rowIndex).textContent() || '').trim();
+      this.incidentType = (await this.page.locator('tbody > tr > td.mat-column-incidentType').nth(rowIndex).textContent() || '').trim();
+      this.incidentPlace = (await this.page.locator('tbody > tr > td.mat-column-incidentPlace').nth(rowIndex).textContent() || '').trim();
+      this.description = (await this.page.locator('tbody > tr > td.mat-column-description').nth(rowIndex).textContent() || '').trim();
+      this.deadline = (await this.page.locator('tbody > tr > td.mat-column-deadline').nth(rowIndex).textContent() || '').trim();
+      this.actionPlan = (await this.page.locator('tbody > tr > td.mat-column-actionPlan').nth(rowIndex).textContent() || '').trim();
+      this.toBeSolvedBy = (await this.page.locator('tbody > tr > td.mat-column-solvedBy').nth(rowIndex).textContent() || '').trim();
+      this.status = (await this.page.locator('tbody > tr > td.mat-column-status').nth(rowIndex).textContent() || '').trim();
       this.menuBtn = this.page.locator(`#actionMenu-${rowIndex}`);
       this.updateBtn = this.page.locator(`#editWorkflowCaseBtn-${rowIndex}`);
       this.deleteBtn = this.page.locator(`#deleteBtn-${rowIndex}`);
@@ -195,7 +195,7 @@ export class WorkflowCaseRowObject {
       if (updateModel.status) {
         await this.workflowCasesPage.statusEdit().locator('input').fill(updateModel.status);
         await this.page.waitForTimeout(1000);
-        const option = this.page.locator('ng-dropdown-panel').locator(`.ng-option=${updateModel.status}`);
+        const option = this.page.locator('ng-dropdown-panel').locator('.ng-option').filter({ hasText: updateModel.status }).first();
         await option.waitFor({ state: 'visible', timeout: 20000 });
         await option.click();
       }
