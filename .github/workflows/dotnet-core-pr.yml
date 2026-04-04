@@ -156,3 +156,113 @@ jobs:
       run: dotnet build eform-angular-workflow-plugin/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.sln
     - name: Unit Tests
       run: dotnet test --no-restore -c Release -v n eform-angular-workflow-plugin/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.Test/Workflow.Pn.Test.csproj
+  workflow-playwright-test:
+    needs: workflow-build
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        test: [a,b,c,d]
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        path: eform-angular-workflow-plugin
+    - name: Create docker network
+      run: docker network create --driver bridge data
+    - name: Start MariaDB
+      run: |
+        docker pull mariadb:10.8
+        docker run --name mariadbtest --network data -e MYSQL_ROOT_PASSWORD=secretpassword -p 3306:3306 -d mariadb:10.8
+    - name: Start rabbitmq
+      run: |
+        docker pull rabbitmq:latest
+        docker run -d --hostname my-rabbit --name some-rabbit --network data -e RABBITMQ_DEFAULT_USER=admin -e RABBITMQ_DEFAULT_PASS=password rabbitmq:latest
+    - uses: actions/download-artifact@v4
+      with:
+        name: workflow-container
+    - run: docker load -i workflow-container.tar
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 22
+    - name: 'Preparing Frontend checkout'
+      uses: actions/checkout@v3
+      with:
+        repository: microting/eform-angular-frontend
+        ref: stable
+        path: eform-angular-frontend
+    - name: Sleep 15 seconds
+      run: sleep 15
+    - name: Load DB dump
+      run: |
+        mysql -u root -h 127.0.0.1 --password=secretpassword -e 'create database `420_eform-angular-workflow-plugin`'
+        mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < eform-angular-workflow-plugin/420_eform-angular-workflow-plugin.sql
+    - name: Copy dependencies
+      run: |
+        cp -av eform-angular-workflow-plugin/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
+        mkdir -p eform-angular-frontend/eform-client/playwright/e2e/plugins/
+        cp -av eform-angular-workflow-plugin/eform-client/playwright/e2e/plugins/workflow-pn eform-angular-frontend/eform-client/playwright/e2e/plugins/workflow-pn
+        cp -av eform-angular-workflow-plugin/eform-client/playwright.config.ts eform-angular-frontend/eform-client/playwright.config.ts
+        mkdir -p eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins
+        cd eform-angular-frontend/eform-client && ../../eform-angular-workflow-plugin/testinginstallpn.sh
+    - name: Start the newly build Docker container
+      id: docker-run
+      run: docker run --name my-container -p 4200:5000 --network data microtingas/workflow-container:latest "/ConnectionString=host=mariadbtest;Database=420_Angular;user=root;password=secretpassword;port=3306;Convert Zero Datetime = true;SslMode=none;" > docker_run_log 2>&1 &
+    - name: Sleep 15 seconds
+      run: sleep 15
+    - name: Get standard output
+      run: cat docker_run_log
+    - name: Pretest changes to work with Docker container
+      run: sed -i 's/localhost/mariadbtest/g' eform-angular-frontend/eform-client/e2e/Constants/DatabaseConfigurationConstants.ts
+    - name: yarn install
+      run: cd eform-angular-frontend/eform-client && yarn install
+    - name: Install Playwright browsers
+      run: cd eform-angular-frontend/eform-client && npx playwright install --with-deps chromium
+    - name: DB Configuration
+      uses: cypress-io/github-action@v4
+      with:
+        start: echo 'hi'
+        wait-on: "http://localhost:4200"
+        wait-on-timeout: 120
+        browser: chrome
+        record: false
+        spec: cypress/e2e/db/*
+        config-file: cypress.config.ts
+        working-directory: eform-angular-frontend/eform-client
+        command-prefix: "--"
+    - name: Change rabbitmq hostname
+      run: docker exec -i mariadbtest mysql -u root --password=secretpassword -e 'update 420_SDK.Settings set Value = "my-rabbit" where Name = "rabbitMqHost"'
+    - name: Enable plugins
+      if: matrix.test != 'a'
+      run: |
+        docker exec -i mariadbtest mysql -u root --password=secretpassword -e 'update 420_Angular.EformPlugins set Status = 2'
+        docker restart my-container
+        sleep 15
+    - name: Get standard output
+      run: |
+        cat docker_run_log
+        result=`cat docker_run_log | grep "Now listening on: http://0.0.0.0:5000" -m 1 | wc -l`
+        if [ $result -ne 1 ];then exit 1; fi
+    - name: Wait for app
+      run: npx wait-on http://localhost:4200 --timeout 120000
+    - name: ${{ matrix.test }} playwright test
+      run: |
+        cd eform-angular-frontend/eform-client
+        npx playwright test playwright/e2e/plugins/workflow-pn/${{ matrix.test }}/
+    - name: Stop the newly build Docker container
+      run: docker stop my-container
+    - name: Get standard output
+      run: |
+        cat docker_run_log
+        result=`cat docker_run_log | grep "Now listening on: http://0.0.0.0:5000" -m 1 | wc -l`
+        if [ $result -ne 1 ];then exit 1; fi
+    - name: Get standard output
+      if: ${{ failure() }}
+      run: cat docker_run_log
+    - name: Archive Playwright report
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report-${{ matrix.test }}
+        path: eform-angular-frontend/eform-client/playwright-report/
+        retention-days: 2
