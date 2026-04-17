@@ -144,7 +144,7 @@ namespace Workflow.Pn
             }
 
             _connectionString = connectionString;
-            services.AddDbContext<WorkflowPnDbContext>(o => o.UseMySql(connectionString, new MariaDbServerVersion(
+            services.AddDbContextPool<WorkflowPnDbContext>(o => o.UseMySql(connectionString, new MariaDbServerVersion(
                 new Version(10, 4, 0)), mySqlOptionsAction: builder =>
             {
                 builder.EnableRetryOnFailure();
