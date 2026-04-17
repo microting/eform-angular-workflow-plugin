@@ -151,17 +151,6 @@ namespace Workflow.Pn
                 builder.MigrationsAssembly(PluginAssembly().FullName);
             }));
 
-            var angularDbConnectionString = connectionString.Replace(
-                "eform-angular-workflow-plugin",
-                "Angular");
-            services.AddDbContext<BaseDbContext>(o => o.UseMySql(angularDbConnectionString, new MariaDbServerVersion(
-                new Version(10, 4, 0)), mySqlOptionsAction: builder =>
-            {
-                builder.EnableRetryOnFailure();
-                builder.MigrationsAssembly(PluginAssembly().FullName);
-            }));
-
-
             var contextFactory = new WorkflowPnContextFactory();
             var context = contextFactory.CreateDbContext(new[] { connectionString });
             context.Database.Migrate();
