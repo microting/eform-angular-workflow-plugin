@@ -32,7 +32,6 @@ using Microting.EformAngularFrontendBase.Infrastructure.Data;
 using Microting.eFormApi.BasePn.Abstractions;
 using Microting.eFormApi.BasePn.Infrastructure.Helpers.PluginDbOptions;
 using Microting.eFormWorkflowBase.Helpers;
-using QuestPDF.Infrastructure;
 using Sentry;
 using Workflow.Pn.Helpers;
 
@@ -91,7 +90,6 @@ namespace Workflow.Pn
             services.AddTransient<IWorkflowCasesService, WorkflowCasesService>();
             services.AddControllers();
             SeedWorkOrderForms(services);
-            QuestPDF.Settings.License = LicenseType.Community;
         }
 
         public void ConfigureOptionsServices(IServiceCollection services, IConfiguration configuration)
