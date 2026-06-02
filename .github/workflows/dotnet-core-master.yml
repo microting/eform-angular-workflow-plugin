@@ -28,6 +28,8 @@ jobs:
       run: |
         mkdir -p eform-angular-frontend/eform-client/e2e/Tests
         mkdir -p "eform-angular-frontend/eform-client/e2e/Page objects"
+        mkdir -p eform-angular-frontend/eform-client/e2e/Constants
+        cp -av eform-angular-workflow-plugin/eform-client/e2e/Constants/LoginConstants.ts eform-angular-frontend/eform-client/e2e/Constants/LoginConstants.ts
         cp -av eform-angular-workflow-plugin/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-settings eform-angular-frontend/eform-client/e2e/Tests/workflow-settings
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-general eform-angular-frontend/eform-client/e2e/Tests/workflow-general
@@ -94,6 +96,8 @@ jobs:
       run: |
         mkdir -p eform-angular-frontend/eform-client/e2e/Tests
         mkdir -p "eform-angular-frontend/eform-client/e2e/Page objects"
+        mkdir -p eform-angular-frontend/eform-client/e2e/Constants
+        cp -av eform-angular-workflow-plugin/eform-client/e2e/Constants/LoginConstants.ts eform-angular-frontend/eform-client/e2e/Constants/LoginConstants.ts
         cp -av eform-angular-workflow-plugin/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-settings eform-angular-frontend/eform-client/e2e/Tests/workflow-settings
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-general eform-angular-frontend/eform-client/e2e/Tests/workflow-general
