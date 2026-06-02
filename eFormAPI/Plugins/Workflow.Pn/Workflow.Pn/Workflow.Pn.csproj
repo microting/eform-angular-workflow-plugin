@@ -30,12 +30,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlToOpenXml.dll" Version="3.4.0" />
-    <PackageReference Include="Microting.eForm" Version="10.0.29" />
-    <PackageReference Include="Microting.EformAngularFrontendBase" Version="10.0.34" />
-    <PackageReference Include="Microting.eFormApi.BasePn" Version="10.0.26" />
+    <PackageReference Include="HtmlToOpenXml.dll" Version="3.4.1" />
+    <PackageReference Include="Microting.eForm" Version="10.0.30" />
+    <PackageReference Include="Microting.EformAngularFrontendBase" Version="10.0.35" />
+    <PackageReference Include="Microting.eFormApi.BasePn" Version="10.0.27" />
     <PackageReference Include="McMaster.NETCore.Plugins" Version="2.0.0" />
-    <PackageReference Include="Microting.eFormWorkflowBase" Version="10.0.29" />
+    <PackageReference Include="Microting.eFormWorkflowBase" Version="10.0.30" />
     <PackageReference Include="QuestPDF" Version="2026.5.0" />
     <PackageReference Include="sendgrid" Version="9.29.3" />
     <PackageReference Include="Sentry" Version="6.6.0" />
