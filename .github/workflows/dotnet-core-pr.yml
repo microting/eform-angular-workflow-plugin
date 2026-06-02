@@ -126,7 +126,7 @@ jobs:
     - name: Change rabbitmq hostname
       run: docker exec -i mariadbtest mysql -u root --password=secretpassword -e 'update 420_SDK.Settings set Value = "my-rabbit" where Name = "rabbitMqHost"'
     - name: Plugin testing
-      run: cd eform-angular-frontend/eform-client && npm run testheadlessplugin
+      run: echo "Plugin testing migrated to workflow-playwright-test job"
     - name: Stop the newly build Docker container
       run: docker stop my-container
     - name: Get standard output
@@ -207,8 +207,10 @@ jobs:
         mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < eform-angular-workflow-plugin/420_eform-angular-workflow-plugin.sql
     - name: Copy dependencies
       run: |
-        cp -av eform-angular-workflow-plugin/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
+        mkdir -p eform-angular-frontend/eform-client/e2e/Constants
         mkdir -p eform-angular-frontend/eform-client/playwright/e2e/plugins/
+        cp -av eform-angular-workflow-plugin/eform-client/e2e/Constants/LoginConstants.ts eform-angular-frontend/eform-client/e2e/Constants/LoginConstants.ts
+        cp -av eform-angular-workflow-plugin/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
         cp -av eform-angular-workflow-plugin/eform-client/playwright/e2e/plugins/workflow-pn eform-angular-frontend/eform-client/playwright/e2e/plugins/workflow-pn
         cp -av eform-angular-workflow-plugin/eform-client/playwright.config.ts eform-angular-frontend/eform-client/playwright.config.ts
         mkdir -p eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins
