@@ -42,6 +42,8 @@ namespace Workflow.Pn
     using Infrastructure.Models.Settings;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.Infrastructure;
+    using Microsoft.EntityFrameworkCore.Migrations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microting.eFormApi.BasePn;
@@ -151,7 +153,11 @@ namespace Workflow.Pn
 
             var contextFactory = new WorkflowPnContextFactory();
             var context = contextFactory.CreateDbContext(new[] { connectionString });
-            context.Database.Migrate();
+            var historyRepo = context.GetService<IHistoryRepository>();
+            if (!historyRepo.Exists() || context.Database.GetPendingMigrations().Any())
+            {
+                context.Database.Migrate();
+            }
 
             // Seed database
             SeedDatabase(connectionString);
