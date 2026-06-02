@@ -23,12 +23,14 @@ jobs:
         path: eform-angular-frontend
     - name: Copy dependencies
       run: |
+        mkdir -p eform-angular-frontend/eform-client/e2e/Tests
+        mkdir -p "eform-angular-frontend/eform-client/e2e/Page objects"
         cp -av eform-angular-workflow-plugin/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-settings eform-angular-frontend/eform-client/e2e/Tests/workflow-settings
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-general eform-angular-frontend/eform-client/e2e/Tests/workflow-general
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Page\ objects/Workflow eform-angular-frontend/eform-client/e2e/Page\ objects/Workflow
-        cp -av eform-angular-workflow-plugin/eform-client/wdio-headless-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.ts 
-        cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-plugin-step2.conf.ts 
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-headless-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.ts
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-plugin-step2.conf.ts
         mkdir -p eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins
         cd eform-angular-frontend/eform-client && ../../eform-angular-workflow-plugin/testinginstallpn.sh
     - name: Get the version release
@@ -84,12 +86,14 @@ jobs:
         mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < eform-angular-workflow-plugin/420_eform-angular-workflow-plugin.sql
     - name: Copy dependencies
       run: |
+        mkdir -p eform-angular-frontend/eform-client/e2e/Tests
+        mkdir -p "eform-angular-frontend/eform-client/e2e/Page objects"
         cp -av eform-angular-workflow-plugin/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-settings eform-angular-frontend/eform-client/e2e/Tests/workflow-settings
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Tests/workflow-general eform-angular-frontend/eform-client/e2e/Tests/workflow-general
         cp -av eform-angular-workflow-plugin/eform-client/e2e/Page\ objects/Workflow eform-angular-frontend/eform-client/e2e/Page\ objects/Workflow
-        cp -av eform-angular-workflow-plugin/eform-client/wdio-headless-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.ts 
-        cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-plugin-step2.conf.ts 
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-headless-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-headless-plugin-step2.conf.ts
+        cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-plugin-step2.conf.ts
         mkdir -p eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins
         cd eform-angular-frontend/eform-client && ../../eform-angular-workflow-plugin/testinginstallpn.sh
     - name: Start the newly build Docker container
