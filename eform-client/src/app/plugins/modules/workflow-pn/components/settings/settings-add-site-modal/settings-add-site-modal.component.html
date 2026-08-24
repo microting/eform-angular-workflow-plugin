@@ -14,8 +14,7 @@
 </div>
 <div mat-dialog-actions class="d-flex flex-row justify-content-end">
   <button
-    mat-raised-button
-    color="accent"
+    class="btn-primary"
     id="siteAssignBtnSave"
     (click)="assignSite()"
     [disabled]="!selectedSiteId"
@@ -23,7 +22,7 @@
     {{'Assign' | translate}}
   </button>
   <button
-    mat-raised-button
+    class="btn-cancel"
     id="siteAssignBtnSaveCancel"
     (click)="hide()"
   >
