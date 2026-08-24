@@ -35,6 +35,11 @@ jobs:
         cp -av eform-angular-workflow-plugin/eform-client/wdio-plugin-step2.conf.ts  eform-angular-frontend/eform-client/wdio-plugin-step2.conf.ts
         mkdir -p eform-angular-frontend/eFormAPI/eFormAPI.Web/Plugins
         cd eform-angular-frontend/eform-client && ../../eform-angular-workflow-plugin/testinginstallpn.sh
+    - name: Button conventions
+      # The checker lives in the frontend repo (checked out above); these
+      # templates are ours. A frontend CI run cannot see them because
+      # src/app/plugins/ is gitignored there, so this plugin has to run it.
+      run: cd eform-angular-frontend/eform-client && node scripts/check-button-conventions.js src/app/plugins/modules/workflow-pn
     - name: Get the version release
       id: get_release_version
       run: echo "VERSION=$(cd eform-angular-workflow-plugin && git describe --abbrev=0 --tags | cut -d "v" -f 2)" >> $GITHUB_OUTPUT
