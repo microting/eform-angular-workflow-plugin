@@ -18,6 +18,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AssemblyMetadata Include="SentryDsn" Value="https://80b935299e69fe24c21043140b62f2ab@o4506241219428352.ingest.us.sentry.io/4508266849501184" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="Resources\localization.json" />
     <None Remove="Resources\Templates\page.html" />
     <EmbeddedResource Include="Resources\Templates\page.html" />
