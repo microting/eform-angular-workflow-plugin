@@ -20,4 +20,8 @@
     <PackageReference Include="Testcontainers.Mariadb" Version="4.16.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Workflow.Pn\Workflow.Pn.csproj" />
+  </ItemGroup>
+
 </Project>
