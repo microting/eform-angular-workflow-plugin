@@ -181,7 +181,8 @@ public class WorkflowCasesService(
         var secondEformId = int.Parse(secondEformIdValue!);
         var childCheckList = await sdkDbContext.CheckLists.FirstAsync(x => x.ParentId == secondEformId);
         var fieldIdOfTaskCompleted =
-            await sdkDbContext.Fields.FirstAsync(x => x.CheckListId == childCheckList.Id && x.FieldTypeId == 5);
+            await sdkDbContext.Fields.FirstAsync(x =>
+                x.CheckListId == childCheckList.Id && x.FieldType.Type == Constants.FieldTypes.Picture);
 
         // get query
         var workflowDbCase = await workflowPnDbContext.WorkflowCases
@@ -627,7 +628,7 @@ public class WorkflowCasesService(
 
                 var fieldWithPlaces = await sdkDbContext.Fields
                     .Where(x => x.CheckListId == options.Value.FirstEformId)
-                    .Where(x => x.FieldTypeId == 8) // fieldType.id == 8; fieldType.type -> SingleSelect
+                    .Where(x => x.FieldType.Type == Constants.FieldTypes.SingleSelect)
                     .Select(x => x.Id)
                     .Skip(1)
                     .FirstOrDefaultAsync();
