@@ -9,13 +9,17 @@ import { AuthService, FoldersService} from 'src/app/common/services';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { FolderDto } from 'src/app/common/models';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MatDialogTitle, MatDialogContent} from '@angular/material/dialog';
+import {MatCard, MatCardContent} from '@angular/material/card';
+import {EformTreeViewPickerComponent} from 'src/app/common/modules/eform-shared/components';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @AutoUnsubscribe()
 @Component({
     selector: 'app-workflow-folders-modal',
     templateUrl: './workflow-folders-modal.component.html',
     styleUrls: ['./workflow-folders-modal.component.scss'],
-    standalone: false
+    imports: [MatDialogTitle, MatDialogContent, MatCard, MatCardContent, EformTreeViewPickerComponent, TranslatePipe],
 })
 export class WorkflowFoldersModalComponent implements OnInit, OnDestroy {
   private folderService = inject(FoldersService);

@@ -5,13 +5,18 @@ import {Subscription} from 'rxjs';
 import {WorkflowPnSettingsService} from '../../../services';
 import {eqBy, prop, symmetricDifferenceWith} from 'ramda';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MatDialogTitle, MatDialogContent, MatDialogActions} from '@angular/material/dialog';
+import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MtxSelect} from '@ng-matero/extensions/select';
+import {FormsModule} from '@angular/forms';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @AutoUnsubscribe()
 @Component({
     selector: 'app-settings-add-site-modal',
     templateUrl: './settings-add-site-modal.component.html',
     styleUrls: ['./settings-add-site-modal.component.scss'],
-    standalone: false
+    imports: [MatDialogTitle, MatDialogContent, MatDialogActions, MatFormField, MatLabel, MtxSelect, FormsModule, TranslatePipe],
 })
 export class SettingsAddSiteModalComponent implements OnInit, OnDestroy {
   private settingsService = inject(WorkflowPnSettingsService);

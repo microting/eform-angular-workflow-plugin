@@ -15,7 +15,7 @@ import {Overlay} from '@angular/cdk/overlay';
 import {dialogConfigHelper} from 'src/app/common/helpers';
 import {DeleteModalComponent} from 'src/app/common/modules/eform-shared/components';
 import {PdfIcon, WordIcon} from 'src/app/common/const';
-import {MatIconRegistry} from '@angular/material/icon';
+import {MatIcon, MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
 import {Store} from '@ngrx/store';
 import {
@@ -24,13 +24,24 @@ import {
   selectWorkflowCasesPaginationIsSortDsc,
   selectWorkflowCasesPaginationSort
 } from '../../../state';
+import {EformNewSubheaderComponent, EformPaginationComponent} from 'src/app/common/modules/eform-shared/components';
+import {MatIconButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
+import {MtxGrid} from '@ng-matero/extensions/grid';
+import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
+import {RouterLink} from '@angular/router';
+import {AsyncPipe} from '@angular/common';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @AutoUnsubscribe()
 @Component({
     selector: 'app-workflow-cases-page',
     templateUrl: './workflow-cases-page.component.html',
     styleUrls: ['./workflow-cases-page.component.scss'],
-    standalone: false
+    imports: [EformNewSubheaderComponent, EformPaginationComponent, MatIconButton, MatTooltip, MatIcon, MatFormField, MatLabel, MatInput, FormsModule, MtxGrid, MatMenu, MatMenuItem, MatMenuTrigger, RouterLink, AsyncPipe, TranslatePipe],
 })
 export class WorkflowCasesPageComponent implements OnInit, OnDestroy {
   private store = inject(Store);
