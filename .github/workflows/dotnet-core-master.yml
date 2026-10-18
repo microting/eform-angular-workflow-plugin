@@ -8,6 +8,32 @@ on:
     - '.github/**'
 
 jobs:
+  angular-unit-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        path: eform-angular-workflow-plugin
+    - name: Preparing Frontend checkout
+      uses: actions/checkout@v4
+      with:
+        repository: microting/eform-angular-frontend
+        ref: ${{ github.ref_name }}
+        path: eform-angular-frontend
+    - name: Copy dependencies
+      run: |
+        cp -av eform-angular-workflow-plugin/eform-client/src/app/plugins/modules/workflow-pn eform-angular-frontend/eform-client/src/app/plugins/modules/workflow-pn
+        cd eform-angular-frontend/eform-client && ../../eform-angular-workflow-plugin/testinginstallpn.sh
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+    - name: Enable Corepack
+      run: corepack enable
+    - name: yarn install
+      run: cd eform-angular-frontend/eform-client && yarn install
+    - name: Unit tests
+      run: cd eform-angular-frontend/eform-client && npx ng test --watch=false --include='src/app/plugins/modules/workflow-pn/**/*.spec.ts'
   workflow-build:
     runs-on: ubuntu-latest
     steps:
