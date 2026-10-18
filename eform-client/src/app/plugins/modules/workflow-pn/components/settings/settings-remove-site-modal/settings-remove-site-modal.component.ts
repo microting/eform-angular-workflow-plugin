@@ -12,12 +12,12 @@ import {WorkflowPnSettingsService} from '../../../services';
 import { AutoUnsubscribe } from 'ngx-auto-unsubscribe';
 import { Subscription } from 'rxjs';
 
+
 @AutoUnsubscribe()
 @Component({
     selector: 'app-settings-remove-site-modal',
     templateUrl: './settings-remove-site-modal.component.html',
-    styleUrls: ['./settings-remove-site-modal.component.scss'],
-    standalone: false
+    styleUrls: ['./settings-remove-site-modal.component.scss']
 })
 export class SettingsRemoveSiteModalComponent implements OnInit, OnDestroy {
   private settingsService = inject(WorkflowPnSettingsService);
