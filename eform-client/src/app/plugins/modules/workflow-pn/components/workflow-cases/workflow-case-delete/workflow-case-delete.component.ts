@@ -10,13 +10,16 @@ import {Subscription} from 'rxjs';
 import {WorkflowCaseModel} from '../../../models';
 import {WorkflowPnCasesService} from '../../../services';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {MatDialogTitle, MatDialogContent, MatDialogActions} from '@angular/material/dialog';
+import {DatePipe} from '@angular/common';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @AutoUnsubscribe()
 @Component({
     selector: 'app-workflow-case-delete',
     templateUrl: './workflow-case-delete.component.html',
     styleUrls: ['./workflow-case-delete.component.scss'],
-    standalone: false
+    imports: [MatDialogTitle, MatDialogContent, MatDialogActions, TranslatePipe, DatePipe],
 })
 export class WorkflowCaseDeleteComponent implements OnInit, OnDestroy {
   private workflowCaseService = inject(WorkflowPnCasesService);

@@ -22,13 +22,22 @@ import {Overlay} from '@angular/cdk/overlay';
 import {MtxGridColumn} from '@ng-matero/extensions/grid';
 import {TranslateService} from '@ngx-translate/core';
 import {DeleteModalComponent} from 'src/app/common/modules/eform-shared/components';
+import {EformNewSubheaderComponent} from 'src/app/common/modules/eform-shared/components';
+import {MatButton} from '@angular/material/button';
+import {MatTooltip} from '@angular/material/tooltip';
+import {MatIcon} from '@angular/material/icon';
+import {TranslatePipe} from '@ngx-translate/core';
+import {MatFormField, MatLabel} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
+import {MtxGrid} from '@ng-matero/extensions/grid';
 
 @AutoUnsubscribe()
 @Component({
     selector: 'app-workflow-settings',
     templateUrl: './workflow-settings.component.html',
     styleUrls: ['./workflow-settings.component.scss'],
-    standalone: false
+    imports: [EformNewSubheaderComponent, MatButton, MatTooltip, MatIcon, TranslatePipe, MatFormField, MatLabel, MatInput, FormsModule, MtxGrid],
 })
 export class WorkflowSettingsComponent implements OnInit, OnDestroy {
   private workflowPnSettingsService = inject(WorkflowPnSettingsService);

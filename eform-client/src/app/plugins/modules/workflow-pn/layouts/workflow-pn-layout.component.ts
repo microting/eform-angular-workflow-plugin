@@ -4,12 +4,13 @@ import {translates} from './../i18n/translates';
 import {Store} from '@ngrx/store';
 import {take} from 'rxjs';
 import {addPluginToVisited, selectPluginsVisitedPlugins} from 'src/app/state';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
     selector: 'app-workflow-pn-layout',
     template: `
     <router-outlet></router-outlet>`,
-    standalone: false
+    imports: [RouterOutlet],
 })
 export class WorkflowPnLayoutComponent implements AfterContentInit, OnInit {
   private translateService = inject(TranslateService);

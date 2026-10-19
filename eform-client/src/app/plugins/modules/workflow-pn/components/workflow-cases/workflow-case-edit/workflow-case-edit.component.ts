@@ -17,13 +17,24 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {format} from 'date-fns';
 import {Store} from '@ngrx/store';
 import {MatDatepickerInputEvent} from '@angular/material/datepicker';
+import {EformNewSubheaderComponent} from 'src/app/common/modules/eform-shared/components';
+import {MatCard, MatCardHeader, MatCardContent, MatCardFooter} from '@angular/material/card';
+import {MatFormField, MatLabel, MatSuffix} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {MatDatepickerToggle, MatDatepickerInput, MatDatepicker} from '@angular/material/datepicker';
+import {MtxSelect} from '@ng-matero/extensions/select';
+import {FormsModule} from '@angular/forms';
+import {NgIf, DatePipe} from '@angular/common';
+import {ElementPictureComponent} from 'src/app/common/modules/eform-cases/components';
+import {MatButton} from '@angular/material/button';
+import {TranslatePipe} from '@ngx-translate/core';
 
 @AutoUnsubscribe()
 @Component({
     selector: 'app-workflow-case-edit',
     templateUrl: './workflow-case-edit.component.html',
     styleUrls: ['./workflow-case-edit.component.scss'],
-    standalone: false
+    imports: [EformNewSubheaderComponent, MatCard, MatCardHeader, MatCardContent, MatCardFooter, MatFormField, MatLabel, MatSuffix, MatInput, MatDatepickerToggle, MatDatepickerInput, MatDatepicker, MtxSelect, FormsModule, NgIf, DatePipe, ElementPictureComponent, MatButton, TranslatePipe],
 })
 export class WorkflowCaseEditComponent implements OnInit, OnDestroy {
   private activateRoute = inject(ActivatedRoute);
