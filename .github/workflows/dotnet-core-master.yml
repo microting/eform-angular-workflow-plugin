@@ -37,14 +37,14 @@ jobs:
   workflow-build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         path: eform-angular-workflow-plugin
     - name: Extract branch name
       id: extract_branch
       run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
     - name: 'Preparing Frontend checkout'
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
         repository: microting/eform-angular-frontend
@@ -89,7 +89,7 @@ jobs:
     needs: workflow-build
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         path: eform-angular-workflow-plugin
     - name: Extract branch name
@@ -110,7 +110,7 @@ jobs:
       with:
         node-version: 22
     - name: 'Preparing Frontend checkout'
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: microting/eform-angular-frontend
         ref: ${{ steps.extract_branch.outputs.branch }}
@@ -176,7 +176,7 @@ jobs:
   workflow-dotnet-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         path: eform-angular-workflow-plugin
     - name: Create docker network
@@ -192,9 +192,9 @@ jobs:
         mysql -u root -h 127.0.0.1 --password=secretpassword -e 'create database `420_eform-angular-workflow-plugin`'
         mysql -u root -h 127.0.0.1 --password=secretpassword 420_eform-angular-workflow-plugin < eform-angular-workflow-plugin/420_eform-angular-workflow-plugin.sql
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 10.0.x
+        dotnet-version: 11.0.x
     - name: Build
       run: dotnet build eform-angular-workflow-plugin/eFormAPI/Plugins/Workflow.Pn/Workflow.Pn.sln
     - name: Unit Tests
@@ -207,7 +207,7 @@ jobs:
       matrix:
         test: [a,b,c,d]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         path: eform-angular-workflow-plugin
     - name: Extract branch name
@@ -232,7 +232,7 @@ jobs:
       with:
         node-version: 22
     - name: 'Preparing Frontend checkout'
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: microting/eform-angular-frontend
         ref: ${{ steps.extract_branch.outputs.branch }}
